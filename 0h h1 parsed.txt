@@ -1,0 +1,7 @@
+6
+E E E E E E 
+E E E E B E 
+E E R R E E 
+E R R E E E 
+E E E E E E 
+E R E E B E 
