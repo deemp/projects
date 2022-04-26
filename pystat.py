@@ -26,6 +26,9 @@ PATH = 'repos'
 # see https://github.com/AlDanial/cloc#options-
 CODE_JSON = "code"
 
+# target language
+# 
+LANGUAGE = "Python"
 
 #%%
 
@@ -134,5 +137,5 @@ def count_lines(language="Python"):
     j = json.loads(output)[language][CODE_JSON]
     print(f"""\ncontain{"s" if len(projects) == 1 else ""} {j} {language} SLOC""")
 
-count_lines(language="Python")
+count_lines(language=LANGUAGE)
 # %%
