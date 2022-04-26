@@ -4,8 +4,10 @@ A script for counting SLOC for a `LANGUAGE` in GitHub projects.
 
 ## Usage
 1. Specify the list of URLs of projects you want to download and process in [pystat.py](./pystat.py)
-    * Each URL should lead to a `Tag` of a GitHub project. For a project, see `Releases` -> `Tags` -> `Source code (zip)`.
-    * If the `./repos/unzipped` already contains a directory for a `Tag`, this `Tag` won't be downloaded again.
+    * Each URL should lead to either `Tag` or to `main` of a GitHub project.
+        * To get a `Tag` link for a project, see `Releases` -> `Tags`, fill the correct `<user>`, `<repo>`, `<tag>` into `https://github.com/<user>/<repo>/archive/refs/tags/<tag>.zip` and use this link
+        * To get the freshest zip, fill the correct `<user>` and `<repo>` into `https://github.com/<user>/<repo>/archive/refs/heads/main.zip` and use this link.
+    * If the `./repos/unzipped` already contains a directory for a `Tag` or `main`, this `Tag` or `main` won't be downloaded again.
 1. Specify the `LANGUAGE` in [pystat.py](./pystat.py)
 2. Install the required packages from `requirements.txt` ([link](https://pip.pypa.io/en/stable/cli/pip_freeze/#examples))
 3. Run the script
