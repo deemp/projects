@@ -26,14 +26,28 @@ PATH = 'repos'
 # see https://github.com/AlDanial/cloc#options-
 CODE_JSON = "code"
 
+
 #%%
 
-def get_name(url):
+def get_name_from_url(url):
     repo_name = url.split("/")[-5]
     tag = os.path.basename(url)
     return f"{repo_name}-{tag}"
 
- 
+def zipped(x): return f"{x}/zipped"
+def unzipped(x): return f"{x}/unzipped"
+
+def get_existing_projects():
+    return [os.path.basename(i) for i in glob.glob(f"./{unzipped(PATH)}/*")]
+
+def strip_zip(s): return s.replace(".zip", "")
+
+existing = get_existing_projects()
+URLS = [i for i in URLS if strip_zip(get_name_from_url(i)) not in existing] 
+
+print(URLS)
+
+#%%
 # download a url and return the raw data, or None on error
 def download_url(url):
     try:
@@ -48,7 +62,7 @@ def download_url(url):
 # save data to a local file
 def save_file(url, data, path):
     # get the name of the file from the url
-    file_name = get_name(url)
+    file_name = get_name_from_url(url)
     # construct a local path for saving the file
     out_path = join(path, file_name)
     # save to file
@@ -60,10 +74,8 @@ def save_file(url, data, path):
 def unzip_file(file_path, extract_to):
     # https://stackoverflow.com/a/3451150
     with zipfile.ZipFile(file_path, 'r') as zip_ref:
-        zip_ref.extractall(extract_to)
-
-def zipped(x): return f"{x}/zipped"
-def unzipped(x): return f"{x}/unzipped"
+        new_path = f"{extract_to}/{strip_zip(os.path.basename(file_path))}"
+        zip_ref.extractall(new_path)
 
 # download and unzip an archive
 def download_and_process(url, path):
@@ -84,7 +96,7 @@ def download_and_process(url, path):
 
     unzipped_path = unzipped(path)
     unzip_file(file_path=out_path, extract_to=unzipped_path)
-    unzipped_name = os.path.basename(out_path).replace(".zip","")
+    unzipped_name = strip_zip(os.path.basename(out_path))
     print(f'>Unzipped {out_path} into {unzipped_path}/{unzipped_name}')
 
 
@@ -111,10 +123,9 @@ print("Finished unzipping")
 
 print("Counting lines...")
 
-
 # Collect statistics about repositories
 def count_lines(language="Python"):
-    projects = [os.path.basename(i) for i in glob.glob(f"./{unzipped(PATH)}/*")]
+    projects = get_existing_projects()
     print(f"""Project{"s" if len(projects) > 1 else ""}:\n""")
     for i in projects:
         print(i)
