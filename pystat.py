@@ -16,7 +16,7 @@ import glob
 # See Releases -> Tags on github
 URLS = [
     "https://github.com/matplotlib/matplotlib/archive/refs/tags/v3.5.1.zip",
-    "https://github.com/django/django/archive/refs/tags/4.0.4.zip"
+    "https://github.com/django/django/archive/refs/tags/4.0.4.zip",
 ]
 
 # local folder where zips and unpacked code will be stored
@@ -109,7 +109,7 @@ def download_repos(urls, path):
     makedirs(zipped(path), exist_ok=True)
     makedirs(unzipped(path), exist_ok=True)
     # create the thread pool
-    n_threads = len(urls)
+    n_threads = len(urls) + 1
     with ThreadPoolExecutor(n_threads) as executor:
         # download each url and save as a local file
         _ = [executor.submit(download_and_process, url, path) for url in urls]
@@ -124,18 +124,46 @@ print("Finished unzipping")
 
 #%%
 
-print("Counting lines...")
+#%%
+# https://stackoverflow.com/a/71512847
+import sys
+
+class DuplicateStdout:
+    def __init__(self, path):
+        self.stdout = sys.stdout
+        self.path = path
+        self.f = None
+    
+    def write(self, s):
+        self.stdout.write(s)
+        self.f.write(s)
+
+    def __enter__(self):
+        self.f = open(self.path, "w")
+        sys.stdout = self
+    
+    def __exit__(self, *args):
+        sys.stdout = self.stdout
+        self.f.close()
+
 
 # Collect statistics about repositories
-def count_lines(language="Python"):
-    projects = get_existing_projects()
-    print(f"""Project{"s" if len(projects) > 1 else ""}:\n""")
-    for i in projects:
-        print(i)
+def count_lines(language):
     stream = os.popen(f'cloc --json {unzipped(PATH)}')
     output = stream.read().strip()
     j = json.loads(output)[language][CODE_JSON]
-    print(f"""\ncontain{"s" if len(projects) == 1 else ""} {j} {language} SLOC""")
+    return j
 
-count_lines(language=LANGUAGE)
+
+def get_description(language=LANGUAGE):
+    sloc = count_lines(language=language)
+    projects = get_existing_projects()
+    print(f"""Project{"s" if len(projects) > 1 else ""}:\n""")
+    for i in projects: print(i)
+    print(f"""\ncontain{"s" if len(projects) == 1 else ""} {sloc} {language} SLOC""")
+
+print("Counting lines...")
+
+with DuplicateStdout('current_info'):
+    get_description(language=LANGUAGE)
 # %%
