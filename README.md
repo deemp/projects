@@ -10,3 +10,5 @@ A script for counting `{target_language}` SLOC in GitHub projects.
 ```sh
 python3 pystat.py
 ```
+
+See current statistics [here](./current_stat)
