@@ -10,6 +10,7 @@ A script for counting SLOC for a `LANGUAGE` in GitHub projects.
     * If the `./repos/unzipped` already contains a directory for a `Tag` or `main`, this `Tag` or `main` won't be downloaded again.
 1. Specify the `LANGUAGE` in [pystat.py](./pystat.py)
 2. Install the required packages from `requirements.txt` ([link](https://pip.pypa.io/en/stable/cli/pip_freeze/#examples))
+1. Install [cloc](https://github.com/AlDanial/cloc) ([link](https://www.geeksforgeeks.org/cloc-count-number-of-lines-of-code-in-file/))
 3. Run the script
 ```sh
 python3 pystat.py
