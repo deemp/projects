@@ -10,13 +10,23 @@ import json
 import zipfile
 import glob
 #%%
+
+
 # list of tags from releases
 # See Releases -> Tags on github
-
 URLS = [
     "https://github.com/matplotlib/matplotlib/archive/refs/tags/v3.5.1.zip",
     "https://github.com/django/django/archive/refs/tags/4.0.4.zip"
 ]
+
+# local folder where zips and unpacked code will be stored
+PATH = 'repos'
+
+# target metric
+# see https://github.com/AlDanial/cloc#options-
+CODE_JSON = "code"
+
+#%%
 
 def get_name(url):
     repo_name = url.split("/")[-5]
@@ -90,7 +100,6 @@ def download_repos(urls, path):
         _ = [executor.submit(download_and_process, url, path) for url in urls]
 
 
-PATH = 'repos'
 
 #%%
 # download all docs
@@ -101,7 +110,7 @@ print("Finished unzipping")
 #%%
 
 print("Counting lines...")
-code_json = "code"
+
 
 # Collect statistics about repositories
 def count_lines(language="Python"):
@@ -111,8 +120,8 @@ def count_lines(language="Python"):
         print(i)
     stream = os.popen(f'cloc --json {unzipped(PATH)}')
     output = stream.read().strip()
-    j = json.loads(output)[language][code_json]
+    j = json.loads(output)[language][CODE_JSON]
     print(f"""\ncontain{"s" if len(projects) == 1 else ""} {j} {language} SLOC""")
 
-count_lines(language="C++")
+count_lines(language="Python")
 # %%
