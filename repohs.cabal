@@ -31,11 +31,19 @@ library
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
+      MissingH
+    , async
+    , base >=4.7 && <5
     , bytestring
+    , conduit-extra
+    , containers
     , directory
+    , filepath
+    , fmt
     , lens
+    , uri
     , wreq
+    , zip
   default-language: Haskell2010
 
 executable repohs-exe
@@ -46,12 +54,20 @@ executable repohs-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      MissingH
+    , async
+    , base >=4.7 && <5
     , bytestring
+    , conduit-extra
+    , containers
     , directory
+    , filepath
+    , fmt
     , lens
     , repohs
+    , uri
     , wreq
+    , zip
   default-language: Haskell2010
 
 test-suite repohs-test
@@ -63,10 +79,18 @@ test-suite repohs-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      MissingH
+    , async
+    , base >=4.7 && <5
     , bytestring
+    , conduit-extra
+    , containers
     , directory
+    , filepath
+    , fmt
     , lens
     , repohs
+    , uri
     , wreq
+    , zip
   default-language: Haskell2010

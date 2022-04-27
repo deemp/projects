@@ -25,6 +25,14 @@ dependencies:
 - lens
 - bytestring
 - directory
+- uri
+- filepath
+- async
+- fmt
+- MissingH
+- zip
+- conduit-extra
+- containers
 
 library:
   source-dirs: src
