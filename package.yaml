@@ -24,6 +24,7 @@ dependencies:
 - wreq
 - lens
 - bytestring
+- directory
 
 library:
   source-dirs: src

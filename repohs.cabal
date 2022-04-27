@@ -33,6 +33,7 @@ library
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , directory
     , lens
     , wreq
   default-language: Haskell2010
@@ -47,6 +48,7 @@ executable repohs-exe
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , directory
     , lens
     , repohs
     , wreq
@@ -63,6 +65,7 @@ test-suite repohs-test
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , directory
     , lens
     , repohs
     , wreq
