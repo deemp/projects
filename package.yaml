@@ -33,6 +33,9 @@ dependencies:
 - zip
 - conduit-extra
 - containers
+- process
+- aeson
+- scientific
 
 library:
   source-dirs: src

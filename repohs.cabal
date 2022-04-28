@@ -32,6 +32,7 @@ library
       src
   build-depends:
       MissingH
+    , aeson
     , async
     , base >=4.7 && <5
     , bytestring
@@ -41,6 +42,8 @@ library
     , filepath
     , fmt
     , lens
+    , process
+    , scientific
     , uri
     , wreq
     , zip
@@ -55,6 +58,7 @@ executable repohs-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       MissingH
+    , aeson
     , async
     , base >=4.7 && <5
     , bytestring
@@ -64,7 +68,9 @@ executable repohs-exe
     , filepath
     , fmt
     , lens
+    , process
     , repohs
+    , scientific
     , uri
     , wreq
     , zip
@@ -80,6 +86,7 @@ test-suite repohs-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       MissingH
+    , aeson
     , async
     , base >=4.7 && <5
     , bytestring
@@ -89,7 +96,9 @@ test-suite repohs-test
     , filepath
     , fmt
     , lens
+    , process
     , repohs
+    , scientific
     , uri
     , wreq
     , zip

@@ -1,37 +1,66 @@
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE LambdaCase       #-}
+
 module Main (
   main,
 )where
 
-import Network.Wreq                  -- package wreq
-import Control.Lens                  -- package lens
-import qualified Data.ByteString.Lazy as BL
-import System.Directory (createDirectory, getDirectoryContents, doesDirectoryExist, createDirectoryIfMissing)
-import Text.Printf (printf)
-import Text.URI ( parseURI, URI(uriPath) )
-import System.FilePath.Posix(takeBaseName, takeDirectory)
-import Control.Concurrent.Async (mapConcurrently)
-import Fmt ( (+|), (|+), format, Buildable(build), Builder, (|++|), blockListF, fmt )
-import Fmt.Internal.Core (FromBuilder)
-import Data.List.Utils ( replace )
-import Control.Monad (guard)
-import Data.Maybe (isJust, fromJust)
-import Data.Either (isRight, isLeft, fromRight, fromLeft)
-import Codec.Archive.Zip (withArchive, sourceEntry, mkEntrySelector, getEntries, getEntry, getEntryName)
-import qualified Data.Conduit.Binary as CB
-import qualified Data.Map as M
+import           Codec.Archive.Zip        (getEntries, getEntry, getEntryName,
+                                           mkEntrySelector, sourceEntry,
+                                           withArchive, unpackInto)
+import           Control.Concurrent.Async (mapConcurrently)
+import           Control.Lens
+import           Control.Monad            (guard, unless)
+import qualified Data.ByteString.Lazy     as BL
+import qualified Data.Conduit.Binary      as CB
+import           Data.Either              (fromLeft, fromRight, isLeft, isRight)
+import           Data.List.Utils          (replace)
+import qualified Data.Map                 as M
+import           Data.Maybe               (fromJust, isJust, fromMaybe)
+import           Fmt                      (Buildable (build), Builder,
+                                           blockListF, fmt, format, (+|), (|+),
+                                           (|++|))
+import           Fmt.Internal.Core        (FromBuilder)
+import           Network.Wreq
+import           System.Directory         (createDirectory,
+                                           createDirectoryIfMissing,
+                                           doesDirectoryExist,
+                                           getDirectoryContents)
+import           System.FilePath.Posix    (takeBaseName, takeDirectory)
+import           Text.Printf              (printf)
+import           Text.URI                 (URI (uriPath), parseURI)
+import          System.Process
+import Data.Aeson.Types (parseMaybe, FromJSON (parseJSON), Array, Parser)
+import Data.Aeson (decode, (.:), (.:?), Value (Object, Number), Object, FromJSON (parseJSON))
+import qualified Data.String as BL
+import Data.Scientific (scientific)
+import Control.Applicative (empty)
+import Data.Foldable (forM_)
 
 main :: IO ()
 main = do
-  downloadAndProcessRepos _URLs "repos"
+  downloadAndProcessRepos _URLs _PATH
+  let path = unzipped _PATH
+  p <- runSloc _LANGUAGE path
+  case p of
+    Just (PyExtension g) -> do
+      putStrLn ("Files in " +| path |+ " contain " +| g |+ " SLOC in " +\ _LANGUAGE  :: String)
+    Nothing ->
+      putStrLn (path |+ " doesn't contain " +| _LANGUAGE |+ " code" :: String)
+  putStrLn "Done!"
 
 _URLs :: [String]
 _URLs = [
-    -- "https://github.com/matplotlib/matplotlib/archive/refs/tags/v3.5.1.zip",
-    "https://github.com/br4ch1st0chr0n3/pyrepos/archive/refs/heads/master.zip",
-    "https://github.com/Inno-Notes/Notes/archive/refs/heads/main.zip"
+    "https://github.com/django/django/archive/refs/heads/main.zip",
+    "https://github.com/matplotlib/matplotlib/archive/refs/heads/main.zip",
+    "https://github.com/keras-team/keras/archive/refs/heads/master.zip",
+    "https://github.com/taseikyo/PyQt5-Apps/archive/refs/heads/master.zip",
+    "https://github.com/pallets/flask/archive/refs/heads/main.zip",
+    "https://github.com/ansible/ansible/archive/refs/heads/devel.zip",
+    "https://github.com/zulip/zulip/archive/refs/heads/main.zip",
+    "https://github.com/Theano/Theano/archive/refs/heads/master.zip"
   ]
 
 _PATH :: String
@@ -77,21 +106,43 @@ getNameURL s = p
     p = NameURL <$> name <*> url
 
 
-{- | filter out 
+{-
+>>>checkExists (_PATH /+\ "/unzipped") []
+Left "No such directory exists: repos/unzipped"
+-}
+checkExists :: FilePath -> b -> IO (Either String b)
+checkExists p ok = do
+  is <- doesDirectoryExist p
+  if not is
+    then do
+      let msg = "No such directory exists: " +\ p :: String
+      putStrLn msg
+      return (Left msg)
+    else return (Right ok)
+
+
+
+{- | filter out
 
 * URLs for already unzipped projects
 
 * invalid URLs
 
->>>missing _PATH _URLs
-NOW Right [NameURL {getName = "matplotlib.matplotlib.archive.refs.tags.v3.5.1.zip", getURL = "https://github.com/matplotlib/matplotlib/archive/refs/tags/v3.5.1.zip"},NameURL {getName = "django.django.archive.refs.tags.4.0.4.zip", getURL = "https://github.com/django/django/archive/refs/tags/4.0.4.zip"},NameURL {getName = "Inno-Notes.Notes.archive.refs.heads.main.zip", getURL = "https://github.com/Inno-Notes/Notes/archive/refs/heads/main.zip"}]
+>>>missing (_PATH /+\ "/unzipped") _URLs
+NOW Right []
 -}
 missing :: FilePath -> [String] -> IO (Either String [NameURL])
 missing p urls = do
-  guard =<< doesDirectoryExist p
-  t <- getDirectoryContents p
-  let nus = fromJust <$> filter isJust (getNameURL <$> urls)
-  return (Right nus)
+  ex <- checkExists p []
+  case ex of
+    Left msg -> do
+      putStrLn msg
+      return ex
+    _ -> do
+      t <- getDirectoryContents p
+      let nus = fromJust <$> filter isJust (getNameURL <$> urls)
+          nus' = filter (\NameURL{..} -> takeBaseName getName `notElem` t) nus
+      return (Right nus')
 
 (+\) :: (FromBuilder b, Buildable a) => Builder -> a -> b
 b +\ x = b +| x |+ ""
@@ -109,6 +160,7 @@ Right "repos/zipped/Inno-Notes.Notes.archive.refs.heads.main.zip"
 
 downloadRepo :: FilePath -> NameURL -> IO (Either String FilePath)
 downloadRepo dir nu = do
+
   -- should I check existence here?
   exists <- doesDirectoryExist dir
   if not exists
@@ -116,7 +168,7 @@ downloadRepo dir nu = do
   else do
     let url = getURL nu
 
-    print ("Downloading " +\ url :: String)
+    putStrLn ("Downloading " +\ url :: String)
     d <- get url
     let
       contents = d ^. responseBody
@@ -124,64 +176,94 @@ downloadRepo dir nu = do
       path = dir |+ "/" +\ name
 
     BL.writeFile path contents
-    print ("Downloaded " +| url |+ " into " +\ path :: String)
+    putStrLn ("Downloaded " +| url |+ " into " +\ path :: String)
     return $ Right path
 
-{-
->>>takeBaseName "repos/unzipped/Inno-Notes.Notes.archive.refs.heads.main.zip"
-"Inno-Notes.Notes.archive.refs.heads.main"
--}
-
-{- Given path to a `fileName.zip` and a `directory`, 
+{- Given path to a `fileName.zip` and a `directory`,
 unzip this file into `directory/fileName`
 
 -}
-unzipRepo :: FilePath -> FilePath -> IO ()
+unzipRepo :: FilePath -> FilePath -> IO (Either String FilePath)
 unzipRepo p t = do
   let
     name = takeBaseName p
     newDir = (t |+ "/" +\ name) :: FilePath
-    -- newPath = (newDir |+ "/" +\ name) :: FilePath
   createDirectoryIfMissing True newDir
-  print ("Unzipping " +| p |+ " into " +\ newDir :: String)
-  entries <- withArchive p (M.keys <$> getEntries)
-  case entries of
-    [] -> "The archive " +| p |+ "is empty"
-    _ ->
-      do
-        print (getEntryName <$> entries)
-        let dirs = (\x -> newDir |+ "/" +\ getEntryName x) <$> entries
-        mapM_ (createDirectoryIfMissing True . takeDirectory) dirs
-        let es = zip entries (CB.sinkFile <$> dirs)
-        bs <- mapM (\(x, e) -> withArchive p $ sourceEntry x e) es
-        print ("Unzipped " +| p |+ " into " +\ newDir :: String)
+  putStrLn ("Unzipping " +| p |+ " into " +\ newDir :: String)
+  withArchive p (unpackInto newDir)
+  putStrLn ("Unzipped " +| p |+ " into " +\ newDir :: String)
+  return $ Right newDir
 
-{- | Given a list of URLs and a target directory,
 
-download files there
-
->>>downloadRepos _URLs _PATH
--}
-downloadAndProcessRepos :: [String] -> FilePath -> IO ()
-downloadAndProcessRepos urls path = do
-  -- TODO check doesn't overwrite if exist
-  let zdir = zipped path
-  createDirectoryIfMissing True zdir
-  ms <- missing zdir urls
-  case ms of
+putContent :: FilePath -> NameURL -> FilePath -> IO (Either String FilePath)
+putContent zdir nu uzdir = do
+  r <- downloadRepo zdir nu
+  case r of
     Left msg -> do
-      print msg
-      return ()
-    _ -> pure ()
+      putStrLn msg
+      return r
+    Right path -> do
+      k <- unzipRepo path uzdir
+      case k of
+        Left msg -> do
+          putStrLn msg
+          return r
+        Right path' ->
+          return k
 
-  let Right ms' = ms
-  zips <- mapConcurrently (downloadRepo zdir) ms'
-  let
-    zipl = filter isLeft zips & map (fromLeft "")
-    zipr = filter isRight zips & map (fromRight "")
+{- | 
 
-  let uzdir = unzipped path
+> downloadAndProcessRepos urls dir 
+downloads files accessible by `urls` into directory `dir`
+
+>>>downloadAndProcessRepos _URLs _PATH
+-}
+downloadAndProcessRepos :: [String] -- ^ list of possibly correct URLs
+                        -> FilePath -- ^ directory to store files into
+                        -> IO ()
+downloadAndProcessRepos urls path = do
+  let zdir = zipped path
+      uzdir = unzipped path
+
+  createDirectoryIfMissing True zdir
   createDirectoryIfMissing True uzdir
 
-  unzips <- mapConcurrently (`unzipRepo` uzdir) zipr
+  ms <- missing uzdir urls
+
+  case ms of
+    Left msg -> do
+      putStrLn msg
+    Right v -> do
+        unless (null v) $ putStrLn "Missing repos:"
+        forM_ v (\NameURL{..} -> putStrLn getName)
+
+  let Right ms' = ms
+  zips <- mapConcurrently (\x -> putContent zdir x uzdir) ms'
   return ()
+
+type Language = String
+
+{-
+>>>runSloc _LANGUAGE "app"
+Just (HsExtension 164)
+-}
+
+runSloc :: Language -> FilePath -> IO (Maybe PyExtension)
+runSloc lang path = do
+  p <- readProcess "sloc" ["-f", "json", path] ""
+  return (decode (BL.fromString p) :: Maybe PyExtension)
+
+newtype PyExtension = PyExtension (Maybe Int) deriving Show
+
+instance FromJSON PyExtension where
+  parseJSON (Object v) = do
+    ext <- v .: "byExt"
+    hs <- ext .:? "py"
+    cnt <-
+      case hs of
+        Just k -> do
+          k1 <- k .: "summary"
+          k1 .: "source"
+        Nothing -> return Nothing
+    return (PyExtension cnt)
+  parseJSON _ = empty
