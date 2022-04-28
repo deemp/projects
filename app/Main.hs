@@ -73,7 +73,9 @@ main = do
   p <- runSloc _LANGUAGE path
   case p of
     Just (PyExtension g) -> do
-      putStrLn ("Files in " +| path |+ " contain " +| g |+ " SLOC in " +\ _LANGUAGE  :: String)
+      let msg = ("Files in " +| path |+ " contain " +| g |+ " SLOC in " +\ _LANGUAGE  :: String)
+      putStrLn msg
+      writeFile "report" msg
     Nothing ->
       putStrLn (path |+ " doesn't contain " +| _LANGUAGE |+ " code" :: String)
   putStrLn "Done!"
