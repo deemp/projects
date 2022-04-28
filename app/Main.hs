@@ -1,7 +1,29 @@
+#!/usr/bin/env stack
+{- stack
+  script
+  --resolver lts-18.28
+  --install-ghc
+  --package wreq
+  --package lens
+  --package bytestring
+  --package directory
+  --package uri
+  --package filepath
+  --package async
+  --package fmt
+  --package MissingH
+  --package zip
+  --package conduit-extra
+  --package containers
+  --package process
+  --package aeson
+  --package scientific
+-}
+
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE LambdaCase            #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE LambdaCase       #-}
 
 module Main (
   main,
@@ -9,16 +31,25 @@ module Main (
 
 import           Codec.Archive.Zip        (getEntries, getEntry, getEntryName,
                                            mkEntrySelector, sourceEntry,
-                                           withArchive, unpackInto)
+                                           unpackInto, withArchive)
+import           Control.Applicative      (empty)
 import           Control.Concurrent.Async (mapConcurrently)
 import           Control.Lens
 import           Control.Monad            (guard, unless)
+import           Data.Aeson               (FromJSON (parseJSON), Object,
+                                           Value (Number, Object), decode, (.:),
+                                           (.:?))
+import           Data.Aeson.Types         (Array, FromJSON (parseJSON), Parser,
+                                           parseMaybe)
 import qualified Data.ByteString.Lazy     as BL
 import qualified Data.Conduit.Binary      as CB
 import           Data.Either              (fromLeft, fromRight, isLeft, isRight)
+import           Data.Foldable            (forM_)
 import           Data.List.Utils          (replace)
 import qualified Data.Map                 as M
-import           Data.Maybe               (fromJust, isJust, fromMaybe)
+import           Data.Maybe               (fromJust, fromMaybe, isJust)
+import           Data.Scientific          (scientific)
+import qualified Data.String              as BL
 import           Fmt                      (Buildable (build), Builder,
                                            blockListF, fmt, format, (+|), (|+),
                                            (|++|))
@@ -29,15 +60,9 @@ import           System.Directory         (createDirectory,
                                            doesDirectoryExist,
                                            getDirectoryContents)
 import           System.FilePath.Posix    (takeBaseName, takeDirectory)
+import           System.Process
 import           Text.Printf              (printf)
 import           Text.URI                 (URI (uriPath), parseURI)
-import          System.Process
-import Data.Aeson.Types (parseMaybe, FromJSON (parseJSON), Array, Parser)
-import Data.Aeson (decode, (.:), (.:?), Value (Object, Number), Object, FromJSON (parseJSON))
-import qualified Data.String as BL
-import Data.Scientific (scientific)
-import Control.Applicative (empty)
-import Data.Foldable (forM_)
 
 main :: IO ()
 main = do
@@ -211,9 +236,9 @@ putContent zdir nu uzdir = do
         Right path' ->
           return k
 
-{- | 
+{- |
 
-> downloadAndProcessRepos urls dir 
+> downloadAndProcessRepos urls dir
 downloads files accessible by `urls` into directory `dir`
 
 >>>downloadAndProcessRepos _URLs _PATH
