@@ -11,4 +11,15 @@ sudo apt install nodejs
 ```sh
 sudo npm install -g sloc
 ```
-1. 
+1. `stack` ([link](https://docs.haskellstack.org/en/stable/install_and_upgrade/))
+
+## Running
+* From this project's root
+```sh
+stack run
+```
+* As a script. Assume you put the code into `script.hs`
+```sh
+chmod +x script.hs
+./script.hs
+```
