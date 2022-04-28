@@ -36,6 +36,7 @@ dependencies:
 - process
 - aeson
 - scientific
+- text
 
 library:
   source-dirs: src

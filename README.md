@@ -1,6 +1,6 @@
 # repohs
 
-Download repos as zips, unpack them and give SLOC for a specified language
+Download repos as zips, unpack them into `./repos` and give SLOC for files with a language extension specified in the script (see `_EXTENSION` in [main](./app/Main.hs))
 
 ## Requirements
 1. `npm`
@@ -18,7 +18,7 @@ sudo npm install -g sloc
 ```sh
 stack run
 ```
-* As a script. Assume you put the code into `script.hs`
+* As a script. Assume you put the code into `script.hs` somewhere
 ```sh
 chmod +x script.hs
 ./script.hs

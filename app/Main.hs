@@ -18,6 +18,7 @@
   --package process
   --package aeson
   --package scientific
+  --package text
 -}
 
 {-# LANGUAGE DuplicateRecordFields #-}
@@ -50,6 +51,7 @@ import qualified Data.Map                 as M
 import           Data.Maybe               (fromJust, fromMaybe, isJust)
 import           Data.Scientific          (scientific)
 import qualified Data.String              as BL
+import           Data.Text                (pack)
 import           Fmt                      (Buildable (build), Builder,
                                            blockListF, fmt, format, (+|), (|+),
                                            (|++|))
@@ -96,6 +98,9 @@ _CODE_JSON = "code"
 
 _LANGUAGE :: String
 _LANGUAGE = "Python"
+
+_EXTENSION :: String
+_EXTENSION = "py"
 
 {-
 
@@ -283,7 +288,7 @@ newtype PyExtension = PyExtension (Maybe Int) deriving Show
 instance FromJSON PyExtension where
   parseJSON (Object v) = do
     ext <- v .: "byExt"
-    hs <- ext .:? "py"
+    hs <- ext .:? pack _EXTENSION
     cnt <-
       case hs of
         Just k -> do

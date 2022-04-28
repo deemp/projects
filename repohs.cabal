@@ -44,6 +44,7 @@ library
     , lens
     , process
     , scientific
+    , text
     , uri
     , wreq
     , zip
@@ -71,6 +72,7 @@ executable repohs-exe
     , process
     , repohs
     , scientific
+    , text
     , uri
     , wreq
     , zip
@@ -99,6 +101,7 @@ test-suite repohs-test
     , process
     , repohs
     , scientific
+    , text
     , uri
     , wreq
     , zip
