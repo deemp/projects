@@ -2,6 +2,9 @@
 
 Download repos as zips, unpack them into `./repos` and give SLOC for files with a language extension specified in the script (see `_EXTENSION` in [main](./app/Main.hs))
 
+## SLOC
+* See current results in the [report](./report)
+
 ## Requirements
 1. `npm`
 ```sh
