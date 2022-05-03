@@ -37,6 +37,10 @@ dependencies:
 - aeson
 - scientific
 - text
+- rio
+- data-default
+- mtl
+- monad-extras
 
 library:
   source-dirs: src

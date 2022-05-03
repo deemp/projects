@@ -38,11 +38,15 @@ library
     , bytestring
     , conduit-extra
     , containers
+    , data-default
     , directory
     , filepath
     , fmt
     , lens
+    , monad-extras
+    , mtl
     , process
+    , rio
     , scientific
     , text
     , uri
@@ -65,12 +69,16 @@ executable repohs-exe
     , bytestring
     , conduit-extra
     , containers
+    , data-default
     , directory
     , filepath
     , fmt
     , lens
+    , monad-extras
+    , mtl
     , process
     , repohs
+    , rio
     , scientific
     , text
     , uri
@@ -94,12 +102,16 @@ test-suite repohs-test
     , bytestring
     , conduit-extra
     , containers
+    , data-default
     , directory
     , filepath
     , fmt
     , lens
+    , monad-extras
+    , mtl
     , process
     , repohs
+    , rio
     , scientific
     , text
     , uri
