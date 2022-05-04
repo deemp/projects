@@ -26,3 +26,6 @@ stack run
 chmod +x script.hs
 ./script.hs
 ```
+
+## Articles
+* [Resource Management in Haskell](https://aherrmann.github.io/programming/2016/01/04/resource-management-in-haskell/index.html) + 

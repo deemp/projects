@@ -26,6 +26,9 @@
 {-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Main (
   main,
@@ -56,36 +59,40 @@ import           Fmt                      (Buildable (build), Builder,
                                            (|++|))
 import           Fmt.Internal.Core        (FromBuilder)
 import           Network.Wreq
-import           System.Directory         (createDirectory,
+import           System.Directory         (
                                            createDirectoryIfMissing,
                                            doesDirectoryExist,
-                                           getDirectoryContents)
+                                           getDirectoryContents, doesPathExist, doesFileExist)
 import           System.FilePath.Posix    (takeBaseName, takeDirectory)
 import           System.Process
 import           Text.Printf              (printf)
 import           Text.URI                 (URI (uriPath, URI), parseURI)
 
-import RIO
+import RIO hiding (mapConcurrently)
 import RIO.List.Partial (tail)
 import Control.Monad.Except (ExceptT (ExceptT), runExceptT)
 import Control.Monad.Cont (ContT(runContT, ContT), MonadCont (callCC), Cont)
-import Prelude (print, putStrLn)
+import Prelude (print, putStrLn, writeFile)
 import Control.Monad.Extra (doCallCC)
+import Data.List (partition, intercalate)
+import Data.Text.IO as TIO(writeFile)
 
 
 main :: IO ()
-main = do undefined
-  -- downloadAndProcessRepos _URLs _PATH
-  -- let path = unzipped _PATH
-  -- p <- runSloc _LANGUAGE path
-  -- case p of
-  --   Just (PyExtension g) -> do
-  --     let msg = ("Files in " +| path |+ " contain " +| g |+ " SLOC in " +\ _LANGUAGE  :: String)
-  --     putStrLn msg
-  --     writeFile "report" msg
-  --   Nothing ->
-  --     putStrLn (path |+ " doesn't contain " +| _LANGUAGE |+ " code" :: String)
-  -- putStrLn "Done!"
+main = runSimpleApp $ doCallCC $ \cont -> do
+  path <- liftIO $ createDirectoryIfMissing True _PATH
+  logInfo (Utf8Builder $ "The files will be stored in \"" +| _PATH |+ "\"")
+  path' <- liftIO $ downloadAndProcessRepos _URLs _PATH
+  let path = unzipped _PATH
+  p <- liftIO $ runSloc (PythonExt Nothing) path
+  case p of
+    Right r -> do
+      let msg = Utf8Builder $ "Files in " +| path |+ " contain " +| maybe "?" show (getData r) |+ " SLOC in " +\ showName r
+      logInfo msg
+      liftIO $ TIO.writeFile "report" (utf8BuilderToText msg)
+    Left r ->
+      logError (Utf8Builder $ path |+ " doesn't contain " +| _LANGUAGE |+ " code")
+  logInfo "Done!"
 
 _URLs :: [String]
 _URLs = [
@@ -126,38 +133,21 @@ unzipped :: String -> String
 unzipped x = x |+ "/unzipped"
 
 class Convertible a where
+  getZipName :: a -> String
   getName :: a -> String
   getPath :: a -> String
   getURI :: a -> String
 
+{-
+>>>getName $ fromJust $ parseURI "https://github.com/django/django/archive/refs/heads/main.zip" 
+"django.django.archive.refs.heads.main"
+-}
+
 instance Convertible URI where
-  getName URI {..} = uriPath & tail & replace "/" "."
+  getZipName URI {..} = uriPath & tail & replace "/" "."
+  getName = takeBaseName . getZipName
   getPath URI {..} = uriPath
   getURI = show
-
-
-
--- data NameURL = NameURL {getName :: String, getURL :: String} deriving (Show)
-
-{- | get name from URL
-
->>>getNameURL <$> _URLs
-NOW [Just (NameURL {getName = "matplotlib.matplotlib.archive.refs.tags.v3.5.1.zip", getURL = "https://github.com/matplotlib/matplotlib/archive/refs/tags/v3.5.1.zip"}),Just (NameURL {getName = "django.django.archive.refs.tags.4.0.4.zip", getURL = "https://github.com/django/django/archive/refs/tags/4.0.4.zip"}),Just (NameURL {getName = "Inno-Notes.Notes.archive.refs.heads.main.zip", getURL = "https://github.com/Inno-Notes/Notes/archive/refs/heads/main.zip"})]
-
--}
--- getNameURL :: String -> Maybe URI
--- getNameURL s = 
---   where
---     uri = parseURI s
---     name = replace "/" "." . tail . uriPath <$> uri
---     url = uriPath <$> uri >> return s
---     p = NameURL <$> name <*> url
-
-
-{-
->>>checkExists (_PATH /+\ "/unzipped") []
-Left "No such directory exists: repos/unzipped"
--}
 
 data LocationError =
     NoSuchDirectory FilePath
@@ -166,30 +156,25 @@ data LocationError =
   deriving Show
 
 instance Display LocationError where
-  display (NoSuchDirectory s) = RIO.displayBytesUtf8 ("No such directory exists: " +\ s)
-  display (NoSuchFile s) = RIO.displayBytesUtf8 ("No such file exists: " +\ s)
-  display (ProblematicURL s) = RIO.displayBytesUtf8 ("Unavailable URL: " +\ show s)
+  display (NoSuchDirectory s) = Utf8Builder ("No such directory exists: " +\ s)
+  display (NoSuchFile s) = Utf8Builder ("No such file exists: " +\ s)
+  display (ProblematicURL s) = Utf8Builder ("Unavailable URL: " +\ show s)
 
 
-checkExists :: FilePath -> IO Bool
-checkExists p = runSimpleApp $ do
-  is <- liftIO $ doesDirectoryExist p
-  unless is (logInfo $ display (NoSuchDirectory p))
-  return is
+checkExists :: FilePath -> LocationError -> IO Bool
+checkExists p locErr = runSimpleApp $ do
+  exists <- liftIO $ doesPathExist p
+  unless exists (logInfo $ display locErr)
+  return exists
 
-{- | filter out
+{- | filter out URIs for already unzipped projects
 
-* URLs for already unzipped projects
-
-* invalid URLs
-
->>>missing (_PATH /+\ "/unzipped") (fromJust . parseURI <$> _URLs)
+>>>getMissing (_PATH /+\ "/unzipped") (fromJust <$> (filter (isJust) (parseURI <$> _URLs)))
 -}
-missing :: FilePath -> [URI] -> IO (Either LocationError [URI])
-missing p urls = doCallCC $ \cont -> do
-  ex <- lift $ checkExists p
-  unless ex $ cont (Left $ NoSuchDirectory p)
-  t <- lift $ getDirectoryContents p
+getMissing :: FilePath -> [URI] -> IO (Either LocationError [URI])
+getMissing path urls = doCallCC $ \cont -> do
+  unlessValid path cont Left (NoSuchDirectory path)
+  t <- lift $ getDirectoryContents path
   let nus = filter (\x -> getName x `notElem` t) urls
   return $ Right nus
 
@@ -199,114 +184,171 @@ b +\ x = b +| x |+ ""
 (/+\) :: (Buildable a, Buildable b, FromBuilder c) => a -> b -> c
 a /+\ b = "" +| a |++| b |+ ""
 
-{- | Given a path and a URL
+{- | Given a `directory` and a `URL`
 
-downloads a file and returns its name
+gets a `file` from `URL`
 
->>>downloadRepo (zipped "repos") (NameURL {getName = "Inno-Notes.Notes.archive.refs.heads.main.zip", getURL = "https://github.com/Inno-Notes/Notes/archive/refs/heads/main.zip"})
-Right "repos/zipped/Inno-Notes.Notes.archive.refs.heads.main.zip"
+writes this `file` into `directory`
+
+returns this `file`'s path
 -}
 
 downloadRepo :: FilePath -> URI -> IO (Either LocationError FilePath)
-downloadRepo dir nu = doCallCC $ \cont -> do
-  ex <- lift $ checkExists dir
-  unless ex $ cont (Left $ NoSuchDirectory dir)
-  let url = getURI nu
+downloadRepo dir uri = doCallCC $ \cont -> do
+  unlessValid dir cont Left (NoSuchDirectory dir)
+  let url = getURI uri
   lift $ putStrLn ("Downloading " +\ url)
   -- TODO handle invalid codes
-  d <- lift $ get url
+  resp <- lift $ get url
   let
-    contents = d ^. responseBody
-    path = dir |+ "/" +\ getName nu
-  lift $ BL.writeFile path contents
-  lift $ putStrLn ("Downloaded " +| url |+ " into " +\ path)
-  return $ Right path
+    contents = resp ^. responseBody
+    zipPath = dir |+ "/" +\ getZipName uri
+  lift $ BL.writeFile zipPath contents
+  lift $ putStrLn ("Downloaded " +| url |+ " into " +\ zipPath)
+  return $ Right zipPath
 
-{- Given path to a `fileName.zip` and a `directory`,
+{- 
+Given path to a `fileName.zip` and a `directory`,
 
 unzip this file into `directory/fileName`
 
 and return this new path
 -}
+
+-- unlessValid :: (Monad (t1 IO), MonadTrans t1) => FilePath -> (t2 -> t1 IO ()) -> t2 -> t1 IO ()
+unlessValid path c ret err = do
+  ex <- lift $ checkExists path err
+  unless ex $ c (ret err)
+
 unzipRepo :: FilePath -> FilePath -> IO (Either LocationError FilePath)
-unzipRepo p t = doCallCC $ \cont -> do
-  ex1 <- lift $ checkExists p
-  unless ex1 $ cont (Left $ NoSuchDirectory p)
-  ex2 <- lift $ checkExists t
-  unless ex2 $ cont (Left $ NoSuchDirectory t)
+unzipRepo zipPath unzipDir = doCallCC $ \cont -> do
+  unlessValid zipPath cont Left (NoSuchFile zipPath)
+  unlessValid unzipDir cont Left (NoSuchDirectory unzipDir)
   let
-    name = takeBaseName p
-    newDir = t |+ "/" +\ name
+    name = takeBaseName zipPath
+    newDir = unzipDir |+ "/" +\ name
   lift $ createDirectoryIfMissing True newDir
-  lift $ putStrLn ("Unzipping " +| p |+ " into " +\ newDir :: String)
-  withArchive p (unpackInto newDir)
-  lift $ putStrLn ("Unzipped " +| p |+ " into " +\ newDir :: String)
+  lift $ putStrLn ("Unzipping " +| zipPath |+ " into " +\ newDir)
+  withArchive zipPath (unpackInto newDir)
+  lift $ putStrLn ("Unzipped " +| zipPath |+ " into " +\ newDir)
   return $ Right newDir
 
 
 putContent :: FilePath -> URI -> FilePath -> IO (Either LocationError FilePath)
-putContent zipdir url unzipdir = doCallCC $ \cont -> do
-  -- TODO do I need these checks?
-  ex1 <- lift $ checkExists zipdir
-  unless ex1 $ cont (Left $ NoSuchDirectory zipdir)
-  ex2 <- lift $ checkExists unzipdir
-  unless ex2 $ cont (Left $ NoSuchDirectory unzipdir)
-  r <- lift $ downloadRepo zipdir url
+putContent zipDir url unzipDir = doCallCC $ \cont -> do
+  unlessValid zipDir cont Left (NoSuchDirectory zipDir)
+  unlessValid unzipDir cont Left (NoSuchDirectory unzipDir)
+  r <- lift $ downloadRepo zipDir url
   case r of
     Left _ -> return r
-    Right path -> lift $ unzipRepo path unzipdir
+    Right path -> lift $ unzipRepo path unzipDir
+
 
 {- |
 
 > downloadAndProcessRepos urls dir
 downloads files accessible by `urls` into directory `dir`
 
+returns dir
 >>>downloadAndProcessRepos _URLs _PATH
 -}
--- downloadAndProcessRepos :: [String] -- ^ list of possibly correct URLs
---                         -> FilePath -- ^ directory to store files into
---                         -> IO ()
--- downloadAndProcessRepos urls path = do
---   let zdir = zipped path
---       uzdir = unzipped path
---   createDirectoryIfMissing True zdir
---   createDirectoryIfMissing True uzdir
---   ms <- missing uzdir urls
+downloadAndProcessRepos :: [String] -- ^ list of possibly correct URLs
+                        -> FilePath -- ^ directory to store files into
+                        -> IO (Either LocationError FilePath)
+downloadAndProcessRepos urls path = runSimpleApp $ doCallCC $ \cont -> do
+  let zdir = zipped path
+      uzdir = unzipped path
+  liftIO $ createDirectoryIfMissing True zdir
+  liftIO $ createDirectoryIfMissing True uzdir
+  let
+    urlsGood = fromJust <$> filter isJust (parseURI <$> urls)
+    urlsBad = filter (isNothing . parseURI) urls
+  unless
+    (null urlsBad)
+    (logInfo $ Utf8Builder $ "The following URLs are unavailable:\n" +\ intercalate "\n" urlsBad)
+  ms <- liftIO $ getMissing uzdir urlsGood
+  when (isLeft ms) (let Left ms' = ms in cont (Left ms'))
+  let Right ms' = ms
+  unless
+    (null ms')
+    (logInfo $ Utf8Builder $ "Missing repos:\n" +\ intercalate "\n" (show <$> urlsGood))
+  zips <- liftIO $ mapConcurrently (\x -> putContent zdir x uzdir) ms'
+  return $ Right uzdir
 
---   case ms of
---     Left msg -> do
---       putStrLn msg
---     Right v -> do
---         unless (null v) $ putStrLn "Missing repos:"
---         forM_ v (\NameURL{..} -> putStrLn getName)
 
---   let Right ms' = ms
---   zips <- mapConcurrently (\x -> putContent zdir x uzdir) ms'
---   return ()
+newtype LanguageError a = NoLanguage {b :: (LangExtension a) => a}
 
--- type Language = String
+instance (LangExtension a) => Show (LanguageError a) where
+  show (NoLanguage m) = "No " +| showName m |+ " files detected"
 
--- {-
--- >>>runSloc _LANGUAGE "app"
--- Just (HsExtension 164)
--- -}
+{-
+counts SLOC in a directory
 
--- runSloc :: Language -> FilePath -> IO (Maybe PyExtension)
--- runSloc lang path = do
---   p <- readProcess "sloc" ["-f", "json", path] ""
---   return (decode (BL.fromString p) :: Maybe PyExtension)
+returns Left if no info about a language is available
+>>>runSloc (PythonExt Nothing) "app"
+-}
+runSloc :: (LangExtension a, FromJSON a) => a -> FilePath -> IO (Either (LanguageError a) a)
+runSloc lang path = runSimpleApp $ doCallCC $ \cont -> do
+  logInfo (Utf8Builder $ "Counting lines for " +| showName lang |+ " in " +| path |+ "...")
+  p <- liftIO $ readProcess "sloc" ["-f", "json", path] ""
+  let p' = decode (BL.fromString p)
+  when (isNothing p') (cont $ Left $ NoLanguage lang)
+  return (Right $ fromJust p')
 
--- newtype PyExtension = PyExtension (Maybe Int) deriving Show
+newtype PythonExt = PythonExt (Maybe Int)
+newtype JavaExt = JavaExt (Maybe Int)
+newtype HaskellExt = HaskellExt (Maybe Int)
 
--- instance FromJSON PyExtension where
---   parseJSON (Object v) = do
---     ext <- v .: "byExt"
---     hs <- ext .:? pack _EXTENSION
---     cnt <-
---       case hs of
---         Just k -> do
---           k1 <- k .: "summary"
---           k1 .: "source"
---         Nothing -> return Nothing
---     return (PyExtension cnt)
---   parseJSON _ = empty
+class LangExtension a where
+  -- TODO allow several extensions
+  showExt :: a -> String
+  showName :: a -> String
+  showFull :: a -> String
+  getData :: a -> Maybe Int
+  getNoLangError :: a -> LanguageError a
+
+showData' :: (LangExtension a) => a -> String
+showData' a = showName a |+ ": " +| maybe "?" show (getData a) |+ " SLOC"
+
+instance LangExtension PythonExt where
+  showExt _ = "py"
+  showName _ = "Python"
+  getData (PythonExt a) = a
+  showFull = showData'
+  getNoLangError = NoLanguage
+
+instance LangExtension JavaExt where
+  showExt _ = "java"
+  showName _ = "Java"
+  getData (JavaExt a) = a
+  showFull = showData'
+  getNoLangError = NoLanguage
+
+instance LangExtension HaskellExt where
+  showExt _ = "hs"
+  showName _ = "Haskell"
+  getData (HaskellExt a) = a
+  showFull = showData'
+  getNoLangError = NoLanguage
+
+instance FromJSON PythonExt where
+  parseJSON v = parseJSONExt v PythonExt
+
+instance FromJSON JavaExt where
+  parseJSON v = parseJSONExt v JavaExt
+
+instance FromJSON HaskellExt where
+  parseJSON v = parseJSONExt v HaskellExt
+
+parseJSONExt :: (LangExtension a) => Value -> (Maybe Int -> a) -> Parser a
+parseJSONExt (Object v) a = do
+  ext <- v .: "byExt"
+  hs <- ext .:? pack (showExt (a Nothing))
+  cnt <-
+    case hs of
+      Just k -> do
+        k1 <- k .: "summary"
+        k1 .: "source"
+      Nothing -> return Nothing
+  return (a cnt)
+parseJSONExt _ _ = undefined
