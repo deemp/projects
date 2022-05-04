@@ -1,6 +1,20 @@
 # repohs
 
-Download repos as zips, unpack them into `./repos/unzipped` and give SLOC for files with a language extension specified in the script (see `_EXTENSION` in [main](./app/Main.hs))
+Provides a convenient way to download several archives with source code
+
+## How it works
+* It defines several constants: 
+    * `_PATH` - where all files will be stored
+    * `_LANGUAGE` - extension of files written in language of interest. For now, defines a single extension. E.g., `.py` for `Python`
+    * `_ZIPPED` - name of subdirectory in `_PATH` where the zipped archives will be stored
+    * `_UNZIPPED` - name of subdirectory in `_PATH` where the unzipped folders will be stored
+    * `_URLs` - a list of URLs of interest
+
+* It will concurrently download the files and unpack them into corresponding folders
+    * Each zip-archive will be named after URL's path: file for `https://github.com/django/django/archive/refs/heads/main.zip` will become `django.django.archive.refs.heads.main.zip`
+    * Contents of such archive will be unpacked into subdirectory `django.django.archive.refs.heads.main`
+
+* If you have any questions, have a look at [Main.hs](./app/Main.hs)
 
 ## SLOC
 * See current results in the [report](./report)
@@ -28,4 +42,4 @@ chmod +x script.hs
 ```
 
 ## Articles
-* [Resource Management in Haskell](https://aherrmann.github.io/programming/2016/01/04/resource-management-in-haskell/index.html) + 
+* [Resource Management in Haskell](https://aherrmann.github.io/programming/2016/01/04/resource-management-in-haskell/index.html)
