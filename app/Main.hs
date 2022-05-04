@@ -1,4 +1,4 @@
-
+#!/usr/bin/env stack
 {- stack
   script
   --resolver lts-18.28
@@ -20,15 +20,17 @@
   --package scientific
   --package text
   --package rio
+  --package mtl
+  --package monad-extras
 -}
 
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE NoImplicitPrelude     #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE UndecidableInstances  #-}
 
 module Main (
   main,
@@ -59,40 +61,24 @@ import           Fmt                      (Buildable (build), Builder,
                                            (|++|))
 import           Fmt.Internal.Core        (FromBuilder)
 import           Network.Wreq
-import           System.Directory         (
-                                           createDirectoryIfMissing,
-                                           doesDirectoryExist,
-                                           getDirectoryContents, doesPathExist, doesFileExist)
-import           System.FilePath.Posix    (takeBaseName, takeDirectory)
+import           System.Directory         (createDirectoryIfMissing,
+                                           doesDirectoryExist, doesFileExist,
+                                           doesPathExist, getDirectoryContents)
+import           System.FilePath.Posix    (joinPath, takeBaseName,
+                                           takeDirectory)
 import           System.Process
 import           Text.Printf              (printf)
-import           Text.URI                 (URI (uriPath, URI), parseURI)
+import           Text.URI                 (URI (URI, uriPath), parseURI)
 
-import RIO hiding (mapConcurrently)
-import RIO.List.Partial (tail)
-import Control.Monad.Except (ExceptT (ExceptT), runExceptT)
-import Control.Monad.Cont (ContT(runContT, ContT), MonadCont (callCC), Cont)
-import Prelude (print, putStrLn, writeFile)
-import Control.Monad.Extra (doCallCC)
-import Data.List (partition, intercalate)
-import Data.Text.IO as TIO(writeFile)
-
-
-main :: IO ()
-main = runSimpleApp $ doCallCC $ \cont -> do
-  path <- liftIO $ createDirectoryIfMissing True _PATH
-  logInfo (Utf8Builder $ "The files will be stored in \"" +| _PATH |+ "\"")
-  path' <- liftIO $ downloadAndProcessRepos _URLs _PATH
-  let path = unzipped _PATH
-  p <- liftIO $ runSloc (PythonExt Nothing) path
-  case p of
-    Right r -> do
-      let msg = Utf8Builder $ "Files in " +| path |+ " contain " +| maybe "?" show (getData r) |+ " SLOC in " +\ showName r
-      logInfo msg
-      liftIO $ TIO.writeFile "report" (utf8BuilderToText msg)
-    Left r ->
-      logError (Utf8Builder $ path |+ " doesn't contain " +| _LANGUAGE |+ " code")
-  logInfo "Done!"
+import           Control.Monad.Cont       (Cont, ContT (ContT, runContT),
+                                           MonadCont (callCC))
+import           Control.Monad.Except     (ExceptT (ExceptT), runExceptT)
+import           Control.Monad.Extra      (doCallCC)
+import           Data.List                (intercalate, partition)
+import           Data.Text.IO             as TIO (writeFile)
+import           Prelude                  (print, putStrLn, writeFile)
+import           RIO                      hiding (mapConcurrently)
+import           RIO.List.Partial         (tail)
 
 _URLs :: [String]
 _URLs = [
@@ -109,28 +95,51 @@ _URLs = [
 _PATH :: String
 _PATH = "repos"
 
+-- _LANGUAGE :: HaskellExt
+-- _LANGUAGE = HaskellExt Nothing
+
+_LANGUAGE :: PythonExt
+_LANGUAGE = PythonExt Nothing
+
 _CODE_JSON :: String
 _CODE_JSON = "code"
 
-_LANGUAGE :: String
-_LANGUAGE = "Python"
+_ZIPPED :: String
+_ZIPPED = "zipped"
 
-_EXTENSION :: String
-_EXTENSION = "py"
+_UNZIPPED :: String
+_UNZIPPED = "unzipped"
+
+
+main :: IO ()
+main = runSimpleApp $ doCallCC $ \cont -> do
+  path <- liftIO $ createDirectoryIfMissing True _PATH
+  logInfo (Utf8Builder $ "The files will be stored in \"" +| _PATH |+ "\"")
+  path' <- liftIO $ downloadAndProcessRepos _URLs _PATH
+  let path = unzipped _PATH
+  p <- liftIO $ runSloc _LANGUAGE path
+  case p of
+    Right r -> do
+      let msg = Utf8Builder $ "Files in " +| path |+ " contain " +| maybe "no" show (getData r) |+ " SLOC in " +\ showName r
+      logInfo msg
+      liftIO $ TIO.writeFile "report" (utf8BuilderToText msg)
+    Left r ->
+      logError (Utf8Builder $ path |+ " doesn't contain " +| showName _LANGUAGE |+ " code")
+  logInfo "Done!"
 
 {-
 >>>zipped "path"
 "path/zipped"
 -}
 zipped :: String -> String
-zipped x = x |+ "/zipped"
+zipped x = joinPath [x, _ZIPPED]
 
 {- |
 >>>unzipped "path"
 "path/unzipped"
 -}
 unzipped :: String -> String
-unzipped x = x |+ "/unzipped"
+unzipped x = joinPath [x, _UNZIPPED]
 
 class Convertible a where
   getZipName :: a -> String
@@ -139,7 +148,7 @@ class Convertible a where
   getURI :: a -> String
 
 {-
->>>getName $ fromJust $ parseURI "https://github.com/django/django/archive/refs/heads/main.zip" 
+>>>getName $ fromJust $ parseURI "https://github.com/django/django/archive/refs/heads/main.zip"
 "django.django.archive.refs.heads.main"
 -}
 
@@ -207,7 +216,7 @@ downloadRepo dir uri = doCallCC $ \cont -> do
   lift $ putStrLn ("Downloaded " +| url |+ " into " +\ zipPath)
   return $ Right zipPath
 
-{- 
+{-
 Given path to a `fileName.zip` and a `directory`,
 
 unzip this file into `directory/fileName`
@@ -240,7 +249,7 @@ putContent zipDir url unzipDir = doCallCC $ \cont -> do
   unlessValid unzipDir cont Left (NoSuchDirectory unzipDir)
   r <- lift $ downloadRepo zipDir url
   case r of
-    Left _ -> return r
+    Left _     -> return r
     Right path -> lift $ unzipRepo path unzipDir
 
 
