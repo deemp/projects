@@ -7,7 +7,7 @@
   --package lens
   --package bytestring
   --package directory
-  --package uri
+  --package network-uri
   --package filepath
   --package async
   --package fmt
@@ -22,6 +22,7 @@
   --package rio
   --package mtl
   --package monad-extras
+  --package http-types
 -}
 
 {-# LANGUAGE DuplicateRecordFields #-}
@@ -36,49 +37,51 @@ module Main (
   main,
 )where
 
-import           Codec.Archive.Zip        (getEntries, getEntry, getEntryName,
-                                           mkEntrySelector, sourceEntry,
-                                           unpackInto, withArchive)
-import           Control.Applicative      (empty)
-import           Control.Concurrent.Async (mapConcurrently)
-import           Data.Aeson               (FromJSON (parseJSON), Object,
-                                           Value (Number, Object), decode, (.:),
-                                           (.:?))
-import           Data.Aeson.Types         (Array, FromJSON (parseJSON), Parser,
-                                           parseMaybe)
-import qualified Data.ByteString.Lazy     as BL
-import qualified Data.Conduit.Binary      as CB
-import           Data.Either              (fromLeft, fromRight, isLeft, isRight)
-import           Data.Foldable            (forM_)
-import           Data.List.Utils          (replace)
-import qualified Data.Map                 as M
-import           Data.Maybe               (fromJust, fromMaybe, isJust)
-import           Data.Scientific          (scientific)
-import qualified Data.String              as BL
-import           Data.Text                (pack)
-import           Fmt                      (Buildable (build), Builder,
-                                           blockListF, fmt, format, (+|), (|+),
-                                           (|++|))
-import           Fmt.Internal.Core        (FromBuilder)
+import           Codec.Archive.Zip         (getEntries, getEntry, getEntryName,
+                                            mkEntrySelector, sourceEntry,
+                                            unpackInto, withArchive)
+import           Control.Applicative       (empty)
+import           Control.Concurrent.Async  (mapConcurrently)
+import           Data.Aeson                (FromJSON (parseJSON), Object,
+                                            Value (Number, Object), decode,
+                                            (.:), (.:?))
+import           Data.Aeson.Types          (Array, FromJSON (parseJSON), Parser,
+                                            parseMaybe)
+import qualified Data.ByteString.Lazy      as BL
+import qualified Data.Conduit.Binary       as CB
+import           Data.Either               (fromLeft, fromRight, isLeft,
+                                            isRight)
+import           Data.Foldable             (forM_)
+import           Data.List.Utils           (replace)
+import qualified Data.Map                  as M
+import           Data.Maybe                (fromJust, fromMaybe, isJust)
+import           Data.Scientific           (scientific)
+import qualified Data.String               as BL
+import           Data.Text                 (pack)
+import           Fmt                       (Buildable (build), Builder,
+                                            blockListF, fmt, format, (+|), (|+),
+                                            (|++|))
+import           Fmt.Internal.Core         (FromBuilder)
+import           Network.URI               (URI (URI, uriPath), parseURI)
 import           Network.Wreq
-import           System.Directory         (createDirectoryIfMissing,
-                                           doesDirectoryExist, doesFileExist,
-                                           doesPathExist, getDirectoryContents)
-import           System.FilePath.Posix    (joinPath, takeBaseName,
-                                           takeDirectory)
+import           System.Directory          (createDirectoryIfMissing,
+                                            doesDirectoryExist, doesFileExist,
+                                            doesPathExist, getDirectoryContents)
+import           System.FilePath.Posix     (joinPath, takeBaseName,
+                                            takeDirectory)
 import           System.Process
-import           Text.Printf              (printf)
-import           Text.URI                 (URI (URI, uriPath), parseURI)
+import           Text.Printf               (printf)
 
-import           Control.Monad.Cont       (Cont, ContT (ContT, runContT),
-                                           MonadCont (callCC))
-import           Control.Monad.Except     (ExceptT (ExceptT), runExceptT)
-import           Control.Monad.Extra      (doCallCC)
-import           Data.List                (intercalate, partition)
-import           Data.Text.IO             as TIO (writeFile)
-import           Prelude                  (print, putStrLn, writeFile)
-import           RIO                      hiding (mapConcurrently)
-import           RIO.List.Partial         (tail)
+import           Control.Monad.Cont        (Cont, ContT (ContT, runContT),
+                                            MonadCont (callCC))
+import           Control.Monad.Except      (ExceptT (ExceptT), runExceptT)
+import           Control.Monad.Extra       (doCallCC)
+import           Data.List                 (intercalate, partition)
+import           Data.Text.IO              as TIO (writeFile)
+import           Network.HTTP.Types.Status (status200)
+import           Prelude                   (print, putStrLn, writeFile)
+import           RIO                       hiding (mapConcurrently)
+import           RIO.List.Partial          (tail)
 
 _URLs :: [String]
 _URLs = [
@@ -115,9 +118,9 @@ main :: IO ()
 main = runSimpleApp $ doCallCC $ \cont -> do
   path <- liftIO $ createDirectoryIfMissing True _PATH
   logInfo (Utf8Builder $ "The files will be stored in \"" +| _PATH |+ "\"")
-  path' <- liftIO $ downloadAndProcessRepos _URLs _PATH
+  path' <- liftIO $ getUnpackRepos _URLs _PATH
   let path = unzipped _PATH
-  p <- liftIO $ runSloc _LANGUAGE path
+  p <- liftIO $ runSLOC _LANGUAGE path
   case p of
     Right r -> do
       let msg = Utf8Builder $ "Files in " +| path |+ " contain " +| maybe "no" show (getData r) |+ " SLOC in " +\ showName r
@@ -170,22 +173,18 @@ instance Display LocationError where
   display (ProblematicURL s) = Utf8Builder ("Unavailable URL: " +\ show s)
 
 
-checkExists :: FilePath -> LocationError -> IO Bool
-checkExists p locErr = runSimpleApp $ do
-  exists <- liftIO $ doesPathExist p
-  unless exists (logInfo $ display locErr)
-  return exists
+-- checkExists :: FilePath -> LocationError -> IO Bool
+-- checkExists p locErr = runSimpleApp $ do
+--   exists <- liftIO $ doesPathExist p
+--   unless exists (logInfo $ display locErr)
+--   return exists
 
 {- | filter out URIs for already unzipped projects
 
 >>>getMissing (_PATH /+\ "/unzipped") (fromJust <$> (filter (isJust) (parseURI <$> _URLs)))
 -}
-getMissing :: FilePath -> [URI] -> IO (Either LocationError [URI])
-getMissing path urls = doCallCC $ \cont -> do
-  unlessValid path cont Left (NoSuchDirectory path)
-  t <- lift $ getDirectoryContents path
-  let nus = filter (\x -> getName x `notElem` t) urls
-  return $ Right nus
+getMissing :: [FilePath] -> [URI] -> [URI]
+getMissing paths = filter (\x -> getName x `notElem` paths)
 
 (+\) :: (FromBuilder b, Buildable a) => Fmt.Builder -> a -> b
 b +\ x = b +| x |+ ""
@@ -202,18 +201,18 @@ writes this `file` into `directory`
 returns this `file`'s path
 -}
 
+
 downloadRepo :: FilePath -> URI -> IO (Either LocationError FilePath)
-downloadRepo dir uri = doCallCC $ \cont -> do
-  unlessValid dir cont Left (NoSuchDirectory dir)
+downloadRepo dir uri = runSimpleApp $ doCallCC $ \cont -> do
   let url = getURI uri
-  lift $ putStrLn ("Downloading " +\ url)
-  -- TODO handle invalid codes
-  resp <- lift $ get url
+  liftIO $ putStrLn ("Downloading " +\ url)
+  resp <- liftIO $ get url
+  when (resp ^. responseStatus /= status200) (cont $ Left $ ProblematicURL uri)
   let
     contents = resp ^. responseBody
     zipPath = dir |+ "/" +\ getZipName uri
-  lift $ BL.writeFile zipPath contents
-  lift $ putStrLn ("Downloaded " +| url |+ " into " +\ zipPath)
+  liftIO $ BL.writeFile zipPath contents
+  logThis ("Downloaded " +| url |+ " into " +\ zipPath)
   return $ Right zipPath
 
 {-
@@ -223,34 +222,40 @@ unzip this file into `directory/fileName`
 
 and return this new path
 -}
+-- unlessValid :: (Monad (t1 IO), MonadTrans t1) =>
+--   FilePath
+--   -> (t2 -> t1 IO ())
+--   -> (LocationError -> t2)
+--   -> LocationError
+--   -> t1 IO ()
+-- unlessValid path c ret err = do
+--   ex <- lift $ checkExists path err
+--   unless ex $ c (ret err)
 
--- unlessValid :: (Monad (t1 IO), MonadTrans t1) => FilePath -> (t2 -> t1 IO ()) -> t2 -> t1 IO ()
-unlessValid path c ret err = do
-  ex <- lift $ checkExists path err
-  unless ex $ c (ret err)
+-- logThis :: (MonadIO m, HasLogFunc env, HasCallStack) => RIO.Builder -> m ()
+logThis :: (MonadIO m, MonadReader env m, HasLogFunc env) => RIO.Builder -> m ()
+logThis x = logInfo $ Utf8Builder x
+
+
 
 unzipRepo :: FilePath -> FilePath -> IO (Either LocationError FilePath)
-unzipRepo zipPath unzipDir = doCallCC $ \cont -> do
-  unlessValid zipPath cont Left (NoSuchFile zipPath)
-  unlessValid unzipDir cont Left (NoSuchDirectory unzipDir)
+unzipRepo zipPath unzipDir = runSimpleApp $ doCallCC $ \cont -> do
   let
     name = takeBaseName zipPath
     newDir = unzipDir |+ "/" +\ name
-  lift $ createDirectoryIfMissing True newDir
-  lift $ putStrLn ("Unzipping " +| zipPath |+ " into " +\ newDir)
+  liftIO $ createDirectoryIfMissing True newDir
+  logThis ("Unzipping " +| zipPath |+ " into " +\ newDir)
   withArchive zipPath (unpackInto newDir)
-  lift $ putStrLn ("Unzipped " +| zipPath |+ " into " +\ newDir)
+  logThis ("Unzipped " +| zipPath |+ " into " +\ newDir)
   return $ Right newDir
 
 
 putContent :: FilePath -> URI -> FilePath -> IO (Either LocationError FilePath)
-putContent zipDir url unzipDir = doCallCC $ \cont -> do
-  unlessValid zipDir cont Left (NoSuchDirectory zipDir)
-  unlessValid unzipDir cont Left (NoSuchDirectory unzipDir)
-  r <- lift $ downloadRepo zipDir url
+putContent zipDir url unzipDir = do
+  r <- downloadRepo zipDir url
   case r of
     Left _     -> return r
-    Right path -> lift $ unzipRepo path unzipDir
+    Right path -> unzipRepo path unzipDir
 
 
 {- |
@@ -261,10 +266,10 @@ downloads files accessible by `urls` into directory `dir`
 returns dir
 >>>downloadAndProcessRepos _URLs _PATH
 -}
-downloadAndProcessRepos :: [String] -- ^ list of possibly correct URLs
+getUnpackRepos :: [String] -- ^ list of possibly correct URLs
                         -> FilePath -- ^ directory to store files into
                         -> IO (Either LocationError FilePath)
-downloadAndProcessRepos urls path = runSimpleApp $ doCallCC $ \cont -> do
+getUnpackRepos urls path = runSimpleApp $ do
   let zdir = zipped path
       uzdir = unzipped path
   liftIO $ createDirectoryIfMissing True zdir
@@ -274,14 +279,13 @@ downloadAndProcessRepos urls path = runSimpleApp $ doCallCC $ \cont -> do
     urlsBad = filter (isNothing . parseURI) urls
   unless
     (null urlsBad)
-    (logInfo $ Utf8Builder $ "The following URLs are unavailable:\n" +\ intercalate "\n" urlsBad)
-  ms <- liftIO $ getMissing uzdir urlsGood
-  when (isLeft ms) (let Left ms' = ms in cont (Left ms'))
-  let Right ms' = ms
+    (logThis $ "The following URLs are unavailable:\n" +\ intercalate "\n" urlsBad)
+  -- TODO handle exceptions
+  ms <- (`getMissing` urlsGood) <$> liftIO (getDirectoryContents uzdir)
   unless
-    (null ms')
+    (null ms)
     (logInfo $ Utf8Builder $ "Missing repos:\n" +\ intercalate "\n" (show <$> urlsGood))
-  zips <- liftIO $ mapConcurrently (\x -> putContent zdir x uzdir) ms'
+  zips <- liftIO $ mapConcurrently (\x -> putContent zdir x uzdir) ms
   return $ Right uzdir
 
 
@@ -294,22 +298,23 @@ instance (LangExtension a) => Show (LanguageError a) where
 counts SLOC in a directory
 
 returns Left if no info about a language is available
->>>runSloc (PythonExt Nothing) "app"
+>>>runSLOC (PythonExt Nothing) "app"
 -}
-runSloc :: (LangExtension a, FromJSON a) => a -> FilePath -> IO (Either (LanguageError a) a)
-runSloc lang path = runSimpleApp $ doCallCC $ \cont -> do
+runSLOC :: (LangExtension a, FromJSON a) => a -> FilePath -> IO (Either (LanguageError a) a)
+runSLOC lang path = runSimpleApp $ doCallCC $ \cont -> do
   logInfo (Utf8Builder $ "Counting lines for " +| showName lang |+ " in " +| path |+ "...")
   p <- liftIO $ readProcess "sloc" ["-f", "json", path] ""
   let p' = decode (BL.fromString p)
   when (isNothing p') (cont $ Left $ NoLanguage lang)
   return (Right $ fromJust p')
 
+
 newtype PythonExt = PythonExt (Maybe Int)
 newtype JavaExt = JavaExt (Maybe Int)
 newtype HaskellExt = HaskellExt (Maybe Int)
 
 class LangExtension a where
-  -- TODO allow several extensions
+  -- TODO allow several file extensions
   showExt :: a -> String
   showName :: a -> String
   showFull :: a -> String

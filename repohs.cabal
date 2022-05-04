@@ -42,14 +42,15 @@ library
     , directory
     , filepath
     , fmt
+    , http-types
     , lens
     , monad-extras
     , mtl
+    , network-uri
     , process
     , rio
     , scientific
     , text
-    , uri
     , wreq
     , zip
   default-language: Haskell2010
@@ -73,15 +74,16 @@ executable repohs-exe
     , directory
     , filepath
     , fmt
+    , http-types
     , lens
     , monad-extras
     , mtl
+    , network-uri
     , process
     , repohs
     , rio
     , scientific
     , text
-    , uri
     , wreq
     , zip
   default-language: Haskell2010
@@ -106,15 +108,16 @@ test-suite repohs-test
     , directory
     , filepath
     , fmt
+    , http-types
     , lens
     , monad-extras
     , mtl
+    , network-uri
     , process
     , repohs
     , rio
     , scientific
     , text
-    , uri
     , wreq
     , zip
   default-language: Haskell2010

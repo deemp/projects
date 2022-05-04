@@ -25,7 +25,7 @@ dependencies:
 - lens
 - bytestring
 - directory
-- uri
+- network-uri
 - filepath
 - async
 - fmt
@@ -41,6 +41,7 @@ dependencies:
 - data-default
 - mtl
 - monad-extras
+- http-types
 
 library:
   source-dirs: src
