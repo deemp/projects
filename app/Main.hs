@@ -1,16 +1,21 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE LambdaCase #-}
 
 module Main (main) where
 
 import Data.Function ((&))
 import Data.Functor ((<&>))
 import Data.HashMap.Strict as HashMap (HashMap, fromList, lookup)
+import Data.List (partition)
 import Data.Maybe (fromJust)
 import qualified Data.Maybe
+import Data.Text (Text, pack, unpack)
+import Data.Time (CalendarDiffDays, UTCTime, defaultTimeLocale, parseTimeM)
+import Data.Traversable (for, forM)
+import Data.Void
 import Data.Yaml
   ( FromJSON (parseJSON),
     ParseException,
@@ -19,19 +24,15 @@ import Data.Yaml
     (.:),
   )
 import Lib
-import NginxConfig (CHColumn (..), Clickhouse (..), NginxConfig (..), Nginx(..))
+import NginxConfig (CHColumn (..), Clickhouse (..), Nginx (..), NginxConfig (..))
 import SqlConfig (Create (..), DBColumnDescription (..), DBType (..), SQLExpression (..))
 import System.Directory
+import Text.Megaparsec as MP
+import Text.Megaparsec.Char (char, letterChar, numberChar, printChar, spaceChar, string)
+import Text.Megaparsec.Debug (dbg)
 import Text.Pretty.Simple
 import Text.Printf
-import Text.Megaparsec as MP
-import Data.Time (UTCTime, CalendarDiffDays)
-import Data.Void
-import Data.Text (Text, unpack, pack)
-import Text.Megaparsec.Char (string, letterChar, numberChar, char, printChar, spaceChar)
-import Data.List (partition)
-import Data.Traversable (for, forM)
-import Text.Megaparsec.Debug (dbg)
+import Text.Read (readMaybe)
 
 nginxConfigPath :: FilePath
 nginxConfigPath = "./files/nginx_config.yml"
@@ -59,21 +60,19 @@ matchDBTypesFromSQL ng (CREATE c) = matches
                 ColumnMatch n m (fromJust $ HashMap.lookup n sqlColumns)
             )
 
-data DBEntry =
-    DBString String
-  | DBDateTime UTCTime
-  | DBFloat32 Float
-  | DBFixedString Int String
-  | DBInt32 Int
-  | DBInt64 Int
-  | Date CalendarDiffDays
+data DBEntry
+  = EString String
+  | EDateTime UTCTime
+  | EFloat32 Float
+  | EFixedString Int String
+  | EInt32 Int
+  | EInt64 Int
+  | EDate UTCTime
   deriving (Show)
-
-
 
 type MParser = Parsec Void String
 
-data FormatToken = TWord {lParen::String, magicWord :: String, rParen::String} | TDelim String deriving Show
+data FormatToken = TWord {lParen :: String, magicWord :: String, rParen :: String} | TDelim String deriving (Show)
 
 pMagicWord :: MParser String
 pMagicWord = do
@@ -81,19 +80,20 @@ pMagicWord = do
   some (letterChar <|> numberChar <|> char '_')
 
 lparens = ['(', '[', '"', '\'']
-rparens = [')', ']', '"', '\'']
-delims = ['-']
 
+rparens = [')', ']', '"', '\'']
+
+delims = ['-']
 
 pFormatToken :: MParser FormatToken
 pFormatToken = do
-  choice [
-    do
-      l <- many $ oneOf lparens
-      w <- pMagicWord
-      r <- many $ oneOf rparens
-      return $ TWord l w (r <> " ")
-    , do
+  choice
+    [ do
+        l <- many $ oneOf lparens
+        w <- pMagicWord
+        r <- many $ oneOf rparens
+        return $ TWord l w (r <> " "),
+      do
         d <- some $ oneOf delims
         return (TDelim d)
     ]
@@ -117,15 +117,13 @@ logLine = "157.90.181.51 - - [06/Apr/2022:00:17:01 +0300] 'GET /version HTTP/1.1
 
 pBetween :: String -> String -> String -> MParser String
 pBetween lp w rp = do
-  _ <- dbg "left paren" $ string lp
-  s <- dbg "words" $ takeWhileP Nothing (/= head rp)
-  _ <- dbg "right paren" $ string rp
+  _ {-dbg "left paren" $ -} <- string lp
+  s {-dbg "words" $ -} <- takeWhileP Nothing (/= head rp)
+  _ {-dbg "right paren" $ -} <- string rp
   return s
 
 pDelim :: String -> MParser String
-pDelim s = do
-  s' <- dbg "delim" $ string (s ++ " ")
-  return s'
+pDelim s = {-dbg "delim" $ -} string (s ++ " ")
 
 tokenizeLine :: [FormatToken] -> MParser [(MagicWord, String)]
 tokenizeLine fs = do
@@ -133,31 +131,80 @@ tokenizeLine fs = do
   let ws = (\case TWord _ w _ -> w; TDelim w -> w) <$> fs
   return $ zip ws p
 
+pDBDateTime :: String -> Maybe DBEntry
+pDBDateTime s = EDateTime <$> parseTimeM True defaultTimeLocale "%d/%b/%0Y:%H:%M:%S %z" s
+
+pDBDate :: String -> Maybe DBEntry
+pDBDate s = EDate <$> parseTimeM True defaultTimeLocale "%d/%b/%0Y" s
+
+pDBFloat32 :: String -> Maybe DBEntry
+pDBFloat32 s = EFloat32 <$> readMaybe s
+
+pDBInt32 :: String -> Maybe DBEntry
+pDBInt32 s = EInt32 <$> readMaybe s
+
+pDBString :: String -> Maybe DBEntry
+pDBString s = Just $ EString s
+
+pDBInt64 :: String -> Maybe DBEntry
+pDBInt64 s = EInt64 <$> readMaybe s
+
+pDBFixedString :: Int -> String -> Maybe DBEntry
+pDBFixedString i s = if length s <= i then Just (EString s) else Nothing
+
+data GetParser = FromString String | FromIntString Int String
+
+getParsers :: MagicWord -> GetParser -> Maybe DBEntry
+getParsers w g =
+  case g of
+    FromString s
+      | w `elem` ["remote_addr", "remote_user", "request", "http_referer", "http_user_agent", "request_method", "https"] -> pDBString s
+      | w == "time_local" -> pDBDateTime s
+      | w `elem` ["request_time", "upstream_connect_time", "upstream_header_time", "upstream_response_time", "msec"] -> pDBFloat32 s
+      | w `elem` ["bytes_sent", "connections_waiting", "connections_active", "status", "connection", "request_length", "body_bytes_sent"] -> pDBInt32 s
+      | otherwise -> Nothing
+    FromIntString i s -> pDBFixedString i s
+
 {-
->>>parseMaybe (pUntilBtwAndConsume "[") "skdlfk4"
-Nothing
+>>>pDateTime "06/Apr/2022:00:17:01 +0300"
+Just (EDateTime 2022-04-05 21:17:01 UTC)
+
+>>>pDate "06/Apr/2022"
+Just (EDate 2022-04-06 00:00:00 UTC)
 -}
--- pDBString :: MParser DBEntry
--- pDBString = 
 
--- getMagicParsers :: HashMap DBType DBEntry
--- getMagicParsers = undefined
+{-| pretty-prints a map Column name -> value
 
-
+-}
 
 main :: IO ()
 main = do
-
   (nginxConfig :: Either ParseException NginxConfig.NginxConfig) <- decodeFileEither nginxConfigPath
   (sqlConfig :: Either ParseException [SQLExpression]) <- decodeFileEither sqlConfigPath
 
   let p = matchDBTypesFromSQL <$> nginxConfig <*> (head <$> sqlConfig)
   let f = tokenizeFormat <$> nginxConfig
-  pPrint f
-  case f of
-    Right (Just f') -> do
-      print logLine
-      parseTest (tokenizeLine f') (logLine <> " ")
+  -- pPrint f
+  case (f, p) of
+    (Right (Just f'), Right p') -> do
+      -- print logLine
+      let ts = parseMaybe (tokenizeLine f') (logLine <> " ")
+      case ts of
+        Just l -> do
+          let ms = fromList l
+              -- assume that magic words decide the entry type
+              ts' =
+                HashMap.fromList $
+                  ( \(ColumnMatch c w t) ->
+                      ( c,
+                        HashMap.lookup w ms
+                          >>= (\s -> getParsers w (FromString s))
+                      )
+                  )
+                    <$> p'
+          pPrint ts'
+        _ -> print "oops"
+      return ()
     _ -> print "oops"
   -- print $ ((`parseMaybe` logLine) . tokenizeLine <$>) <$> f
   -- pPrint nginxConfig
