@@ -112,6 +112,9 @@ tokenizeFormat ng =
 logLine :: String
 logLine = "157.90.181.51 - - [06/Apr/2022:00:17:01 +0300] 'GET /version HTTP/1.1' 'GET' '-' '0.005' 200 341 '-' 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.104 Safari/537.36' '0.005' 'north-west.rt.getshop.tv' 'spb-1' '-' '-' '-' '-' '{\x22versions\x22:[\x221.8.0\x22],\x22server_version\x22:\x221.25.1\x22,\x22build\x22:null,\x22git\x22:{\x22commit\x22:null,\x22branch\x22:null,\x22tag\x22:null},\x22docker\x22:null}' '-' '-' '-' '-' '-' '-' '-' '-' '-' '-' '-' '-'"
 
+logLine1 :: String
+logLine1 = "213.158.8.97 - - [06/Apr/2022:00:17:01 +0300] 'GET /v2/rt-wink/live/playlist?key=00000141-1a10-726f-7374-656c65636f6d&client_time=1649193421&channel_id=3541715&san=10215020191125&client_id=fc%3A44%3A9f%3A36%3A03%3Adb&location=200004&mcast=igmp%3A%2F%2F225.78.32.76%3A5000&event_id=00000000-0000-0000-0000-000000000001&age_value=18 HTTP/1.1' 'GET' '-' '0.002' 200 401 '-' 'RT-STB-FW/7.46.4 (zte_amls805, B700V7L) stbapp/1.54.4-gd649a14ff' '0.002' 'north-west.rt.getshop.tv' 'spb-1' '1.1 rt-nw-hub-proxy01 (squid/4.8)' 'fc:44:9f:36:03:db' '089D73ED-1045-4839-8D82-AC46662612FD' '10215020191125' '{\x22device_timestamp\x22:1.649193421468805927e9,\x22events\x22:[{\x22banner\x22:null,\x22id\x22:\x22 00000000-0000-0000-0000-000000000001\x22,\x22type\x22:\x22playlist_update\x22,\x22datetime\x22:1.649199847477686405181e9}]}' '-' '3541715' '-' '-' 'fc%3A44%3A9f%3A36%3A03%3Adb' '-' '-' '-' '-' '00000000-0000-0000-0000-000000000001' '200004' '10215020191125'"
+
 -- pAnyUntil :: String -> MParser String
 -- pAnyUntil s = some (printChar <* lookAhead (string s))
 
@@ -158,10 +161,55 @@ getParsers :: MagicWord -> GetParser -> Maybe DBEntry
 getParsers w g =
   case g of
     FromString s
-      | w `elem` ["remote_addr", "remote_user", "request", "http_referer", "http_user_agent", "request_method", "https"] -> pDBString s
+      | w
+          `elem` [ "remote_addr",
+                   "remote_user",
+                   "request",
+                   "http_referer",
+                   "http_user_agent",
+                   "request_method",
+                   "https",
+                   "host",
+                   "hostname",
+                   "request_body",
+                   "resp_body",
+                   "arg_campaign_id",
+                   "arg_channel_id",
+                   "arg_channel_name",
+                   "arg_chmap",
+                   "arg_client_id",
+                   "arg_client_session_id",
+                   "arg_client_version",
+                   "arg_display_height",
+                   "arg_display_width",
+                   "arg_event_id",
+                   "arg_location",
+                   "arg_san",
+                   "req_header_via",
+                   "req_header_x_rt_mac",
+                   "req_header_x_rt_san",
+                   "req_header_x_rt_uid"
+                 ] ->
+        pDBString s
       | w == "time_local" -> pDBDateTime s
-      | w `elem` ["request_time", "upstream_connect_time", "upstream_header_time", "upstream_response_time", "msec"] -> pDBFloat32 s
-      | w `elem` ["bytes_sent", "connections_waiting", "connections_active", "status", "connection", "request_length", "body_bytes_sent"] -> pDBInt32 s
+      | w
+          `elem` [ "request_time",
+                   "upstream_connect_time",
+                   "upstream_header_time",
+                   "upstream_response_time",
+                   "msec"
+                 ] ->
+        pDBFloat32 s
+      | w
+          `elem` [ "bytes_sent",
+                   "connections_waiting",
+                   "connections_active",
+                   "status",
+                   "connection",
+                   "request_length",
+                   "body_bytes_sent"
+                 ] ->
+        pDBInt32 s
       | otherwise -> Nothing
     FromIntString i s -> pDBFixedString i s
 
@@ -173,22 +221,20 @@ Just (EDateTime 2022-04-05 21:17:01 UTC)
 Just (EDate 2022-04-06 00:00:00 UTC)
 -}
 
-{-| pretty-prints a map Column name -> value
-
--}
-
+-- | pretty-prints a map Column name -> value
 main :: IO ()
 main = do
   (nginxConfig :: Either ParseException NginxConfig.NginxConfig) <- decodeFileEither nginxConfigPath
   (sqlConfig :: Either ParseException [SQLExpression]) <- decodeFileEither sqlConfigPath
-
+  -- print logLine1
   let p = matchDBTypesFromSQL <$> nginxConfig <*> (head <$> sqlConfig)
+  -- pPrint p
   let f = tokenizeFormat <$> nginxConfig
   -- pPrint f
   case (f, p) of
     (Right (Just f'), Right p') -> do
       -- print logLine
-      let ts = parseMaybe (tokenizeLine f') (logLine <> " ")
+      let ts = parseMaybe (tokenizeLine f') (logLine1 <> " ")
       case ts of
         Just l -> do
           let ms = fromList l
@@ -203,6 +249,7 @@ main = do
                   )
                     <$> p'
           pPrint ts'
+          return ()
         _ -> print "oops"
       return ()
     _ -> print "oops"
