@@ -26,12 +26,23 @@ source-repository head
 library
   exposed-modules:
       Lib
+      NginxConfig
+      SqlConfig
+      Utils
   other-modules:
       Paths_interview
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , directory
+    , megaparsec
+    , pretty-simple
+    , text
+    , time
+    , unordered-containers
+    , yaml
   default-language: Haskell2010
 
 executable interview-exe
@@ -42,8 +53,16 @@ executable interview-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , directory
     , interview
+    , megaparsec
+    , pretty-simple
+    , text
+    , time
+    , unordered-containers
+    , yaml
   default-language: Haskell2010
 
 test-suite interview-test
@@ -55,6 +74,14 @@ test-suite interview-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , directory
     , interview
+    , megaparsec
+    , pretty-simple
+    , text
+    , time
+    , unordered-containers
+    , yaml
   default-language: Haskell2010
