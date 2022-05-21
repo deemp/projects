@@ -1,5 +1,19 @@
 # Nginx-Clickhouse
 
+## Run the project
+
+* Clone this repository and go there
+```sh
+git clone https://github.com/br4ch1st0chr0n3/nginx-clickhouse-hs
+cd nginx-clickhouse-hs
+```
+
+* Build and run
+```sh
+stack build
+stack run
+```
+
 ## Workflow
 
 1. Takes a mapping `column name` -> `database type` from [schema.yml](./files/schema.yml) (the yml-ed version of [schema.sql](./files/schema.sql)). This is an  unnecessary step, since for now, the parser types for log elements are chosen by magic words, as in the original [solution](https://github.com/mintance/nginx-clickhouse/blob/4d36a9dded1ed1f9c90f3e89987ffef4766cc9db/nginx/nginx.go#L29)
