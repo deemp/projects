@@ -1,0 +1,48 @@
+- CREATE:
+    TABLE: metrics.nginx_v2
+    # the order of columns matters
+    COLUMNS:
+      - RemoteAddr: String
+      - RemoteUser: String
+      - TimeLocal: DateTime
+      - Date:
+          TYPE: Date
+          DEFAULT: toDate(TimeLocal)
+      - Request: String
+      - RequestMethod: String
+      - RequestBody: String
+      - Status: Int32
+      - BytesSent: Int64
+      - HttpReferer: String
+      - HttpUserAgent: String
+      - RequestTime: String
+      - UpstreamConnectTime: Float32
+      - UpstreamHeaderTime: Float32
+      - UpstreamResponseTime: String
+      - Https: FixedString(2)
+      - ConnectionsWaiting: Int64
+      - ConnectionsActive: Int64
+      - Host: String
+      - HostName: String
+      - req_header_via: String
+      - req_header_x_rt_mac: String
+      - req_header_x_rt_uid: String
+      - req_header_x_rt_san: String
+      - ResponseHeader: String
+      - ResponseBody: String
+      - arg_campaign_id: String
+      - arg_channel_id: String
+      - arg_channel_name: String
+      - arg_chmap: String
+      - arg_client_id: String
+      - arg_client_session_id: String
+      - arg_client_version: String
+      - arg_display_height: String
+      - arg_display_width: String
+      - arg_event_id: String
+      - arg_location: String
+      - arg_san: String
+    ENGINE: MergeTree
+    PARTITION BY: Date
+    ORDER BY:  (Status, Date)
+    SETTINGS: index_granularity = 8192

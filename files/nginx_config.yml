@@ -1,0 +1,54 @@
+# Settings
+settings:
+  interval: 5 # in seconds
+  log_path: /var/log/nginx/access-clickhouse.log
+  seek_from_end: false # start reading from the lasl line (to prevent duplicates after restart)
+# ClickHouse credentials
+clickhouse:
+ db: metrics
+ table: nginx_v2
+ host: some_ch_host
+ port: 8123
+ credentials:
+  user: blablabla
+  password: blablabla
+ columns:
+   RemoteAddr: remote_addr
+   RemoteUser: remote_user
+   TimeLocal: time_local
+   Request: request
+   RequestMethod: request_method
+   RequestBody: request_body
+   RequestTime: request_time
+   Status: status
+   BytesSent: bytes_sent
+   HttpReferer: http_referer
+   HttpUserAgent: http_user_agent
+   UpstreamResponseTime: upstream_response_time
+   Host : host
+   HostName: hostname
+   req_header_via: req_header_via
+   req_header_x_rt_mac: req_header_x_rt_mac
+   req_header_x_rt_uid: req_header_x_rt_uid
+   req_header_x_rt_san: req_header_x_rt_san
+   ResponseBody: resp_body
+   #ResponseHeader: resp_header
+   arg_campaign_id: arg_campaign_id
+   arg_channel_id: arg_channel_id
+   arg_channel_name: arg_channel_name
+   arg_chmap: arg_chmap
+   arg_client_id: arg_client_id
+   arg_client_session_id: arg_client_session_id
+   arg_client_version: arg_client_version
+   arg_display_height: arg_display_height
+   arg_display_width: arg_display_width
+   arg_event_id: arg_event_id
+   arg_location: arg_location
+   arg_san: arg_san
+
+# NGINX
+nginx:
+  log_type: main
+  # log_format: $remote_addr - $remote_user [$time_local] "$request" "$request_method" "$request_body" "$request_time" $status $bytes_sent "$http_referer" "$http_user_agent" "$upstream_response_time" "$host" "$hostname" "$req_header_via" "$req_header_x_rt_mac" "$req_header_x_rt_uid" "$req_header_x_rt_san" "$resp_body" "$arg_campaign_id" "$arg_channel_id" "$arg_channel_name" "$arg_chmap" "$arg_client_id" "$arg_client_session_id" "$arg_client_version" "$arg_display_height" "$arg_display_width" "$arg_event_id" "$arg_location" "$arg_san"
+  log_format: $remote_addr - $remote_user [$time_local] '$request' '$request_method' '$request_body' '$request_time' $status $bytes_sent '$http_referer' '$http_user_agent' '$upstream_response_time' '$host' '$hostname' '$req_header_via' '$req_header_x_rt_mac' '$req_header_x_rt_uid' '$req_header_x_rt_san' '$resp_body' '$arg_campaign_id' '$arg_channel_id' '$arg_channel_name' '$arg_chmap' '$arg_client_id' '$arg_client_session_id' '$arg_client_version' '$arg_display_height' '$arg_display_width' '$arg_event_id' '$arg_location' '$arg_san'
+
