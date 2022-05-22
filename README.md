@@ -1,5 +1,9 @@
 # Nginx-Clickhouse
 
+## The goal
+
+* Create a program to parse a log file based on the log format
+
 ## Run the project
 
 * Clone this repository and go there
