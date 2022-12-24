@@ -2,6 +2,26 @@
 
 for backend - [src](https://github.com/fullstack-development/developers-roadmap)
 
+## Prerequisites
+
+* See `VSCodium` for `Haskell` [template](https://github.com/deemp/flakes/tree/main/templates/codium/haskell#readme).
+It explains what's available in this project.
+* Next, see Haskell [Prerequisites](https://github.com/br4ch1st0chr0n3/flakes/blob/main/README/Haskell.md).
+* Following that, see [Troubleshooting](https://github.com/br4ch1st0chr0n3/flakes/blob/main/README/Troubleshooting.md).
+* Recurse into `Prerequisites` on the linked pages to get even more info.
+
+## Quick start
+
+1. If you haven't yet started `VSCodium` provided by this flake:
+
+    ```terminal
+    nix develop
+    write-settings-json
+    codium .
+    ```
+
+1. Open a `Haskell` file `src/Main.hs` and hover over a function. `Haskell Language Server` should start giving you type info.
+
 ## Junior 1
 
 [link](https://github.com/fullstack-development/developers-roadmap/blob/master/backend/junior-1#readme)
@@ -104,25 +124,4 @@ for backend - [src](https://github.com/fullstack-development/developers-roadmap)
     * `FT` can define `AM`
   * `Tagged Initial` - sum types are represented as `(tag, payload)`. `tag` - for pattern-matching
   * `Tagless Initial` - use `GADTs` to ban nonsense expressions, no tags
-  * `Final Tagless` - use overloaded functions to
-
-## Prerequisites
-
-* See `VSCodium` for `Haskell` [template](https://github.com/deemp/flakes/tree/main/templates/codium/haskell#readme).
-It explains what's available in this project.
-* Next, see Haskell [Prerequisites](https://github.com/br4ch1st0chr0n3/flakes/blob/main/README/Haskell.md).
-* Following that, see [Troubleshooting](https://github.com/br4ch1st0chr0n3/flakes/blob/main/README/Troubleshooting.md).
-* Recurse into `Prerequisites` to get even more info.
-
-## Quick start
-
-1. If you haven't yet started `VSCodium` from this flake:
-
-    ```terminal
-    nix develop
-    # if you haven't yet written or have already changed the settings
-    write-settings-json
-    codium .
-    ```
-
-1. Open a `Haskell` file `src/Main.hs` and hover over a function. `Haskell Language Server` should start giving you type info.
+  * `Final Tagless` - use overloaded functions
