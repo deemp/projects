@@ -28,71 +28,47 @@
         inherit (my-codium.configs.${system}) settingsNix;
         inherit (drv-tools.functions.${system}) readDirectories;
         inherit (flakes-tools.functions.${system}) mkFlakesTools;
+        inherit (my-devshell.functions.${system}) mkCommands;
         pkgs = nixpkgs.legacyPackages.${system};
         devshell = my-devshell.devshell.${system};
 
         flakesTools = (mkFlakesTools (
           let f = dir: (builtins.map (x: "${dir}/${x}") (readDirectories ./${dir})); in
           [
-            (f "source-flake")
-            (f "language-tools")
-            (f "templates/codium")
-            (f "misc")
             [
-              "drv-tools"
-              "flakes-tools"
-              "env2json"
-              "codium"
-              "json2md"
-              "devshell"
-              "terrafix"
-              "misc/manager/nix-dev"
+              "blockchain"
+              "db-hs"
+              "developers-roadmap"
+              "manager"
+              "scala"
+              "sockets-and-pipes"
+              "webchat"
               "."
             ]
           ]
         ));
 
+        writeSettings = writeSettingsJSON settingsNix;
+        codiumTools = [ writeSettings ];
         codium = mkCodium {
           extensions = { inherit (extensions) nix misc github markdown; };
+          runtimeDependencies = codiumTools;
         };
-        writeSettings = writeSettingsJSON settingsNix;
+        tools = [ codium writeSettings ];
       in
       {
-        devShells.default = devshell.mkShell {
-          packages = (builtins.attrValues flakesTools) ++ [ codium writeSettings ];
-          commands = [
-            {
-              name = "codium";
-              category = "ide";
-              help = codium.meta.description;
-            }
-            {
-              name = writeSettings.name;
-              category = "ide";
-              help = writeSettings.meta.description;
-            }
-          ];
-        };
+        devShells.default = devshell.mkShell
+          {
+            packages = tools;
+            commands = mkCommands "tools" tools;
+          };
 
         packages = {
           pushToCachix = flakesTools.pushToCachix;
           updateLocks = flakesTools.updateLocks;
           format = flakesTools.format;
         };
-      })
-    // {
-      inherit (formatter) formatter;
-      templates = rec {
-        codium-generic = {
-          path = ./templates/codium/generic;
-          description = "VSCodium with extensions and executables";
-        };
-        codium-haskell = {
-          path = ./templates/codium/haskell;
-          description = "${codium-generic.description} for Haskell";
-        };
-      };
-    };
+      });
 
   nixConfig = {
     extra-trusted-substituters = [
