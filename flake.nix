@@ -39,7 +39,6 @@
               "blockchain"
               "db-hs"
               "developers-roadmap"
-              "manager"
               "scala"
               "sockets-and-pipes"
               "webchat"
