@@ -10,7 +10,6 @@ Some of my projects with `Nix` flakes
 
 ## Contents
 
-- [manager](./manager) - a Haskell CLI app for managing projects with multiple `Main.hs` modules
 - [sockets-and-pipes] - notes and code for the [Sockets and Pipes](https://leanpub.com/sockets-and-pipes) book
 - [db-hs](./db-hs) - demo Haskell app that connects to a database
 - [developers-roadmap](./drv-tools) - notes and exercises for the [backend developers roadmap](https://github.com/fullstack-development/developers-roadmap) course
