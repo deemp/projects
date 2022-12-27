@@ -9,6 +9,7 @@
     formatter.url = "github:deemp/flakes?dir=source-flake/formatter";
     my-codium.url = "github:deemp/flakes?dir=codium";
     my-devshell.url = "github:deemp/flakes?dir=devshell";
+    workflows.url = "github:deemp/flakes?dir=workflows";
   };
   outputs =
     { self
@@ -19,6 +20,7 @@
     , my-codium
     , formatter
     , my-devshell
+    , workflows
     , ...
     }: flake-utils.lib.eachDefaultSystem
       (system:
@@ -29,6 +31,8 @@
         inherit (drv-tools.functions.${system}) readDirectories;
         inherit (flakes-tools.functions.${system}) mkFlakesTools;
         inherit (my-devshell.functions.${system}) mkCommands;
+        inherit (workflows.functions.${system}) writeWorkflow;
+        inherit (workflows.configs.${system}) nix-ci;
         pkgs = nixpkgs.legacyPackages.${system};
         devshell = my-devshell.devshell.${system};
 
@@ -65,7 +69,7 @@
         packages = {
           pushToCachix = flakesTools.pushToCachix;
           updateLocks = flakesTools.updateLocks;
-          format = flakesTools.format;
+          writeWorkflows = writeWorkflow "ci" nix-ci;
         };
       });
 
