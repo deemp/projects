@@ -32,7 +32,7 @@
         inherit (flakes-tools.functions.${system}) mkFlakesTools;
         inherit (my-devshell.functions.${system}) mkCommands;
         inherit (workflows.functions.${system}) writeWorkflow;
-        inherit (workflows.configs.${system}) nix-ci;
+        inherit (workflows.configs.${system}) nixCI;
         pkgs = nixpkgs.legacyPackages.${system};
         devshell = my-devshell.devshell.${system};
 
@@ -69,7 +69,7 @@
         packages = {
           pushToCachix = flakesTools.pushToCachix;
           updateLocks = flakesTools.updateLocks;
-          writeWorkflows = writeWorkflow "ci" nix-ci;
+          writeWorkflows = writeWorkflow "ci" nixCI;
         };
       });
 
