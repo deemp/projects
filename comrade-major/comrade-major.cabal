@@ -1,0 +1,100 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           comrade-major
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/value/comrade-major#readme>
+homepage:       https://github.com/value/comrade-major#readme
+bug-reports:    https://github.com/value/comrade-major/issues
+author:         value
+maintainer:     value
+copyright:      value
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/value/comrade-major
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_comrade_major
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      aeson
+    , async
+    , base >=4.7 && <5
+    , bytestring
+    , random
+    , servant
+    , servant-docs
+    , servant-server
+    , stm
+    , stm-containers
+    , text
+    , unordered-containers
+    , wai
+    , warp
+  default-language: Haskell2010
+
+executable comrade-major
+  main-is: Main.hs
+  other-modules:
+      Paths_comrade_major
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , async
+    , base >=4.7 && <5
+    , bytestring
+    , comrade-major
+    , random
+    , servant
+    , servant-docs
+    , servant-server
+    , stm
+    , stm-containers
+    , text
+    , unordered-containers
+    , wai
+    , warp
+  default-language: Haskell2010
+
+test-suite comrade-major-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_comrade_major
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , async
+    , base >=4.7 && <5
+    , bytestring
+    , comrade-major
+    , random
+    , servant
+    , servant-docs
+    , servant-server
+    , stm
+    , stm-containers
+    , text
+    , unordered-containers
+    , wai
+    , warp
+  default-language: Haskell2010

@@ -1,0 +1,73 @@
+name:                comrade-major
+version:             0.1.0.0
+github:              "value/comrade-major"
+license:             BSD3
+author:              "value"
+maintainer:          "value"
+copyright:           "value"
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            value
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/value/comrade-major#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- servant
+- servant
+- servant-server
+- async
+- stm
+- text
+- aeson
+- wai
+- warp
+- unordered-containers
+- random
+- bytestring
+- servant-docs
+- stm-containers
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wpartial-fields
+- -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+executables:
+  comrade-major:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - comrade-major
+
+tests:
+  comrade-major-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - comrade-major
