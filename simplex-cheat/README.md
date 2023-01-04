@@ -9,6 +9,13 @@
 - [Haskell](https://github.com/deemp/flakes/blob/main/README/Haskell.md)
 - [Troubleshooting](https://github.com/br4ch1st0chr0n3/flakes/blob/main/README/Troubleshooting.md) - see in case of problems with VSCodium, etc.
 
+## References
+
+- [Practical STM: An Async Job Queue, by Jake Keuhlen](https://www.youtube.com/watch?v=KAlSoytmVFA)
+
+  - `TMVar` - don't forget to put a value inside
+  - `stdout` is a shared resource - can put log into a `TVar`
+
 ## Quick start
 
 1. Install Nix - see [how](https://github.com/deemp/flakes/blob/main/README/InstallNix.md).

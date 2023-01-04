@@ -29,7 +29,7 @@ import Servant
 import Servant.Docs (API, DocCapture (DocCapture), ToCapture (toCapture), ToSample (toSamples), docs, markdown, singleSample)
 import StmContainers.Map as Map (Map, insert, lookup, newIO)
 import qualified System.IO as IO
-import System.Random
+import System.Random.Stateful (globalStdGen, uniformRM)
 import Prelude hiding (lookup)
 
 data Status
@@ -136,5 +136,5 @@ tasksExecutor tasksQueue tasks = forever do addTask >>= runTask
     Map.insert InProcess taskId tasks
     pure task
   runTask Task{..} = forkIO do
-    threadDelay =<< randomRIO ((4 `seconds`), (20 `seconds`))
+    threadDelay =<< (uniformRM ((4 `seconds`), (20 `seconds`)) globalStdGen :: IO Int)
     atomically do Map.insert (Finished (taskData * 2)) taskId tasks
