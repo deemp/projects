@@ -16,7 +16,7 @@ let
                 mapAttrsToList
                   (name_: value_:
                     let val = {
-                      file = "${config.dataDir}/${config.contacts.dir}/${value_.file}";
+                      file = "${config.dataDir}/${config.contacts.dir}/${value_.file}.yaml";
                       starts =
                         # in config {a.b = {}}, the root is "a"
                         if value_.startsRoot

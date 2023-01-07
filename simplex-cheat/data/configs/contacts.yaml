@@ -1,28 +1,28 @@
 Alice:
   Bob:
-    file: data/contacts/alice_bob
+    file: data/contacts/alice_bob.yaml
     starts: Alice
   Tim:
-    file: data/contacts/alice_tim
+    file: data/contacts/alice_tim.yaml
     starts: Alice
 Bob:
   Alice:
-    file: data/contacts/alice_bob
+    file: data/contacts/alice_bob.yaml
     starts: Alice
   Kate:
-    file: data/contacts/kate_bob
+    file: data/contacts/kate_bob.yaml
     starts: Bob
   Tim:
-    file: data/contacts/bob_tim
+    file: data/contacts/bob_tim.yaml
     starts: Bob
 Kate:
   Bob:
-    file: data/contacts/kate_bob
+    file: data/contacts/kate_bob.yaml
     starts: Bob
 Tim:
   Alice:
-    file: data/contacts/alice_tim
+    file: data/contacts/alice_tim.yaml
     starts: Alice
   Bob:
-    file: data/contacts/bob_tim
+    file: data/contacts/bob_tim.yaml
     starts: Bob

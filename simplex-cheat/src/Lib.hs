@@ -2,8 +2,7 @@
 # Simplex-cheat
 
 We're going to implement a simplex-like chat app.
-It will have a server and bots talking via that server.
-The implementation is given below.
+It will have a server and bots talking to each other via that server.
 
 ## Language extensions
 
@@ -31,6 +30,8 @@ We'll need the following language extensions and pragmas:
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use newtype instead of data" #-}
 {- FOURMOLU_ENABLE -}
 
 {-
@@ -64,7 +65,7 @@ import Control.Concurrent.STM (
   writeTQueue,
   writeTVar,
  )
-import Control.Exception (SomeException, bracketOnError, catch)
+import Control.Exception (SomeException, bracketOnError)
 import Control.Monad (
   forM_,
   forever,
@@ -92,11 +93,13 @@ import qualified Data.Text.IO as T
 import Data.Time (UTCTime)
 import Data.Time.Clock (getCurrentTime)
 import Data.Tuple (swap)
+import Data.Yaml (ParseException)
 import Data.Yaml.Aeson (
   FromJSON (parseJSON),
   Parser,
   ToJSON,
   Value,
+  decodeFileEither,
   decodeFileThrow,
   encodeFile,
   withObject,
@@ -111,8 +114,8 @@ import Servant (Application, Capture, Get, Handler, HasServer (ServerT), JSON, P
 import Servant.Client (BaseUrl (BaseUrl), ClientError, ClientM, Scheme (..), client, mkClientEnv)
 import Servant.Client.Internal.HttpClient (runClientM)
 import Servant.Server (hoistServer)
-import StmContainers.Map (Map, insert, lookup, newIO)
-import System.Directory (createDirectoryIfMissing, doesFileExist, removeDirectoryRecursive, removeFile)
+import StmContainers.Map (Map, delete, insert, lookup, newIO)
+import System.Directory (createDirectoryIfMissing, doesDirectoryExist, doesFileExist, removeDirectoryRecursive, removeFile)
 import System.FilePath (takeDirectory)
 import System.Random.Shuffle (shuffle')
 import System.Random.Stateful (StdGen, globalStdGen, initStdGen, uniformRM)
@@ -125,113 +128,99 @@ import Prelude hiding (log, lookup)
 
 Now, we can proceed to the implementation of the app.
 
-There will be simplex message queues with ids
+There are four main entities in our app:
+- server
+- spawner
+- user
+- logger
 
-There is a config that determines
-  who will request these queues: Alice or Bob
-  where to write the chat config for Alice and Bob
+They're configured via configs in the [configs](./data/configs) dir
 
-See [contacts](./data/configs/contacts.yaml)
+On a server, there will be a pair of message queues for each user pair
+- A queue for Alice where she receives messages and where Bob can send his messages to
+- A symmetric queue for Bob
 
-meaning Alice and Bob agreed on the meeting place (meeting_file)
-and Alice initiates the meeting
+The server doesn't need to know that these queues belong to Alice and Bob.
+It will just protect these queues with a secret key and tell it to Alice and Bob.
+It's not a problem that Alice can read messages from that particular Bob's queue as these are the messages that Alice sent herself
 
-Bob waits for "meeting_file" changes
-Alice queries the server for invite
-Server creates the queues and writes their ids into the "meeting_file"
-{"Alice": { "id": 3, "key": "some_key" }, "Bob": {"id" : 5, "key": "some_other_key"}}
+A `server` will handle the requests:
+- Make a chat for Alice and Bob
+  1. Create queues
+  1. Generate a secret key
+  1. Write queue ids and a secret key into a specified file
+- Accept a message sent by Alice and put it into Bob's queue
+  1. Check if Alice's key is valid for Bob's queue
+-- TODO
+- Remove stale queues
+- check if last message in such a queue was sent delta agok
 
-Now, Alice sends to Bob a message by making POST server/send/5 message_data
-Bob can read messages from ALICE as an array of objects by making GET server/receive/5
+A `spawner` will:
+- Observe the file with [contacts](./data/configs/contacts.yaml) config
+- Handle its changes
+- It's assumed that if there appears in the config an `Alice.Bob` object, there also appears the same `Bob.Alice` object
+- If there appears `Alice.Bob`, `spawner` will
+  - if `Alice` doesn't exist:
+      1. spawn `Alice` and connect to her via a `Queue` (a queue with contacts)
+      1. Put Bob's contact containg the path to their chat config into that queue
+  - else update the `Bob`'s contact in `Alice`'s `Queue`
+- If a new config doesn't have Alice, a spawner will kill her thread
 
-When this functionality is ready, we can add writing messages to a database
+A `user` like `Alice` will:
+- send requests to the server to make a chat config ([example](./data/configs/alice_bob.yaml))
+  - she should provide the filename where to write that config
+- take contacts from her contacts queue
+  - if a contact's file doesn't exist
+    - it may haven't yet been created, so ask the server to create such a file and decrement the number of queries left
+    - if the `contacts config` doesn't have this file, the spawner will remove the file
+    - so, eventually, there will be no queries left and the contact will be dropped from Alice's queue
+- send messages to Bob's queue and to queues of other contacts
+- log received messages
+- drop a contact then
 
-Users threads
-There should be a thread that creates users
-It waits for changes in the config.yaml
+A `logger` will:
+- read logs from a shared queue with logs
+- print them
 
-if there are changes, it goes through users and checks that they exist
--}
-
-{-
-There will be a thread Spawner that handles spawning the persons
-
-It will look at config.yaml and see if there exists Alice.Bob.meeting_file
-
-Spawner tasks
-- Read config.yaml
-- For each Alice.Bob look if
-  - Alice exists
-    - If no, spawn Alice
-  - Bob exists
-    - If no, spawn Bob
-  - filename exists
-    - if file doesn't exist
-    - write into Alice's newContacts list (contact,filename,starts = true)
-  Then, Alice will send a request to the server to create such file for her and Bob
-  This thread will notify Bob to watch until that file exists
-  When that file exists, Bob should start sending and receiving messages
-- Write a TMVar with a user's queue with pairs (contact,filename)
-- Remember and update a map with user thread ids
-- On each config read, actualise Alice's contacts Hashset
-  - If a filename changes, notify a user (via some TVar)
-  - If Alice doesn't exist, kill Alice's thread by id
-
-- TODO: multiple spawners
--}
-
-{-
-
-- Perhaps just use a hashset instead of a queue, convert it to a list and traverse each time
-- Spawner writes to this hashset, user reads from it
-- There are records {contact,filename,Maybe starts}
-
-The tasks of Alice and other users
-- Go through contacts queue with pairs (contact,filename,starts) given by spawner
-- ask server to create a file
-- Move them into a local queue (contact,filename)
-- Read queues ids from filename
-- Receive messages and; print them
-- Send messages
-- Ignore contacts with non-existing file, return them to queue. These files may not yet exist
-- Remove contacts that aren't in a Hashset from the local contacts queue
-
-- TODO: Remove duplicate contacts
--}
-
-{-
-If Alice wants to start a conversation with Bob,
-she will look at that file
-and send its name. Alice will add it to her map of contacts
-Alice shouldn't see config.yaml
+With a shared log queue, the logs of all entities will come one-by-one to stdout
 -}
 
 newtype Name = Name Text
-  deriving (Generic, Show, Eq)
-  deriving anyclass (FromJSON, ToJSON, Hashable)
+  deriving (Generic, Show, Eq, FromJSON, ToJSON)
+  deriving anyclass (Hashable)
 
 newtype MessageMakeChat = MessageMakeChat
   { file :: FilePath
   }
-  deriving (Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving (Generic, FromJSON, ToJSON)
 
 data MessageSend = MessageSend
   { contents :: Text
   , sentAt :: UTCTime
   , key :: SecretKey
   }
-  deriving (Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving (Generic, FromJSON, ToJSON)
 
 data MessageReceive = MessageReceive
   { contents :: Text
   , sentAt :: UTCTime
   }
+  deriving (Generic, FromJSON, ToJSON)
+
+data MessagesReceive = MessagesReceive
+  { -- when server sent message to a receiver
+    serverSentAt :: UTCTime
+  , messages :: [MessageReceive]
+  }
   deriving (Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving (FromJSON, ToJSON)
 
 type QueueID = Int
+
+data MessageRemoveQueues = MessageRemoveQueues
+  { queues :: [QueueID]
+  }
+  deriving (Generic, FromJSON, ToJSON)
 
 type MakeChat =
   "make"
@@ -244,19 +233,16 @@ type SendMessage =
     :> ReqBody '[JSON] MessageSend
     :> Post '[JSON] ()
 
-data MessagesReceive = MessagesReceive
-  { -- when server sent message to a receiver
-    serverSentAt :: UTCTime
-  , messages :: [MessageReceive]
-  }
-  deriving (Generic)
-  deriving (FromJSON, ToJSON)
-
 type ReceiveMessages =
   "receive"
     :> Capture "id" QueueID
     :> Capture "key" SecretKey
     :> Get '[JSON] MessagesReceive
+
+type RemoveQueues =
+  "remove"
+    :> ReqBody '[JSON] MessageRemoveQueues
+    :> Post '[JSON] ()
 
 type SecretKey = Text
 
@@ -268,86 +254,13 @@ type Api =
     :> SendMessage
     :<|> ReceiveMessages
     :<|> MakeChat
+    :<|> RemoveQueues
 
 sendMessage :: QueueID -> MessageSend -> ClientM ()
 receiveMessage :: QueueID -> SecretKey -> ClientM MessagesReceive
 makeChat :: MessageMakeChat -> ClientM ()
-sendMessage :<|> receiveMessage :<|> makeChat = client api
-
-data SpawnerConfig = SpawnerConfig
-  { _DELAY_CONTACT_MAX :: Double
-  , _DELAY_CONTACT_MIN :: Double
-  , _DELAY_SPAWNER :: Double
-  , _LOG_ENABLED :: Bool
-  , _RETRY_TIMES :: Int
-  }
-  deriving (Generic, ToJSON, FromJSON)
-
-mkEnv :: MainConfig -> Log -> IO ClientEnv
-mkEnv mainConfig log = do
-  manager <- newManager defaultManagerSettings
-  spawnerConfig :: SpawnerConfig <- decodeFileThrow mainConfig.spawner
-  let _RETRY_TIMES = spawnerConfig._RETRY_TIMES
-      _DELAY_CONTACT_MIN = spawnerConfig._DELAY_CONTACT_MIN
-      _DELAY_CONTACT_MAX = spawnerConfig._DELAY_CONTACT_MAX
-      _DELAY_SPAWNER = spawnerConfig._DELAY_SPAWNER
-      _LOG_ENABLED = spawnerConfig._LOG_ENABLED
-      _PORT = mainConfig.port
-      _CONTACTS_CONFIG_PATH = mainConfig.contacts
-  return ClientEnv{..}
-
-data MainConfig = MainConfig
-  { contacts :: FilePath
-  , contactsDir :: FilePath
-  , server :: FilePath
-  , spawner :: FilePath
-  , port :: Int
-  }
-  deriving (Generic, FromJSON, ToJSON)
-
-data ServerConfig = ServerConfig
-  { _KEY_LENGTH :: Int
-  , _LOG_ENABLED :: Bool
-  , _RANDOM_SEQ_BLOCK_SIZE :: Int
-  }
-  deriving (Generic, FromJSON, ToJSON)
-
-mkServerEnv :: MainConfig -> Log -> IO ServerEnv
-mkServerEnv mainConfig log = do
-  serverConfig :: ServerConfig <- decodeFileThrow mainConfig.server
-  stdGen <- initStdGen
-  randomSeq <- newTVarIO $ fromJust (initRandomSeq serverConfig._RANDOM_SEQ_BLOCK_SIZE)
-  let _KEY_LENGTH = serverConfig._KEY_LENGTH
-      _LOG_ENABLED = serverConfig._LOG_ENABLED
-  queues :: Map QueueID Queue <- newIO
-  return ServerEnv{..}
-
-main :: IO ()
-main = do
-  log <- newTQueueIO
-
-  let configDir = "data/main.yaml"
-  mainConfig :: MainConfig <- decodeFileThrow configDir
-  -- prepare contacts dir
-  removeDirectoryRecursive mainConfig.contactsDir `catch` (\(_ :: SomeException) -> return ())
-  clientEnv <- mkEnv mainConfig log
-  serverEnv <- mkServerEnv mainConfig log
-  let
-    runServer_ = run mainConfig.port $ app serverEnv
-    runSpawner_ = runReaderT' clientEnv runSpawner
-    runLogger_ = runLogger log
-    runAll =
-      runConcurrently $
-        (,,)
-          <$> Concurrently runServer_
-          <*> Concurrently runSpawner_
-          <*> Concurrently runLogger_
-  bracketOnError
-    ( do
-        runAll
-    )
-    return
-    (\err -> T.putStrLn $ "Terminating app on error: " <> showt err)
+removeQueues :: MessageRemoveQueues -> ClientM ()
+sendMessage :<|> receiveMessage :<|> makeChat :<|> removeQueues = client api
 
 data ConfigValue = ConfigValue
   { file :: FilePath
@@ -464,15 +377,16 @@ writeLogConsecutive msgs = do
     log_ <- asks getLog
     liftIO $ atomically $ forM_ msgs (writeTQueue log_)
 
+type Names = (Name, Name)
+
 runSpawner :: App ClientEnv ()
 runSpawner = do
   config <- liftIO $ newTVarIO HM.empty
-  users <- liftIO $ newTVarIO (HM.empty :: HM.HashMap Name User)
+  users <- liftIO $ newTVarIO (HM.empty :: HM.HashMap Names User)
   let spawnerB = showb (Name "Spawner")
-  _DELAY_SPAWNER <- asks (_DELAY_SPAWNER :: ClientEnv -> Double)
-
+  env <- ask
   forever do
-    liftIO $ sleepRandom _DELAY_SPAWNER (_DELAY_SPAWNER + 1)
+    liftIO $ sleepRandom env._DELAY_SPAWNER (env._DELAY_SPAWNER + 1)
     res :: Either SomeException () <- runExceptT do
       configPath <- asks _CONTACTS_CONFIG_PATH
       configOld <- liftIO $ readTVarIO config
@@ -481,23 +395,41 @@ runSpawner = do
       let
         diffOld = HM.toList $ HM.difference configOld configNew
         diffNew = HM.toList $ HM.difference configNew configOld
+      -- remove users that don't exist in the new config
       users' <- liftIO $ readTVarIO users
       liftIO $
         forM_
           diffOld
-          ( \((name1, _), ConfigValue{..}) -> do
-              maybe
+          ( \(names, ConfigValue{..}) -> do
+              maybe'
+                (HM.lookup names users')
                 (return ())
                 ( \User{..} -> do
                     throwTo threadId NotInConfigError
-                    doesFileExist file >>= (`when` removeFile file)
+                    doesFileExist file
+                      >>= ( `when`
+                              runReaderT' env do
+                                -- request to remove the queues
+                                chatConfig :: Either ParseException ChatConfig <- liftIO $ decodeFileEither file
+                                either'
+                                  chatConfig
+                                  (\err -> writeLog $ spawnerB |+ "couldn't parse the chat config " +| showb (toException err))
+                                  ( \conf -> do
+                                      let queues = [conf.starts, conf.another]
+                                      res <- liftIO $ req_ env.manager (removeQueues MessageRemoveQueues{queues})
+                                      either'
+                                        res
+                                        (\err -> writeLog $ spawnerB |+ "unsuccessfully requested to remove queues: " +| showb err)
+                                        (\_ -> writeLog $ spawnerB |+ "successfully requested to remove queues: " +| showb queues)
+                                  )
+                                liftIO $ removeFile file
+                          )
+                    liftIO $ atomically $ modifyTVar users (HM.delete names)
                 )
-                (HM.lookup name1 users')
           )
       forM_
         diffNew
-        ( \((name1, name2), ConfigValue{..}) -> do
-            _RETRY_TIMES <- asks (_RETRY_TIMES :: ClientEnv -> Int)
+        ( \(names@(name1, name2), ConfigValue{..}) -> do
             let sendContact queue =
                   atomically $
                     writeTQueue
@@ -506,17 +438,16 @@ runSpawner = do
                         { name = name2
                         , file
                         , starts = if name1 == starts then Self else Another
-                        , retryTimes = _RETRY_TIMES
+                        , retryTimes = env._RETRY_TIMES
                         , messageNumber = 0
                         }
             maybe'
-              (HM.lookup name1 users')
+              (HM.lookup names users')
               ( -- if a user doesn't exist
                 do
                   -- spawn a user
                   newQueue <- liftIO newTQueueIO
-                  env <- ask
-                  writeLog $ spawnerB |+ "created a user: " +| showb name1
+                  writeLog $ spawnerB |+ "created a user:" +| showb name1 |+ "for" +| showb name2
                   threadId_ <- liftIO $ forkIO $ runReaderT' env (runUser name1 newQueue)
 
                   -- record new user
@@ -524,16 +455,15 @@ runSpawner = do
                     atomically $
                       modifyTVar'
                         users
-                        ( HM.insert name1 User{threadId = threadId_, queue = newQueue}
+                        ( HM.insert names User{threadId = threadId_, queue = newQueue}
                         )
 
-                  -- send the contact to that user
+                  -- send a contact to that user
                   liftIO $ sendContact newQueue
               )
               ( -- if a user exists
                 \User{..} -> do
-                  -- as it's a new part of config
-                  -- either the contact or the file should have been updated
+                  -- send a contact to that user
                   liftIO $ sendContact queue
               )
         )
@@ -557,6 +487,9 @@ data ChatConfig = ChatConfig
 
 either' :: Either a b -> (a -> c) -> (b -> c) -> c
 either' x f g = either f g x
+
+maybe' :: Maybe a -> b -> (a -> b) -> b
+maybe' val x y = maybe x y val
 
 seconds :: Double -> Int
 seconds n = ceiling (n * 1000000)
@@ -582,16 +515,18 @@ instance TextShow ContactError where
   showb :: ContactError -> Builder
   showb ContactUnavailable{..} = "Contact" +| showb name |+ "is unavailable"
 
+req_ :: Manager -> ClientM a -> IO (Either ClientError a)
+req_ manager clientM = do
+  let baseUrl_ = BaseUrl Http "localhost" 8080 ""
+  liftIO $ runClientM clientM (mkClientEnv manager baseUrl_)
+
 runUser :: Name -> TQueue Contact -> App ClientEnv ()
 runUser selfName queue = do
-  manager' <- asks manager
-  _DELAY_CONTACT_MIN <- asks (_DELAY_CONTACT_MIN :: ClientEnv -> Double)
-  _DELAY_CONTACT_MAX <- asks (_DELAY_CONTACT_MAX :: ClientEnv -> Double)
-  let baseUrl_ = BaseUrl Http "localhost" 8080 ""
-      req clientM = runClientM clientM (mkClientEnv manager' baseUrl_)
+  env <- ask
+  let req = req_ env.manager
       selfB :: Builder
       selfB = showb selfName
-      delayContact = liftIO $ sleepRandom _DELAY_CONTACT_MIN _DELAY_CONTACT_MAX
+      delayContact = liftIO $ sleepRandom env._DELAY_CONTACT_MIN env._DELAY_CONTACT_MAX
   forever do
     delayContact
     res :: Either SomeException () <- runExceptT do
@@ -633,7 +568,7 @@ runUser selfName queue = do
             ( sendMessage
                 sendTo
                 MessageSend
-                  { contents = selfB |+ " : " +| showb contact.messageNumber
+                  { contents = selfB |+ ": " +| showb contact.messageNumber
                   , sentAt = curTime
                   , key = config.key
                   }
@@ -709,9 +644,6 @@ data Queue = Queue
 
 type ServerM = ReaderT ServerEnv Handler
 
-maybe' :: Maybe a -> b -> (a -> b) -> b
-maybe' val x y = maybe x y val
-
 nt :: ServerEnv -> ServerM a -> Handler a
 nt s x = runReaderT x s
 
@@ -719,12 +651,13 @@ app :: ServerEnv -> Application
 app s = serve api $ hoistServer api (nt s) runServer
 
 runServer :: ServerT Api ServerM
-runServer = handleSendMessage :<|> handleReceiveMessage :<|> handleMakeChat
+runServer = handleSendMessage :<|> handleReceiveMessage :<|> handleMakeChat :<|> handleRemoveQueues
  where
   serverB = " [ Server ] " :: Builder
   handleMakeChat :: MessageMakeChat -> ServerM ()
   handleMakeChat MessageMakeChat{..} = do
     let dir = takeDirectory file
+    env <- ask
     liftIO $ createDirectoryIfMissing True dir
     gen <- asks stdGen
     randomSeq_ <- liftIO =<< asks (readTVarIO . randomSeq)
@@ -732,21 +665,19 @@ runServer = handleSendMessage :<|> handleReceiveMessage :<|> handleMakeChat
         (id2, randomSeq2) = nextRandomNumber gen randomSeq1
     randomSeq' <- asks randomSeq
     liftIO $ atomically $ modifyTVar randomSeq' (const randomSeq2)
-    len <- asks (_KEY_LENGTH :: ServerEnv -> Int)
-    key_ <- T.pack <$> replicateM len (uniformRM ('a', 'z') globalStdGen)
+    key_ <- T.pack <$> replicateM env._KEY_LENGTH (uniformRM ('a', 'z') globalStdGen)
     let chatConfig = ChatConfig{starts = id1, another = id2, key = key_}
     liftIO $ encodeFile file chatConfig
-    queues_ <- asks queues
     liftIO $ atomically do
       queue1 <- newTQueue
-      insert Queue{queue = queue1, key = key_} id1 queues_
+      insert Queue{queue = queue1, key = key_} id1 env.queues
       queue2 <- newTQueue
-      insert Queue{queue = queue2, key = key_} id2 queues_
+      insert Queue{queue = queue2, key = key_} id2 env.queues
     writeLog $ serverB |+ "created queues: " +| showb id1 |+ " and " +| showb id2
   handleSendMessage :: QueueID -> MessageSend -> ServerM ()
   handleSendMessage qid msg = do
-    queuesMap <- asks queues
-    queue_ <- liftIO $ atomically $ lookup qid queuesMap
+    env <- ask
+    queue_ <- liftIO $ atomically $ lookup qid env.queues
     maybe'
       queue_
       (throwError err404{errBody = "Sorry, there is no queue with id" <> encode qid})
@@ -758,8 +689,8 @@ runServer = handleSendMessage :<|> handleReceiveMessage :<|> handleMakeChat
       )
   handleReceiveMessage :: QueueID -> SecretKey -> ServerM MessagesReceive
   handleReceiveMessage qid key = do
-    queuesMap <- asks queues
-    queue_ <- liftIO $ atomically $ lookup qid queuesMap
+    env <- ask
+    queue_ <- liftIO $ atomically $ lookup qid env.queues
     maybe'
       queue_
       (throwError err404{errBody = "Sorry, there is no queue with id" <> encode qid})
@@ -772,3 +703,82 @@ runServer = handleSendMessage :<|> handleReceiveMessage :<|> handleMakeChat
           let msgs_ = (\MessageSend{contents, sentAt} -> MessageReceive{..}) <$> msgs
           return MessagesReceive{messages = msgs_, serverSentAt = curTime}
       )
+  handleRemoveQueues :: MessageRemoveQueues -> ServerM ()
+  handleRemoveQueues MessageRemoveQueues{..} = do
+    env <- ask
+    liftIO $ atomically $ forM_ queues $ \x -> delete x env.queues
+
+data SpawnerConfig = SpawnerConfig
+  { _DELAY_CONTACT_MAX :: Double
+  , _DELAY_CONTACT_MIN :: Double
+  , _DELAY_SPAWNER :: Double
+  , _LOG_ENABLED :: Bool
+  , _RETRY_TIMES :: Int
+  }
+  deriving (Generic, ToJSON, FromJSON)
+
+data MainConfig = MainConfig
+  { contacts :: FilePath
+  , contactsDir :: FilePath
+  , server :: FilePath
+  , spawner :: FilePath
+  , port :: Int
+  }
+  deriving (Generic, FromJSON, ToJSON)
+
+data ServerConfig = ServerConfig
+  { _KEY_LENGTH :: Int
+  , _LOG_ENABLED :: Bool
+  , _RANDOM_SEQ_BLOCK_SIZE :: Int
+  }
+  deriving (Generic, FromJSON, ToJSON)
+
+mkClientEnv_ :: MainConfig -> Log -> IO ClientEnv
+mkClientEnv_ mainConfig log = do
+  manager <- newManager defaultManagerSettings
+  spawnerConfig :: SpawnerConfig <- decodeFileThrow mainConfig.spawner
+  let _RETRY_TIMES = spawnerConfig._RETRY_TIMES
+      _DELAY_CONTACT_MIN = spawnerConfig._DELAY_CONTACT_MIN
+      _DELAY_CONTACT_MAX = spawnerConfig._DELAY_CONTACT_MAX
+      _DELAY_SPAWNER = spawnerConfig._DELAY_SPAWNER
+      _LOG_ENABLED = spawnerConfig._LOG_ENABLED
+      _PORT = mainConfig.port
+      _CONTACTS_CONFIG_PATH = mainConfig.contacts
+  return ClientEnv{..}
+
+mkServerEnv_ :: MainConfig -> Log -> IO ServerEnv
+mkServerEnv_ mainConfig log = do
+  serverConfig :: ServerConfig <- decodeFileThrow mainConfig.server
+  stdGen <- initStdGen
+  randomSeq <- newTVarIO $ fromJust (initRandomSeq serverConfig._RANDOM_SEQ_BLOCK_SIZE)
+  let _KEY_LENGTH = serverConfig._KEY_LENGTH
+      _LOG_ENABLED = serverConfig._LOG_ENABLED
+  queues :: Map QueueID Queue <- newIO
+  return ServerEnv{..}
+
+main :: IO ()
+main = do
+  log <- newTQueueIO
+
+  let configDir = "data/main.yaml"
+  mainConfig :: MainConfig <- decodeFileThrow configDir
+  -- prepare contacts dir
+  doesDirectoryExist mainConfig.contactsDir >>= (`when` removeDirectoryRecursive mainConfig.contactsDir)
+  clientEnv <- mkClientEnv_ mainConfig log
+  serverEnv <- mkServerEnv_ mainConfig log
+  let
+    runServer_ = run mainConfig.port $ app serverEnv
+    runSpawner_ = runReaderT' clientEnv runSpawner
+    runLogger_ = runLogger log
+    runAll =
+      runConcurrently $
+        (,,)
+          <$> Concurrently runServer_
+          <*> Concurrently runSpawner_
+          <*> Concurrently runLogger_
+  bracketOnError
+    ( do
+        runAll
+    )
+    return
+    (\err -> T.putStrLn $ "Terminating app on error: " <> showt err)

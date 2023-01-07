@@ -4,11 +4,11 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 
-name:           comrade-major
+name:           simplex-cheat
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/value/comrade-major#readme>
-homepage:       https://github.com/value/comrade-major#readme
-bug-reports:    https://github.com/value/comrade-major/issues
+description:    Please see the README on GitHub at <https://github.com/value/simplex-cheat#readme>
+homepage:       https://github.com/value/simplex-cheat#readme
+bug-reports:    https://github.com/value/simplex-cheat/issues
 author:         value
 maintainer:     value
 copyright:      value
@@ -21,13 +21,13 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/value/comrade-major
+  location: https://github.com/value/simplex-cheat
 
 library
   exposed-modules:
       Lib
   other-modules:
-      Paths_comrade_major
+      Paths_simplex_cheat
   hs-source-dirs:
       src
   default-extensions:
@@ -65,10 +65,10 @@ library
     , yaml
   default-language: Haskell2010
 
-executable comrade-major
+executable simplex-cheat
   main-is: Main.hs
   other-modules:
-      Paths_comrade_major
+      Paths_simplex_cheat
   hs-source-dirs:
       app
   default-extensions:
@@ -80,7 +80,6 @@ executable comrade-major
     , base >=4.7 && <5
     , binary
     , bytestring
-    , comrade-major
     , directory
     , exceptions
     , filepath
@@ -95,6 +94,7 @@ executable comrade-major
     , servant-client
     , servant-docs
     , servant-server
+    , simplex-cheat
     , stm
     , stm-containers
     , text
@@ -107,11 +107,11 @@ executable comrade-major
     , yaml
   default-language: Haskell2010
 
-test-suite comrade-major-test
+test-suite simplex-cheat-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_comrade_major
+      Paths_simplex_cheat
   hs-source-dirs:
       test
   default-extensions:
@@ -123,7 +123,6 @@ test-suite comrade-major-test
     , base >=4.7 && <5
     , binary
     , bytestring
-    , comrade-major
     , directory
     , exceptions
     , filepath
@@ -138,6 +137,7 @@ test-suite comrade-major-test
     , servant-client
     , servant-docs
     , servant-server
+    , simplex-cheat
     , stm
     , stm-containers
     , text
