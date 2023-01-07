@@ -1,0 +1,5 @@
+contacts: data/configs/contacts.yaml
+contactsDir: data/contacts
+port: 8080
+server: data/configs/server.yaml
+spawner: data/configs/spawner.yaml

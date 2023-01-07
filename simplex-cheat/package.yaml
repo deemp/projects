@@ -19,6 +19,9 @@ extra-source-files:
 # common to point users to the README.md file.
 description:         Please see the README on GitHub at <https://github.com/value/comrade-major#readme>
 
+default-extensions:
+- DuplicateRecordFields
+
 dependencies:
 - base >= 4.7 && < 5
 - servant
@@ -32,9 +35,24 @@ dependencies:
 - warp
 - unordered-containers
 - random
+- mtl
 - bytestring
 - servant-docs
 - stm-containers
+- time
+- yaml
+- transformers
+- hashable
+- exceptions
+- directory
+- text-show
+- fmt
+- servant-client
+- http-client
+- filepath
+- random-shuffle
+- focus
+- binary
 
 ghc-options:
 - -Wall

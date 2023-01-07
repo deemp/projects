@@ -1,0 +1,28 @@
+Alice:
+  Bob:
+    file: data/contacts/alice_bob
+    starts: Alice
+  Tim:
+    file: data/contacts/alice_tim
+    starts: Alice
+Bob:
+  Alice:
+    file: data/contacts/alice_bob
+    starts: Alice
+  Kate:
+    file: data/contacts/kate_bob
+    starts: Bob
+  Tim:
+    file: data/contacts/bob_tim
+    starts: Bob
+Kate:
+  Bob:
+    file: data/contacts/kate_bob
+    starts: Bob
+Tim:
+  Alice:
+    file: data/contacts/alice_tim
+    starts: Alice
+  Bob:
+    file: data/contacts/bob_tim
+    starts: Bob

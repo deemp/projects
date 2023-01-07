@@ -157,3 +157,8 @@ This template uses `GHC 9.2`. You can switch to `GHC 9.0`:
 
 - If you're not using stack, in `flake.nix`, change `"92"` to `"90"`
 - Else in `stack.yaml`, change `resolver` to [lts-19.33](https://www.stackage.org/lts-19.33) or a later one from `stackage`
+
+## References
+
+- Servant: Custom monad - [src](https://docs.servant.dev/en/stable/cookbook/using-custom-monad/UsingCustomMonad.html)
+- The ReaderT Design Pattern - [src](https://www.fpcomplete.com/blog/2017/06/readert-design-pattern/)

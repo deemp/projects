@@ -30,22 +30,39 @@ library
       Paths_comrade_major
   hs-source-dirs:
       src
+  default-extensions:
+      DuplicateRecordFields
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       aeson
     , async
     , base >=4.7 && <5
+    , binary
     , bytestring
+    , directory
+    , exceptions
+    , filepath
+    , fmt
+    , focus
+    , hashable
+    , http-client
+    , mtl
     , random
+    , random-shuffle
     , servant
+    , servant-client
     , servant-docs
     , servant-server
     , stm
     , stm-containers
     , text
+    , text-show
+    , time
+    , transformers
     , unordered-containers
     , wai
     , warp
+    , yaml
   default-language: Haskell2010
 
 executable comrade-major
@@ -54,23 +71,40 @@ executable comrade-major
       Paths_comrade_major
   hs-source-dirs:
       app
+  default-extensions:
+      DuplicateRecordFields
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
     , async
     , base >=4.7 && <5
+    , binary
     , bytestring
     , comrade-major
+    , directory
+    , exceptions
+    , filepath
+    , fmt
+    , focus
+    , hashable
+    , http-client
+    , mtl
     , random
+    , random-shuffle
     , servant
+    , servant-client
     , servant-docs
     , servant-server
     , stm
     , stm-containers
     , text
+    , text-show
+    , time
+    , transformers
     , unordered-containers
     , wai
     , warp
+    , yaml
   default-language: Haskell2010
 
 test-suite comrade-major-test
@@ -80,21 +114,38 @@ test-suite comrade-major-test
       Paths_comrade_major
   hs-source-dirs:
       test
+  default-extensions:
+      DuplicateRecordFields
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
     , async
     , base >=4.7 && <5
+    , binary
     , bytestring
     , comrade-major
+    , directory
+    , exceptions
+    , filepath
+    , fmt
+    , focus
+    , hashable
+    , http-client
+    , mtl
     , random
+    , random-shuffle
     , servant
+    , servant-client
     , servant-docs
     , servant-server
     , stm
     , stm-containers
     , text
+    , text-show
+    , time
+    , transformers
     , unordered-containers
     , wai
     , warp
+    , yaml
   default-language: Haskell2010
