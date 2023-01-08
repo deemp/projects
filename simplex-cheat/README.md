@@ -32,6 +32,7 @@ These might be useful if you'd like to learn `Nix` and my flakes:
     ```console
     nix develop
     write-settings-json
+    codium .
     ```
 
 1. Open a `Haskell` file and wait until `HLS` starts giving you type hints
