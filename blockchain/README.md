@@ -7,5 +7,6 @@ Development
 
    ```console
    nix develop
+   write-settings.json
    codium .
    ```
