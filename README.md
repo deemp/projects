@@ -10,12 +10,13 @@ Some of my projects with `Nix` flakes
 
 ## Contents
 
-- [sockets-and-pipes] - notes and code for the [Sockets and Pipes](https://leanpub.com/sockets-and-pipes) book
+- [sockets-and-pipes](./sockets-and-pipes) - notes and code for the [Sockets and Pipes](https://leanpub.com/sockets-and-pipes) book
 - [db-hs](./db-hs) - demo Haskell app that connects to a database
 - [developers-roadmap](./drv-tools) - notes and exercises for the [backend developers roadmap](https://github.com/fullstack-development/developers-roadmap) course
 - [blockchain](./blockchain) - exercises for a blockchain course
 - [scala](./scala) - notes on the Stepik Scala courses
-- [webchat](./webchat) - an attempt to write a webchat with a Haskell backend and PureScript client
+- [simplex-cheat](./simplex-cheat) - an extremely simplified version of [simplex-chat](https://github.com/simplex-chat/simplex-chat) with bots talking to each other via a `servant` server
+- [webchat](./webchat) - an attempt to write a webchat with a Haskell backend and PureScript client (Abandoned)
 
 ## Templates
 
