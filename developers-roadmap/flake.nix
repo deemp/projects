@@ -7,83 +7,82 @@
     flake-utils_.url = "github:deemp/flakes?dir=source-flake/flake-utils";
     flake-utils.follows = "flake-utils_/flake-utils";
     haskell-tools.url = "github:deemp/flakes?dir=language-tools/haskell";
-    my-devshell.url = "github:deemp/flakes?dir=devshell";
-    flake-compat = {
-      url = "github:edolstra/flake-compat";
-      flake = false;
-    };
+    devshell.url = "github:deemp/flakes?dir=devshell";
+    flakes-tools.url = "github:deemp/flakes?dir=flakes-tools";
   };
   outputs =
     { self
     , flake-utils
+    , flakes-tools
     , nixpkgs
     , my-codium
     , drv-tools
     , haskell-tools
-    , my-devshell
+    , devshell
     , ...
     }:
     flake-utils.lib.eachDefaultSystem (system:
     let
       pkgs = nixpkgs.legacyPackages.${system};
       inherit (my-codium.functions.${system}) writeSettingsJSON mkCodium;
-      inherit (drv-tools.functions.${system}) mkBinName;
+      inherit (drv-tools.functions.${system}) mkBin withAttrs withMan withDescription mkShellApp;
+      inherit (drv-tools.configs.${system}) man;
       inherit (my-codium.configs.${system}) extensions settingsNix;
-      devshell = my-devshell.devshell.${system};
-      inherit (my-devshell.functions.${system}) mkCommands;
-      inherit (haskell-tools.functions.${system}) toolsGHC;
-      hsShellTools = haskell-tools.toolSets.${system}.shellTools;
-      inherit (toolsGHC "92") hls ghc;
+      inherit (flakes-tools.functions.${system}) mkFlakesTools;
+      inherit (devshell.functions.${system}) mkCommands mkShell;
+      inherit (haskell-tools.functions.${system}) haskellTools;
+
+      ghcVersion_ = "92";
+
+      myPackageName = "developers-roadmap";
+
+      override = {
+        overrides = self: super: {
+          myPackage = super.callCabal2nix myPackageName ./. { };
+        };
+      };
+
+      inherit (haskellTools ghcVersion_ override (ps: [ ps.myPackage ]) [ ])
+        hls cabal implicit-hie justStaticExecutable
+        ghcid callCabal2nix haskellPackages hpack;
 
       writeSettings = writeSettingsJSON {
         inherit (settingsNix) haskell todo-tree files editor gitlens
-          git nix-ide workbench markdown-all-in-one markdown-language-features;
+          git nix-ide workbench markdown-all-in-one markdown-language-features
+          yaml;
       };
 
-      codiumTools =
-        [
-          hsShellTools.implicit-hie
-          hsShellTools.ghcid
-          pkgs.stack
-          writeSettings
-          hls
-          ghc
-        ];
+      codiumTools = [
+        writeSettings
+        ghcid
+        hpack
+        implicit-hie
+        cabal
+        hls
+      ];
 
       codium = mkCodium {
-        extensions = { inherit (extensions) nix haskell misc github markdown; };
+        extensions = { inherit (extensions) nix haskell misc github markdown kubernetes postgresql; };
         runtimeDependencies = codiumTools;
       };
 
       tools = codiumTools ++ [ codium ];
+
+      defaultShell = mkShell {
+        packages = tools;
+        commands = mkCommands "tools" tools;
+      };
+
+      flakesTools = mkFlakesTools [ "." ];
     in
     {
       packages = {
-        default = codium;
+        inherit (flakesTools) updateLocks pushToCachix;
       };
 
-      devShells.default = devshell.mkShell
-        {
-          packages = tools;
-          bash = {
-            extra = ''printf "Hello!\n"'';
-          };
-          commands = mkCommands "tools" tools;
-        };
-
-      # Nix-provided libraries for stack
-      stack-dependencies = { ghcVersion }:
-
-        pkgs.haskell.lib.buildStackProject {
-          name = "stack-dependencies";
-
-          ghc = pkgs.haskell.compiler.${ghcVersion};
-
-          buildInputs = [
-            pkgs.lzma
-            pkgs.hello
-          ];
-        };
+      devShells = {
+        default = defaultShell;
+      };
     });
 
   nixConfig = {

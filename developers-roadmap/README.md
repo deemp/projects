@@ -38,8 +38,9 @@ It explains what's available in this project.
 
 [code](./src/Junior3.hs)
 
-* Type class
-  * The part before the `=>` is the context, while the part after the `=>` is the head of the instance declaration. - [src](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/instances.html?highlight=overlapping%20instances#instance-declarations-and-resolution)
+#### Type classes
+
+* The part before the `=>` is the context, while the part after the `=>` is the head of the instance declaration. - [src](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/instances.html?highlight=overlapping%20instances#instance-declarations-and-resolution)
 
     ```hs
     instance (assertion1, ..., assertionn) => class type1 ... typem where ...
@@ -125,3 +126,11 @@ It explains what's available in this project.
   * `Tagged Initial` - sum types are represented as `(tag, payload)`. `tag` - for pattern-matching
   * `Tagless Initial` - use `GADTs` to ban nonsense expressions, no tags
   * `Final Tagless` - use overloaded functions
+
+### Type and Data Families
+
+Haskell wiki ([src](https://wiki.haskell.org/GHC/Type_families#What_are_type_families.3F)):
+
+> The concept of a type family comes from type theory. An indexed type family in type theory is a partial function at the type level. Applying the function to parameters (called type indices) yields a type. Type families permit a program to compute what data constructors it will operate on, rather than having them fixed statically (as with simple type systems) or treated as opaque unknowns (as with parametrically polymorphic types).
+
+> Type families are to vanilla data types what type class methods are to regular functions. Vanilla polymorphic data types and functions have a single definition, which is used at all type instances. Classes and type families, on the other hand, have an interface definition and any number of instance definitions. A type family's interface definition declares its kind and its arity, or the number of type indices it takes. Instance definitions define the type family over some part of the domain.
