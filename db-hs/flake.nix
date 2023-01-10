@@ -250,11 +250,12 @@
         pkgs.minikube
         pkgs.kubectl
         pkgs.postgresql_15
+        pkgs.helm
       ];
 
       # And compose VSCodium with dev tools and HLS
       codium = mkCodium {
-        extensions = { inherit (extensions) nix haskell misc github markdown kubernetes; };
+        extensions = { inherit (extensions) nix haskell misc github markdown kubernetes postgresql; };
         runtimeDependencies = codiumTools ++ [ hls ];
       };
       

@@ -21,8 +21,15 @@ description:         Please see the README on GitHub at <https://github.com/valu
 
 dependencies:
 - base >= 4.7 && < 5
-- lzma
-- process
+- esqueleto
+- persistent
+- text
+- mtl
+- transformers
+- persistent
+- persistent-postgresql
+- persistent-template
+- monad-logger
 
 ghc-options:
 - -Wall
