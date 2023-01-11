@@ -12,3 +12,5 @@ CREATE TABLE
 INSERT INTO person (name, age) VALUES ('Horl', 30), ('Bert', 33);
 
 SELECT * FROM person;
+
+SELECT column_name FROM information_schema.columns where table_schema='public' AND table_name='person';

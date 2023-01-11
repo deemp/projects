@@ -30,6 +30,8 @@ dependencies:
 - persistent-postgresql
 - persistent-template
 - monad-logger
+- fused-effects
+- async
 
 ghc-options:
 - -Wall
