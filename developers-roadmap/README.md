@@ -343,7 +343,7 @@ Haskell wiki ([src](https://wiki.haskell.org/GHC/Type_families#What_are_type_fam
 * Parsing with Haskell
   * [Part 1](https://serokell.io/blog/lexing-with-alex)
 * `breakpoint` - [src](https://github.com/aaronallen8455/breakpoint)
-  * put breakpoints into an app
+  * put breakpoints into an app (see [TryBreakpoint](./app/TryBreakpoint.hs))
   * inspect variables visible at a breakpoint
   * freeze other threads (`GHC 9.2.x+`)
 * Haskell CI with caching - [src](https://github.com/aaronallen8455/breakpoint/blob/main/.github/workflows/ci.yml)

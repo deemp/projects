@@ -8,11 +8,15 @@ default-extensions:
 
 dependencies:
 - base >= 4.7 && < 5
+- breakpoint
 
 executables:
-  DevelopersRoadmap:
-    main: Main.hs
-    source-dirs: src
+  TryBreakpoint:
+    main: app/TryBreakpoint.hs
+
+library:
+  source-dirs:
+    - src
 
 license: BSD3
 
