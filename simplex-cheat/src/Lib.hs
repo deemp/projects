@@ -151,9 +151,6 @@ A `server` will handle the requests:
   1. Write queue ids and a secret key into a specified file
 - Accept a message sent by Alice and put it into Bob's queue
   1. Check if Alice's key is valid for Bob's queue
--- TODO
-- Remove stale queues
-- check if last message in such a queue was sent delta agok
 
 A `spawner` will:
 - Observe the file with [contacts](./data/configs/contacts.yaml) config
@@ -165,6 +162,7 @@ A `spawner` will:
       1. Put Bob's contact containg the path to their chat config into that queue
   - else update the `Bob`'s contact in `Alice`'s `Queue`
 - If a new config doesn't have Alice, a spawner will kill her thread
+- Request to remove stale queues
 
 A `user` like `Alice` will:
 - send requests to the server to make a chat config ([example](./data/configs/alice_bob.yaml))

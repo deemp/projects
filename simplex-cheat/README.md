@@ -1,6 +1,6 @@
 # simplex-cheat
 
-It's a `simplex-chat` like app, but much simpler. There's a `server` and a `spawner` that spawns `user`s following a [config](./data/configs/contacts.yaml) so that `user`s talk to each other
+It's a `simplex-chat`-like app, but much simpler. There's a `server` and a `spawner` that spawns `user`s following a [config](./data/configs/contacts.yaml) so that `user`s talk to each other concurrently.
 
 ## Prerequisites
 
@@ -39,9 +39,8 @@ These might be useful if you'd like to learn `Nix` and my flakes:
 
 ## References
 
-- Servant: Custom monad - [src](https://docs.servant.dev/en/stable/cookbook/using-custom-monad/UsingCustomMonad.html)
-- The ReaderT Design Pattern - [src](https://www.fpcomplete.com/blog/2017/06/readert-design-pattern/)
-
+- [Servant: Custom monad](https://docs.servant.dev/en/stable/cookbook/using-custom-monad/UsingCustomMonad.html)
+- [The ReaderT Design Pattern](https://www.fpcomplete.com/blog/2017/06/readert-design-pattern/)
 - [Practical STM: An Async Job Queue, by Jake Keuhlen](https://www.youtube.com/watch?v=KAlSoytmVFA)
 
   - `TMVar` - don't forget to put a value inside
