@@ -1,6 +1,7 @@
 module C_11_Streaming () where
 
 import C_1_Handles (getDataDir)
+import C_3_Bytes (binaryFileResource)
 import C_6_HTTP_types (MessageBody (MessageBody), Response (..))
 import C_8_Responding (ok, sendResponse, status)
 import Control.Monad.IO.Class (MonadIO (..))
@@ -9,9 +10,8 @@ import Data.ByteString.Lazy qualified as LBS
 import GHC.IO.Handle (Handle)
 import GHC.IO.IOMode (IOMode (..))
 import Network.Simple.TCP (HostPreference (..), serve)
-import Text.Blaze.Html5 as Html ()
 import System.FilePath ((</>))
-import C_3_Bytes (binaryFileResource)
+import Text.Blaze.Html5 as Html ()
 
 -- 11
 

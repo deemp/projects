@@ -1,4 +1,20 @@
-module C_6_HTTP_types where
+module C_6_HTTP_types (
+  FieldName (..),
+  FieldValue (..),
+  HeaderField (..),
+  HttpVersion (..),
+  MessageBody (..),
+  Method (..),
+  ReasonPhrase (..),
+  Request (..),
+  RequestLine (..),
+  RequestTarget (..),
+  Response (..),
+  StatusCode (..),
+  StatusLine (..),
+  helloRequest,
+  helloResponse,
+) where
 
 import ASCII qualified as A
 import ASCII.Decimal qualified as A (Digit (..))

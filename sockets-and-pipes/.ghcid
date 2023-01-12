@@ -1,4 +1,6 @@
--c stack ghci Modules/Chapters/C_9_Content_types.hs
+-c stack ghci app/Main.hs
 -W
--r=stuckCountingServerHtml
---reload=Modules
+-r=:main
+--reload=./
+--reverse-errors
+--allow-eval

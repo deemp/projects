@@ -15,7 +15,7 @@ import Control.Concurrent.STM.TVar (newTVarIO, readTVar)
 import Control.Monad (replicateM)
 import Control.Monad.STM (STM)
 import Data.Text.Lazy qualified as LT
-import Data.Time as Time (NominalDiffTime, diffUTCTime, getCurrentTime)
+import Data.Time as Time (diffUTCTime, getCurrentTime)
 import GHC.Natural (Natural)
 import Network.Simple.TCP (HostPreference (..), serve)
 import Text.Blaze.Html5 as Html ()

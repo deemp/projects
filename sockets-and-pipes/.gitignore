@@ -1,2 +1,5 @@
-.stack-work
+.stack-work/
+*~
+.direnv
 .vscode
+dist-newstyle

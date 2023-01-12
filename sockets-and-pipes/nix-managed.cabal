@@ -6,13 +6,25 @@ cabal-version: 1.12
 
 name:           nix-managed
 version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/value/nix-managed#readme>
+homepage:       https://github.com/value/nix-managed#readme
+bug-reports:    https://github.com/value/nix-managed/issues
+author:         value
+maintainer:     value
+copyright:      value
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
 
-executable SocketsAndPipes
-  main-is: Main.hs
-  other-modules:
+source-repository head
+  type: git
+  location: https://github.com/value/nix-managed
+
+library
+  exposed-modules:
       C_10_Change
       C_11_Streaming
       C_1_Handles
@@ -24,16 +36,17 @@ executable SocketsAndPipes
       C_7_Encoding
       C_8_Responding
       C_9_Content_types
+  other-modules:
       Paths_nix_managed
   hs-source-dirs:
-      src/SocketsAndPipes
+      src
   default-extensions:
-      TypeApplications
       ImportQualifiedPost
       BlockArguments
+      TypeApplications
       QuasiQuotes
-      NoOverloadedStrings
       InstanceSigs
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-unused-top-binds
   build-depends:
       base >=4.7 && <5
     , sockets-and-pipes
