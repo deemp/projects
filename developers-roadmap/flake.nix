@@ -34,7 +34,7 @@
 
       ghcVersion_ = "92";
 
-      myPackageName = "developers-roadmap";
+      myPackageName = "nix-managed";
 
       override = {
         overrides = self: super: {
