@@ -1,0 +1,75 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           nix-managed
+version:        0.1.0.0
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+
+library
+  exposed-modules:
+      Junior1
+      Junior3
+  other-modules:
+      Paths_nix_managed
+  hs-source-dirs:
+      src
+  default-extensions:
+      TypeApplications
+      ImportQualifiedPost
+      BlockArguments
+      QuasiQuotes
+      NoOverloadedStrings
+      InstanceSigs
+  build-depends:
+      base >=4.7 && <5
+    , binary <=0.8.9.1
+    , breakpoint
+    , bytestring
+    , random
+    , unordered-containers
+  default-language: Haskell2010
+
+executable RandomNumbers
+  main-is: app/RandomNumbers.hs
+  other-modules:
+      Paths_nix_managed
+  default-extensions:
+      TypeApplications
+      ImportQualifiedPost
+      BlockArguments
+      QuasiQuotes
+      NoOverloadedStrings
+      InstanceSigs
+  build-depends:
+      base >=4.7 && <5
+    , binary <=0.8.9.1
+    , breakpoint
+    , bytestring
+    , random
+    , unordered-containers
+  default-language: Haskell2010
+
+executable TryBreakpoint
+  main-is: app/TryBreakpoint.hs
+  other-modules:
+      Paths_nix_managed
+  default-extensions:
+      TypeApplications
+      ImportQualifiedPost
+      BlockArguments
+      QuasiQuotes
+      NoOverloadedStrings
+      InstanceSigs
+  build-depends:
+      base >=4.7 && <5
+    , binary <=0.8.9.1
+    , breakpoint
+    , bytestring
+    , random
+    , unordered-containers
+  default-language: Haskell2010

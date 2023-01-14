@@ -1,18 +1,24 @@
 default-extensions:
-- TypeApplications
-- ImportQualifiedPost
-- BlockArguments
-- QuasiQuotes
-- NoOverloadedStrings
-- InstanceSigs
+  - TypeApplications
+  - ImportQualifiedPost
+  - BlockArguments
+  - QuasiQuotes
+  - NoOverloadedStrings
+  - InstanceSigs
 
 dependencies:
-- base >= 4.7 && < 5
-- breakpoint
+  - base >= 4.7 && < 5
+  - breakpoint
+  - random
+  - unordered-containers
+  - bytestring
+  - binary <= 0.8.9.1
 
 executables:
   TryBreakpoint:
     main: app/TryBreakpoint.hs
+  RandomNumbers:
+    main: app/RandomNumbers.hs
 
 library:
   source-dirs:
@@ -20,6 +26,6 @@ library:
 
 license: BSD3
 
-name: developers-roadmap
+name: nix-managed
 
 version: 0.1.0.0
