@@ -338,14 +338,87 @@ Haskell wiki ([src](https://wiki.haskell.org/GHC/Type_families#What_are_type_fam
             ask = PersonReader $ \env -> env
           ```
 
-## Misc
+### Laziness
 
-* Parsing with Haskell
-  * [Part 1](https://serokell.io/blog/lexing-with-alex)
+* Bang patterns
+
+  ```hs
+  {-# LANGUAGE BangPatterns #-}
+
+  add :: Int -> Int -> Int
+  add !x !y = x + y
+
+  -- equivalent to
+  add x y = x `seq` y `seq` x + y
+  ```
+
+* `Thunk` is an unevaluated expression - [src](https://stackoverflow.com/a/13984345)
+  * `free variables` in an unevaluated expr
+  * when evaluated, the pointers to it will point to the result
+  * a `dead thunk` is `garbage collected`
+
+* Expression forms - [src](https://stackoverflow.com/a/6889335)
+  * Normal form
+    > An expression in normal form is fully evaluated, and no sub-expression could be evaluated any further (i.e. it contains no un-evaluated thunks).
+  * Weak head normal form
+    > An expression in weak head normal form has been evaluated to the outermost data constructor or lambda abstraction (the head).
+
+    ```hs
+    (1 + 1, 2 + 2)       -- the outermost part is the data constructor (,)
+    \x -> 2 + 2 
+    ```
+
+* `` a `seq` b `` - eval `a` to `WHNF`, return `b`
+* `` a `deepseq` b `` - eval `a` to `NF`, return `b`
+* `` force b = b `deepseq` b `` - eval `b` to `NF` and return `b`
+  * If we have `let a = force b`, `a` is not in `NF`
+  * To get `a` in `NF`, we need to `!a`
+* `fix`
+
+### File IO
+
+* There are several representations of text in `Haskell` - `ByteString`, `Text`, `String`
+* `ByteString` can contain both `human-readable` or `binary` data that mustn't be mixed
+* Also, there are many `file encodings`. Use `UTF-8` to be safe
+* One can encode standard data types into a `ByteString` using [Data.ByteString.Builder](https://hackage.haskell.org/package/bytestring-0.11.4.0/docs/Data-ByteString-Builder.html)
+* `LBS` reads files in chunks. Can be used for streaming
+* `hGet` reads a given number of bytes from a handle
+
+### fused-effects
+
+* [Defining new effects](https://github.com/fused-effects/fused-effects/blob/main/docs/defining_effects.md)
+* [Reinterpreting effects](https://github.com/fused-effects/fused-effects/blob/main/docs/reinterpreting_effects.md)
+* [Usage](https://github.com/fused-effects/fused-effects/blob/main/docs/usage.md)
+* Any `monads`, including `mtl` transformer stacks, can be lifted via `Lift`
+* Structure
+  * `Effect` - define a data type and operations when  an effect in `sig`
+  * `Carrier` - define type class instances, including `Algebra`
+    * `Algebra` instance specifies how an effect’s constructors should be interpreted
+    * `Carrier`s can handle more than one effect, and multiple carriers can be defined for the same effect, corresponding to different interpreters for the effect’s syntax.
+  * Set whatever constraints necessary (e.g., `MonadIO`)
+* `Algebra` instance examples:
+  * [fused-effects-random](https://github.com/fused-effects/fused-effects-random/blob/fac39c49786158d6525ed185c94d64cca0ffcda3/src/Control/Carrier/Random/Gen.hs#L78)
+  * [fused-effects-mwc-random](https://github.com/fused-effects/fused-effects-mwc-random/blob/d0d765e2842e980b9029a574693d99a622867ebb/src/Control/Carrier/Random/Lifted.hs#L41)
+  * [fused-effects-parser](https://github.com/fused-effects/fused-effects-parser/blob/f18ea3cd59ac0983cbc100de42d9bace5b038d09/src/Control/Carrier/Parser/Church.hs#L190)
+  * [fused-effects-readline](https://github.com/fused-effects/fused-effects-readline/blob/d8a35005ae28e827c92b4fe122f62d015a9a8e24/src/Control/Carrier/Readline/Haskeline.hs#L63)
+  * [fused-effects-system](https://github.com/fused-effects/fused-effects-system/blob/b893c2955fa807087e945eff9f8bea4a9fd0be5c/fused-effects-time/src/Control/Carrier/Time/System.hs#L52)
+  * [fused-effects-profile](https://github.com/fused-effects/fused-effects-system/blob/b893c2955fa807087e945eff9f8bea4a9fd0be5c/fused-effects-profile/src/Control/Carrier/Profile/Tree.hs#L48)
+  * [fused-effects-time](https://github.com/fused-effects/fused-effects-system/blob/b893c2955fa807087e945eff9f8bea4a9fd0be5c/fused-effects-time/src/Control/Carrier/Time/System.hs#L52)
+* Usage examples
+  * [LearningHaskell](https://github.com/raymondtay/LearningHaskell/blob/master/src/Effects/fe/lib/Queries.hs)
+
+### Debugging
+
+* `Debug.Trace`
 * `breakpoint` - [src](https://github.com/aaronallen8455/breakpoint)
   * put breakpoints into an app (see [TryBreakpoint](./app/TryBreakpoint.hs))
   * inspect variables visible at a breakpoint
   * freeze other threads (`GHC 9.2.x+`)
+
+## Misc
+
+* Parsing with Haskell
+  * [Part 1](https://serokell.io/blog/lexing-with-alex)
 * Haskell CI with caching - [src](https://github.com/aaronallen8455/breakpoint/blob/main/.github/workflows/ci.yml)
 * `string-interpolate` - [src](https://hackage.haskell.org/package/string-interpolate)
   * UTF-8 string interpolation
