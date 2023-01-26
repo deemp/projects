@@ -13,10 +13,29 @@ dependencies:
   - unordered-containers
   - bytestring
   - binary <= 0.8.9.1
+  - async
+  - rio
+  - transformers
+  - deepseq
+  - aeson
+  - http-client-tls
+  - http-client
+  - time
+  - bytestring
+  - http-types
+  - managed
+  - mtl
+  - exceptions
+  - lifted-base
+  - monad-control
+  - effectful
+  - fused-effects
+  - fused-effects-exceptions
+  - containers
 
 executables:
-  TryBreakpoint:
-    main: app/TryBreakpoint.hs
+  Breakpoint:
+    main: app/Breakpoint.hs
   RandomNumbers:
     main: app/RandomNumbers.hs
 

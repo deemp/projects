@@ -171,6 +171,12 @@ class Vectorizable a where
   data Vector a
   vlength :: Vector a -> Int
 
+newtype S = S {unS :: [Int]}
+instance Vectorizable S where
+  data Vector S = Vector {unVector :: S}
+  vlength :: Vector S -> Int
+  vlength = length . unS . unVector
+
 -- Data family
 data family SomeFamily a
 newtype instance SomeFamily Int = SomeF Int

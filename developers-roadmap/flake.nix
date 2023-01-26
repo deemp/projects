@@ -9,6 +9,10 @@
     haskell-tools.url = "github:deemp/flakes?dir=language-tools/haskell";
     devshell.url = "github:deemp/flakes?dir=devshell";
     flakes-tools.url = "github:deemp/flakes?dir=flakes-tools";
+    fused-effects-exceptions-src = {
+      url = "github:fused-effects/fused-effects-exceptions";
+      flake = false;
+    };
   };
   outputs =
     { self
@@ -19,6 +23,7 @@
     , drv-tools
     , haskell-tools
     , devshell
+    , fused-effects-exceptions-src
     , ...
     }:
     flake-utils.lib.eachDefaultSystem (system:
@@ -30,19 +35,25 @@
       inherit (my-codium.configs.${system}) extensions settingsNix;
       inherit (flakes-tools.functions.${system}) mkFlakesTools;
       inherit (devshell.functions.${system}) mkCommands mkShell;
-      inherit (haskell-tools.functions.${system}) haskellTools;
+      inherit (haskell-tools.functions.${system}) toolsGHC;
 
       ghcVersion_ = "92";
 
       myPackageName = "nix-managed";
 
+      inherit (pkgs.haskell.lib)
+        # dontCheck - skip tests
+        dontCheck
+        ;
+
       override = {
         overrides = self: super: {
+          fused-effects-exceptions = dontCheck (self.callCabal2nix "fused-effects-exceptions" fused-effects-exceptions-src { });
           myPackage = super.callCabal2nix myPackageName ./. { };
         };
       };
 
-      inherit (haskellTools ghcVersion_ override (ps: [ ps.myPackage ]) [ ])
+      inherit (toolsGHC ghcVersion_ override (ps: [ ps.myPackage ]) [ ])
         hls cabal implicit-hie justStaticExecutable
         ghcid callCabal2nix haskellPackages hpack;
 
@@ -70,6 +81,7 @@
 
       defaultShell = mkShell {
         packages = tools;
+        bash.extra = "export LANG=C.utf8";
         commands = mkCommands "tools" tools;
       };
 

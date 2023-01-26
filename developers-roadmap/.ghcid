@@ -1,4 +1,4 @@
--c stack ghci Modules/Chapters/C_9_Content_types.hs
+-c cabal repl app/TryAsync.hs
 -W
 -r=stuckCountingServerHtml
---reload=Modules
+--reload=app
