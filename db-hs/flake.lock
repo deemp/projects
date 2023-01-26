@@ -1185,7 +1185,6 @@
       "inputs": {
         "devshell": "devshell",
         "drv-tools": "drv-tools",
-        "flake-compat": "flake-compat",
         "flake-utils": [
           "flake-utils_",
           "flake-utils"

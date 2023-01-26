@@ -4,6 +4,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
@@ -14,7 +15,11 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
+
+{-# HLINT ignore "Fuse on/on" #-}
+{-# LANGUAGE TupleSections #-}
 
 module Lib (main) where
 
@@ -22,12 +27,16 @@ import Control.Monad (forM_)
 import Control.Monad.Logger (LogLevel (..), LoggingT, filterLogger, runStdoutLoggingT)
 import Control.Monad.Reader (ReaderT (..))
 import Data.Foldable (for_)
-import Data.Traversable (for)
+import Data.Text.IO.Utf8 ()
 import Database.Esqueleto.Experimental
 import Database.Persist.Postgresql (ConnectionString, withPostgresqlConn)
 import Database.Persist.TH (mkMigrate, mkPersist, persistLowerCase, share, sqlSettings)
+import Main.Utf8 (withUtf8)
+import Text.Pretty.Simple (pPrint)
+import qualified Data.Text.IO as LBS
 
 -- define schema
+-- TODO add cascade
 share
   [mkPersist sqlSettings, mkMigrate "migrateAll"]
   [persistLowerCase|
@@ -39,8 +48,8 @@ share
     deriving Eq Show
   Book
     title String
-    authorId AuthorId
-    genreId GenreId
+    author_id AuthorId
+    genre_id GenreId
     price Double
     amount Double
     deriving Eq Show
@@ -50,24 +59,28 @@ share
 
 type Action a = SqlPersistT (LoggingT IO) a
 
-authors :: [Author]
-authors =
-  [ Author "Булгаков М.А."
-  , Author "Достоевский Ф.М."
-  , Author "Есенин С.А."
-  , Author "Пастернак Б.Л."
-  , Author "Лермонтов М.Ю."
-  ]
+-- TODO useful
+-- entityVal
 
-genres :: [Genre]
-genres =
-  [ Genre "Роман"
-  , Genre "Поэзия"
-  , Genre "Приключения"
-  ]
-
-selectAllAction :: Action [Book]
-selectAllAction = (entityVal <$>) <$> (select $ from $ table @Book)
+selectAllAction :: Action [(String, String, Double)]
+selectAllAction =
+  do
+    res <- select do
+      (genre :& book :& _) <-
+        from
+          $ table @Genre
+            `innerJoin` table @Book
+          `on` ( \(genre :& book) ->
+                  genre ^. GenreId ==. book ^. BookGenre_id
+               )
+            `innerJoin` table @Author
+          `on` ( \(_ :& book :& author) ->
+                  author ^. AuthorId ==. book ^. BookAuthor_id
+               )
+      where_ (book ^. BookAmount >. val 8)
+      orderBy [desc (book ^. BookPrice)]
+      return (book ^. BookTitle, genre ^. GenreName_genre, book ^. BookPrice)
+    return $ (\(x, y, z) -> (unValue x, unValue y, unValue z)) <$> res
 
 type PGInfo = ConnectionString
 
@@ -78,8 +91,8 @@ logFilter :: a -> LogLevel -> Bool
 logFilter _ LevelError = True
 logFilter _ LevelWarn = True
 logFilter _ LevelInfo = True
-logFilter _ LevelDebug = False
-logFilter _ (LevelOther _) = False
+logFilter _ LevelDebug = True
+logFilter _ (LevelOther _) = True
 
 runAction_ :: PGInfo -> Action a -> IO a
 runAction_ connectionString action =
@@ -91,12 +104,29 @@ runAction_ connectionString action =
 runAction :: Action a -> IO a
 runAction = runAction_ conn
 
+-- privet = T.pack "Привет"
+
+-- >>>privet
+-- "\1055\1088\1080\1074\1077\1090"
+
 main :: IO ()
-main = do
+main = withUtf8 do
   books <- runAction do
     runMigration migrateAll
-    [aBulgakov, aDostoyevsky, aYesenin, aPasternak, aLermontov] <- for authors insert
-    [gRoman, gPoeziya, gPriklucheniya] <- for genres insert
+
+    -- insert authors
+    aBulgakov <- insert $ Author "Булгаков М.А."
+    aDostoyevsky <- insert $ Author "Достоевский Ф.М."
+    aYesenin <- insert $ Author "Есенин С.А."
+    aPasternak <- insert $ Author "Пастернак Б.Л."
+    _ <- insert $ Author "Лермонтов М.Ю."
+
+    -- insert genres
+    gRoman <- insert $ Genre "Роман"
+    gPoeziya <- insert $ Genre "Поэзия"
+    _ <- insert $ Genre "Приключения"
+
+    -- insert books
     for_
       [ Book "Мастер и Маргарита" aBulgakov gRoman 670.99 3
       , Book "Белая гвардия" aBulgakov gRoman 540.50 5
@@ -109,4 +139,5 @@ main = do
       ]
       insert
     selectAllAction
-  forM_ books print
+  
+  forM_ books pPrint

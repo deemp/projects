@@ -32,6 +32,8 @@ dependencies:
 - monad-logger
 - fused-effects
 - async
+- with-utf8
+- pretty-simple
 
 ghc-options:
 - -Wall

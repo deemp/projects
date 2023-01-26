@@ -1,16 +1,34 @@
 -- Active: 1673272169667@@192.168.58.2@30002@postgresdb@public
+DROP      TABLE author;
 
-DROP TABLE person;
+DROP      TABLE genre;
 
-CREATE TABLE
-    person(
-        id SERIAL PRIMARY KEY NOT NULL,
-        name TEXT NOT NULL,
-        age INT NOT NULL
-    );
+DROP      TABLE book;
 
-INSERT INTO person (name, age) VALUES ('Horl', 30), ('Bert', 33);
+CREATE    TABLE author (
+          id SERIAL PRIMARY KEY NOT NULL,
+          name_author TEXT
+          );
 
-SELECT * FROM person;
+CREATE    TABLE genre (
+          id SERIAL PRIMARY KEY NOT NULL,
+          name_genre TEXT
+          );
 
-SELECT column_name FROM information_schema.columns where table_schema='public' AND table_name='person';
+CREATE    TABLE book (
+          id SERIAL PRIMARY KEY NOT NULL,
+          author_id INT REFERENCES author (id) ON DELETE CASCADE,
+          genre_id INT REFERENCES genre (id) ON DELETE CASCADE,
+          price DECIMAL,
+          amount DECIMAL
+          );
+
+SELECT    *
+FROM      book;
+
+SELECT    column_name
+FROM      information_schema.columns
+WHERE     table_schema = 'public'
+AND       table_name = 'genre';
+
+DROP TABLE genre;
