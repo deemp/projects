@@ -8,19 +8,28 @@ Some of my projects with `Nix` flakes
 - [Conventions](./README/Conventions.md)
 - [Troubleshooting](./README/Troubleshooting.md)
 
-## Contents
+## Projects
 
-- [sockets-and-pipes](./sockets-and-pipes) - notes and code for the [Sockets and Pipes](https://leanpub.com/sockets-and-pipes) book
+### Haskell
+
+- [optics-by-example](./optics-by-example/) - notes and code for the [Optics by Example](https://leanpub.com/optics-by-example) book
+- [simplex-cheat](./simplex-cheat) - an extremely simplified version of [simplex-chat](https://github.com/simplex-chat/simplex-chat) with bots talking to each other via a `servant` server
 - [db-hs](./db-hs) - demo Haskell app that connects to a database
 - [developers-roadmap](./drv-tools) - notes and exercises for the [backend developers roadmap](https://github.com/fullstack-development/developers-roadmap) course
+- [sockets-and-pipes](./sockets-and-pipes) - notes and code for the [Sockets and Pipes](https://leanpub.com/sockets-and-pipes) book
+
+#### Unfinished
+
+- [manager](./manager) - a `Haskell` CLI app for managing `stack` projects with multiple `Main.hs` modules
+
+### Blockchain
+
 - [blockchain](./blockchain) - exercises for a blockchain course
+
+### Scala
+
 - [scala](./scala) - notes on the Stepik Scala courses
-- [simplex-cheat](./simplex-cheat) - an extremely simplified version of [simplex-chat](https://github.com/simplex-chat/simplex-chat) with bots talking to each other via a `servant` server
-- [webchat](./webchat) - an attempt to write a webchat with a Haskell backend and PureScript client (Abandoned)
 
-## Templates
+### Abandoned
 
-This repo provides several templates. Learn how you can use them.
-
-- Templates [Prerequisites](./README/NixPrerequisites.md#templates)
-- Dev tools [Conventions](./README/Conventions.md#dev-tools) - decide where to put flakes generated from templates
+- [webchat](./webchat) - an attempt to write a webchat with a Haskell backend and PureScript client
