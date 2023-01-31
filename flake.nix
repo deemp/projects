@@ -37,17 +37,16 @@
         devshell = my-devshell.devshell.${system};
 
         flakesTools = (mkFlakesTools (
-          let f = dir: (builtins.map (x: "${dir}/${x}") (readDirectories ./${dir})); in
           [
-            [
-              "blockchain"
-              "db-hs"
-              "developers-roadmap"
-              "scala"
-              "sockets-and-pipes"
-              "webchat"
-              "."
-            ]
+            "blockchain"
+            "db-hs"
+            "developers-roadmap"
+            "scala"
+            "sockets-and-pipes"
+            "webchat"
+            "manager"
+            "optics-by-example"
+            "."
           ]
         ));
 

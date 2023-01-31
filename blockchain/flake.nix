@@ -7,7 +7,7 @@
     flake-utils.follows = "flake-utils_/flake-utils";
     formatter.url = "github:deemp/flakes?dir=source-flake/formatter";
     my-codium.url = "github:deemp/flakes?dir=codium";
-    vscode-extensions_.url = "github:deemp/flakes?dir=source-flake/vscode-extensions";
+    vscode-extensions_.url = "github:deemp/flakes?dir=source-flake/nix-vscode-extensions";
     vscode-extensions.follows = "vscode-extensions_/vscode-extensions";
     python-tools.url = "github:deemp/flakes?dir=language-tools/python";
     my-devshell.url = "github:deemp/flakes?dir=devshell";
