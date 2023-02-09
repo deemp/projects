@@ -1,5 +1,5 @@
-<!-- FOURMOLU_DISABLE -->
-<!-- LIMA_DISABLE
+{- FOURMOLU_DISABLE -}
+{- LIMA_DISABLE -}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE StandaloneKindSignatures #-}
 {-# LANGUAGE TypeOperators #-}
@@ -21,8 +21,9 @@ import Language.Haskell.TH.Syntax (Dec, Quasi, runQ)
 
 main = undefined
 
-LIMA_ENABLE -->
+{- LIMA_ENABLE -}
 
+{-
 # Developers roadmap
 
 for backend - [src](https://github.com/fullstack-development/developers-roadmap)
@@ -62,40 +63,42 @@ It explains what's available in this project.
 #### Alternative and MonadPlus
 
 - [Haskell wikibooks](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus):
+-}
 
-    <!-- LIMA_INDENT 4 -->
+{- LIMA_INDENT 4 -}
 
+{-
   - `Alternative`
+-}
 
-    ```haskell
-    class Applicative f => Alternative f where
-      empty :: f a
-      (<|>) :: f a -> f a -> f a
-    ```
+class Applicative f => Alternative f where
+  empty :: f a
+  (<|>) :: f a -> f a -> f a
 
-    <!-- LIMA_DEDENT -->
+{- LIMA_DEDENT -}
 
+{-
     - In case of `Maybe`, leave the first `Just result`
 
 #### Traversable
 
 - [Haskell wikibooks](https://en.wikibooks.org/wiki/Haskell/Traversable):
+-}
 
-    <!-- LIMA_INDENT 4 -->
+{- LIMA_INDENT 4 -}
 
-    ```haskell
-    class (Functor t, Foldable t) => Traversable t where
-      traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
-      sequenceA :: Applicative f => t (f a) -> f (t a)
-    
-      -- These methods have default definitions.
-      -- They are merely specialised versions of the other two.
-      mapM :: Monad m => (a -> m b) -> t a -> m (t b)
-      sequence :: Monad m => t (m a) -> m (t a)
-    ```
+class (Functor t, Foldable t) => Traversable t where
+  traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
+  sequenceA :: Applicative f => t (f a) -> f (t a)
 
-    <!-- LIMA_DEDENT -->
+  -- These methods have default definitions.
+  -- They are merely specialised versions of the other two.
+  mapM :: Monad m => (a -> m b) -> t a -> m (t b)
+  sequence :: Monad m => t (m a) -> m (t a)
 
+{- LIMA_DEDENT -}
+
+{-
 #### Handle pattern
 
 - [src](https://www.metalamp.ru/articles/service-handle-pattern)
@@ -134,15 +137,14 @@ From Haskell in Depth (Chapter 7)
 - We can check `Async a` for a result or block on it - see [TryAsync](./app/TryAsync.hs)
 - `withAsync :: IO a -> (a -> IO b) -> IO b` - when the function `a -> IO b` returns, `IO a` is killed.
   - There's no contradiction. We can't use the value stored in `a` without calling `wait a`. But this will make the computation `IO b` to suspend until `IO a` finishes or throws an exception.
+-}
+{- LIMA_INDENT 6 -}
 
-      <!-- LIMA_INDENT 6 -->
+exAsync = withAsync (threadDelay 3_000_000 >> print "ping") (\a -> wait a >> print "pong")
 
-      ```haskell
-      exAsync = withAsync (threadDelay 3_000_000 >> print "ping") (\a -> wait a >> print "pong")
-      ```
+{- LIMA_DEDENT -}
 
-      <!-- LIMA_DEDENT -->
-
+{-
 - `retry` restarts a transaction and blocks the thread until one of the variables that were read changes its value
 
 - `Broadcasting` channel (e.g., `TMChan`)
@@ -182,18 +184,19 @@ Test types:
   - How is it defined and passed into functions? - [src](https://arxiv.org/pdf/1907.00844.pdf#subsection.2.1)
     - embed `Superclass` dictionary into `Subclass` dictionary
 
-      <!-- LIMA_INDENT 6 -->
+-}
 
-      ```haskell
-      newtype BaseD a = BaseD {base :: a -> Bool}
-      data Sub1D a = Sub1D
-        { super1 :: BaseD a
-        , sub1 :: a -> Bool
-        }
-      ```
+{- LIMA_INDENT 6 -}
 
-      <!-- LIMA_DEDENT -->
+newtype BaseD a = BaseD {base :: a -> Bool}
+data Sub1D a = Sub1D
+  { super1 :: BaseD a
+  , sub1 :: a -> Bool
+  }
 
+{- LIMA_DEDENT -}
+
+{-
     - Passed automatically by the compiler
 - Why using constraints on a type variable within a data declaration isn't a good idea?
   - They make code less flexible and disallow some instances - [SO](https://stackoverflow.com/a/40825913)
@@ -287,168 +290,161 @@ Haskell wiki ([src](https://wiki.haskell.org/GHC/Type_families#What_are_type_fam
   - `Generative` type constructor - can't be reduced to another type
     - `Maybe Bool ~ Maybe Bool` and nothing else
     - We set the `kind` via a standalone `type ...`. Here, `MaybeIf` requires something of kind `Bool` for construction. Therefore, we supply a promoted `True` to it.
+-}
 
-      <!-- LIMA_INDENT 6 -->
+{- LIMA_INDENT 6 -}
+type MaybeIf :: Bool -> Type -> Type
+type family MaybeIf b t where
+  MaybeIf True t = Maybe t
+  MaybeIf False t = Identity t
 
-      ```haskell
-      type MaybeIf :: Bool -> Type -> Type
-      type family MaybeIf b t where
-        MaybeIf True t = Maybe t
-        MaybeIf False t = Identity t
-      ```
-
+{-
   - Use to implement operations on `GADTs` (e.g., concatenate lists)
+-}
 
-      ```haskell
-      type HList :: [Type] -> Type
-      data HList xs where
-        HNil :: HList '[]
-        (:&) :: x -> HList xs -> HList (x : xs)
-      infixr 5 :&
-      
-      type Append :: [a] -> [a] -> [a]
-      type family Append xs ys where -- header
-        Append '[] ys = ys -- clause 1
-        Append (x : xs) ys = x : Append xs ys -- clause 2
-      happend :: HList xs -> HList ys -> HList (Append xs ys)
-      happend = undefined
-      ```
+type HList :: [Type] -> Type
+data HList xs where
+  HNil :: HList '[]
+  (:&) :: x -> HList xs -> HList (x : xs)
+infixr 5 :&
 
-      <!-- LIMA_DEDENT -->
+type Append :: [a] -> [a] -> [a]
+type family Append xs ys where -- header
+  Append '[] ys = ys -- clause 1
+  Append (x : xs) ys = x : Append xs ys -- clause 2
+happend :: HList xs -> HList ys -> HList (Append xs ys)
+happend = undefined
 
+{- LIMA_DEDENT -}
+
+{-
   - **Closed type families**
     - The clauses of a closed type family are ordered and matched **from top to bottom**
     - Overlapping equations
+-}
 
-        <!-- LIMA_INDENT 8 -->
+{- LIMA_INDENT 8 -}
+type And :: Bool -> Bool -> Bool
+type family And a b where
+  And True True = True
+  And _ _ = False
 
-        ```haskell
-        type And :: Bool -> Bool -> Bool
-        type family And a b where
-          And True True = True
-          And _ _ = False
-        ```
+{- LIMA_DEDENT -}
 
-        <!-- LIMA_DEDENT -->
-
+{-
   - **Open type families**
     - Such families can be extended anywhere
     - The equations of an open type family are either:
       - Not overlapping, so get a combinatorial explosion in patterns:
+-}
 
-        <!-- LIMA_INDENT 8 -->
+{- LIMA_INDENT 8 -}
 
-        ```haskell
-        type And' :: Bool -> Bool -> Bool
-        type family And' a b
-        
-        type instance And' True True = True
-        type instance And' True False = False
-        type instance And' False True = False
-        type instance And' False False = False
-        ```
+type And' :: Bool -> Bool -> Bool
+type family And' a b
 
-        <!-- LIMA_DEDENT -->
+type instance And' True True = True
+type instance And' True False = False
+type instance And' False True = False
+type instance And' False False = False
 
+{- LIMA_DEDENT -}
+
+{-
       - Compatible:
         - Can make right sides equal and unify left sides via rewriting
+-}
 
-          <!-- LIMA_INDENT 10 -->
+{- LIMA_INDENT 10 -}
+type family G a b
 
-          ```haskell
-          type family G a b
-          
-          type instance G a Bool = a -> Bool
-          type instance G Char b = Char -> b
-          
-          -- ==>
-          
-          type instance G Char Bool = Char -> Bool
-          ```
+type instance G a Bool = a -> Bool
+type instance G Char b = Char -> b
 
-          <!-- LIMA_DEDENT -->
+-- ==>
 
+type instance G Char Bool = Char -> Bool
+
+{- LIMA_DEDENT -}
+
+{-
   - **Associated types**
     - Almost the same as open type families
     - Can set default values
+-}
 
-      <!-- LIMA_INDENT 6 -->
+{- LIMA_INDENT 6 -}
 
-      ```haskell
-      type family Unwrap x where
-        Unwrap (f a) = a
-      
-      class Container2 a where
-        type Elem2 a
-      
-        -- default
-        type Elem2 x = Int
-        elements' :: a -> [Elem2 a]
-      ```
+type family Unwrap x where
+  Unwrap (f a) = a
 
-      <!-- LIMA_DEDENT -->
+class Container2 a where
+  type Elem2 a
 
+  -- default
+  type Elem2 x = Int
+  elements' :: a -> [Elem2 a]
+
+{- LIMA_DEDENT -}
+
+{-
     - Example from [string-interpolate](https://williamyaoh.com/posts/2019-05-27-string-interpolation-and-overlapping-instances.html#cb12)
 
   - **Injectivity** - get input types from output types
     - Use `TypeFamilyDependencies`
+-}
 
-        <!-- LIMA_INDENT 8 -->
+{- LIMA_INDENT 8 -}
+type family Not x = r | r -> x where
 
-        ```haskell
-        type family Not x = r | r -> x where
-        
-        -- >>> s @True
-        ```
+-- >>> s @True
 
-        <!-- LIMA_DEDENT -->
+{- LIMA_DEDENT -}
 
+{-
   - **Data families**
     - [HaskellWiki](https://wiki.haskell.org/GHC/Type_families#Detailed_definition_of_data_families)
     - Compute **new** data types (type families compute the existing data types)
+-}
 
-      <!-- LIMA_INDENT 6 -->
+{- LIMA_INDENT 6 -}
+data family Vector a
+newtype instance Vector () = VUnit Int
+newtype instance Vector Int = VInts [Int]
 
-      ```haskell
-      data family Vector a
-      newtype instance Vector () = VUnit Int
-      newtype instance Vector Int = VInts [Int]
-      ```
+{- LIMA_DEDENT -}
 
-      <!-- LIMA_DEDENT -->
-
+{-
     - Can associate with a class
+-}
+{- LIMA_INDENT 8 -}
+class Vectorizable a where
+  data Vector_ a
+  vlength :: Vector_ a -> Int
 
-        <!-- LIMA_INDENT 8 -->
+newtype S = S {unS :: [Int]}
+instance Vectorizable S where
+  data Vector_ S = Vector_ {unVector_ :: S}
+  vlength :: Vector_ S -> Int
+  vlength = length . unS . unVector_
 
-        ```haskell
-        class Vectorizable a where
-          data Vector_ a
-          vlength :: Vector_ a -> Int
-        
-        newtype S = S {unS :: [Int]}
-        instance Vectorizable S where
-          data Vector_ S = Vector_ {unVector_ :: S}
-          vlength :: Vector_ S -> Int
-          vlength = length . unS . unVector_
-        ```
+{- LIMA_DEDENT -}
 
-        <!-- LIMA_DEDENT -->
-
+{-
 ### GADTs
 
 - Wikibooks ([src](https://en.wikibooks.org/wiki/Haskell/GADT)):
   > With GADTs, a constructor for `Foo` a is not obliged to return `Foo a`; it can return any `Foo blah` that you can think of:
+-}
 
-    <!-- LIMA_INDENT 4 -->
+{- LIMA_INDENT 4 -}
 
-    ```haskell
-    data TrueGadtFoo a where
-      MkTrueGadtFoo :: a -> TrueGadtFoo Int
-    ```
+data TrueGadtFoo a where
+  MkTrueGadtFoo :: a -> TrueGadtFoo Int
 
-    <!-- LIMA_DEDENT -->
+{- LIMA_DEDENT -}
 
+{-
   - Still, need to use a relevant data constructor
 
     ```hs
@@ -460,22 +456,22 @@ Haskell wiki ([src](https://wiki.haskell.org/GHC/Type_families#What_are_type_fam
   - No. Use a compiler to derive instances like `Functor`, put constraints in functions
 
 - How can heterogenous lists be implemented with DataKinds and GADTs? - [src](https://www.parsonsmatt.org/2017/04/26/basic_type_level_programming_in_haskell.html#heterogeneous-lists)
+-}
 
-    <!-- LIMA_INDENT 4 -->
+{- LIMA_INDENT 4 -}
 
-    ```haskell
-    data HList_ xs where
-      HNil_ :: HList_ '[]
-      (:::) :: a -> HList_ as -> HList_ (a ': as)
-    
-    infixr 6 :::
-    
-    hex :: HList_ '[Char, Integer, String]
-    hex = 'a' ::: 1 ::: "hello" ::: HNil_
-    ```
+data HList_ xs where
+  HNil_ :: HList_ '[]
+  (:::) :: a -> HList_ as -> HList_ (a ': as)
 
-    <!-- LIMA_DEDENT -->
+infixr 6 :::
 
+hex :: HList_ '[Char, Integer, String]
+hex = 'a' ::: 1 ::: "hello" ::: HNil_
+
+{- LIMA_DEDENT -}
+
+{-
 ### Kinds
 
 - `DataKinds` - [src](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/type_data.html#type-level-data-declarations)
@@ -493,16 +489,17 @@ Haskell wiki ([src](https://wiki.haskell.org/GHC/Type_families#What_are_type_fam
 
 - Set a relation between types. Make one type correspond to another type
 
-    <!-- LIMA_INDENT 4 -->
+-}
 
-    ```haskell
-    class Monad m => MonadError e m | m -> e where
-      throwError :: e -> m a
-      catchError :: m a -> (e -> m a) -> m a
-    ```
+{- LIMA_INDENT 4 -}
 
-    <!-- LIMA_DEDENT -->
+class Monad m => MonadError e m | m -> e where
+  throwError :: e -> m a
+  catchError :: m a -> (e -> m a) -> m a
 
+{- LIMA_DEDENT -}
+
+{-
 - Problem ([src](https://www.fpcomplete.com/haskell/tutorial/fundeps/#exercises)):
   > we want a MonadReader typeclass where there is only a single instance per m, and we know the env parameter that will be available from each m.
   - Approach 1:
@@ -532,27 +529,26 @@ Haskell wiki ([src](https://wiki.haskell.org/GHC/Type_families#What_are_type_fam
 
     - Approach 2:
       - `TypeFamilies`
+-}
 
-          <!-- LIMA_INDENT 10 -->
+{- LIMA_INDENT 10 -}
+class MonadReader m where
+  -- use an associated type
+  type Env m
+  ask :: m (Env m)
 
-          ```haskell
-          class MonadReader m where
-            -- use an associated type
-            type Env m
-            ask :: m (Env m)
-          
-          data Person
-          newtype PersonReader a = PersonReader (a -> a)
-          
-          -- `m (Env m)` calculates to `PersonReader Person`
-          instance MonadReader PersonReader where
-            type Env PersonReader = Person
-            ask :: PersonReader (Env PersonReader)
-            ask = PersonReader id
-          ```
+data Person
+newtype PersonReader a = PersonReader (a -> a)
 
-          <!-- LIMA_DEDENT -->
+-- `m (Env m)` calculates to `PersonReader Person`
+instance MonadReader PersonReader where
+  type Env PersonReader = Person
+  ask :: PersonReader (Env PersonReader)
+  ask = PersonReader id
 
+{- LIMA_DEDENT -}
+
+{-
 ### Laziness
 
 - `Bang patterns`
@@ -629,15 +625,15 @@ Haskell wiki ([src](https://wiki.haskell.org/GHC/Type_families#What_are_type_fam
         ```
 
 ### Template Haskell
+-}
 
-```haskell
 ex2 :: (Quasi a) => a [Dec]
 ex2 = runQ [d|decl :: Int; decl = 1 + 2|]
 
 -- >>>ex2
 -- [SigD decl_0 (ConT GHC.Types.Int),ValD (VarP decl_0) (NormalB (InfixE (Just (LitE (IntegerL 1))) (VarE GHC.Num.+) (Just (LitE (IntegerL 2))))) []]
-```
 
+{-
 ## Misc
 
 - Parsing with Haskell
@@ -646,3 +642,4 @@ ex2 = runQ [d|decl :: Int; decl = 1 + 2|]
 - `string-interpolate` - [src](https://hackage.haskell.org/package/string-interpolate)
   - UTF-8 string interpolation
 - [View Patterns](https://gitlab.haskell.org/ghc/ghc/-/wikis/view-patterns)
+-}

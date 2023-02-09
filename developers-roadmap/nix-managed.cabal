@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -54,6 +54,7 @@ library
     , mtl
     , random
     , rio
+    , template-haskell
     , time
     , transformers
     , unordered-containers
@@ -92,6 +93,46 @@ executable Breakpoint
     , mtl
     , random
     , rio
+    , template-haskell
+    , time
+    , transformers
+    , unordered-containers
+  default-language: Haskell2010
+
+executable README
+  main-is: README.hs
+  other-modules:
+      Paths_nix_managed
+  default-extensions:
+      TypeApplications
+      ImportQualifiedPost
+      BlockArguments
+      QuasiQuotes
+      NoOverloadedStrings
+      InstanceSigs
+  build-depends:
+      aeson
+    , async
+    , base >=4.7 && <5
+    , binary <=0.8.9.1
+    , breakpoint
+    , bytestring
+    , containers
+    , deepseq
+    , effectful
+    , exceptions
+    , fused-effects
+    , fused-effects-exceptions
+    , http-client
+    , http-client-tls
+    , http-types
+    , lifted-base
+    , managed
+    , monad-control
+    , mtl
+    , random
+    , rio
+    , template-haskell
     , time
     , transformers
     , unordered-containers
@@ -130,7 +171,53 @@ executable RandomNumbers
     , mtl
     , random
     , rio
+    , template-haskell
     , time
     , transformers
+    , unordered-containers
+  default-language: Haskell2010
+
+test-suite docs
+  type: exitcode-stdio-1.0
+  main-is: test/Docs.hs
+  other-modules:
+      Paths_nix_managed
+  default-extensions:
+      TypeApplications
+      ImportQualifiedPost
+      BlockArguments
+      QuasiQuotes
+      NoOverloadedStrings
+      InstanceSigs
+  build-tool-depends:
+      lima:lima ==0.1.*
+  build-depends:
+      aeson
+    , async
+    , base >=4.7 && <5
+    , binary <=0.8.9.1
+    , breakpoint
+    , bytestring
+    , containers
+    , deepseq
+    , effectful
+    , exceptions
+    , fused-effects
+    , fused-effects-exceptions
+    , http-client
+    , http-client-tls
+    , http-types
+    , lifted-base
+    , managed
+    , monad-control
+    , mtl
+    , random
+    , rio
+    , string-interpolate
+    , template-haskell
+    , text
+    , time
+    , transformers
+    , turtle
     , unordered-containers
   default-language: Haskell2010

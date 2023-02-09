@@ -13,6 +13,7 @@
       url = "github:fused-effects/fused-effects-exceptions";
       flake = false;
     };
+    lima.url = "github:deemp/flakes?dir=lima";
   };
   outputs =
     { self
@@ -24,6 +25,7 @@
     , haskell-tools
     , devshell
     , fused-effects-exceptions-src
+    , lima
     , ...
     }:
     flake-utils.lib.eachDefaultSystem (system:
@@ -39,17 +41,43 @@
 
       ghcVersion_ = "92";
 
+      # and the name of the package
       myPackageName = "nix-managed";
 
+      # Then, we list separately the libraries that our package needs
+      myPackageDepsLib = [ ];
+
+      # And the binaries. 
+      # In our case, the Haskell app will call the `hello` command
+      myPackageDepsBin = [ ];
+
       inherit (pkgs.haskell.lib)
+        # doJailbreak - remove package bounds from build-depends of a package
+        doJailbreak
         # dontCheck - skip tests
         dontCheck
+        # override deps of a package
+        # see what can be overriden - https://github.com/NixOS/nixpkgs/blob/0ba44a03f620806a2558a699dba143e6cf9858db/pkgs/development/haskell-modules/generic-builder.nix#L13
+        overrideCabal
         ;
 
       override = {
         overrides = self: super: {
           fused-effects-exceptions = dontCheck (self.callCabal2nix "fused-effects-exceptions" fused-effects-exceptions-src { });
-          myPackage = super.callCabal2nix myPackageName ./. { };
+          myPackage = overrideCabal
+            (super.callCabal2nix myPackageName ./. { })
+            (x: {
+              # we can combine the existing deps and new deps
+              # these deps will be in haskellPackages.myPackage.getCabalDeps.librarySystemDepends
+              librarySystemDepends = myPackageDepsLib ++ (x.librarySystemDepends or [ ]);
+              # if we want to override the existing deps, we just don't include them
+              executableSystemDepends = myPackageDepsBin ++ (x.executableSystemDepends or [ ]);
+              # here's how we can add a package built from sources
+              # then, we may use this package in .cabal in a test-suite
+              testHaskellDepends = [
+                (super.callCabal2nix "lima" "${lima.outPath}/lima" { })
+              ] ++ (x.testHaskellDepends or [ ]);
+            });
         };
       };
 
@@ -82,7 +110,14 @@
       defaultShell = mkShell {
         packages = tools;
         bash.extra = "export LANG=C.utf8";
-        commands = mkCommands "tools" tools;
+        commands = (mkCommands "tools" tools) ++ [
+          {
+            name = "mkdocs";
+            category = "docs";
+            help = "generate docs (`README.md`, etc.)";
+            command = "cabal v1-test";
+          }
+        ];
       };
 
       flakesTools = mkFlakesTools [ "." ];

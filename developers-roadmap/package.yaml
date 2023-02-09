@@ -8,40 +8,53 @@ default-extensions:
 
 dependencies:
   - base >= 4.7 && < 5
-  - breakpoint
-  - random
-  - unordered-containers
-  - bytestring
-  - binary <= 0.8.9.1
-  - async
-  - rio
-  - transformers
-  - deepseq
   - aeson
-  - http-client-tls
-  - http-client
-  - time
+  - async
+  - binary <= 0.8.9.1
+  - breakpoint
   - bytestring
-  - http-types
-  - managed
-  - mtl
-  - exceptions
-  - lifted-base
-  - monad-control
+  - bytestring
+  - containers
+  - deepseq
   - effectful
+  - exceptions
   - fused-effects
   - fused-effects-exceptions
-  - containers
+  - http-client
+  - http-client-tls
+  - http-types
+  - lifted-base
+  - managed
+  - monad-control
+  - mtl
+  - random
+  - rio
+  - time
+  - transformers
+  - template-haskell
+  - unordered-containers
 
 executables:
   Breakpoint:
     main: app/Breakpoint.hs
   RandomNumbers:
     main: app/RandomNumbers.hs
+  README:
+    main: README.hs
+      
 
 library:
   source-dirs:
     - src
+
+tests:
+  docs:
+    main: test/Docs.hs
+    dependencies:
+      - turtle
+      - string-interpolate
+      - text
+    build-tools: lima:lima ^>= 0.1
 
 license: BSD3
 
