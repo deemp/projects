@@ -9,7 +9,7 @@
     haskell-tools.url = "github:deemp/flakes?dir=language-tools/haskell";
     devshell.url = "github:deemp/flakes?dir=devshell";
     flakes-tools.url = "github:deemp/flakes?dir=flakes-tools";
-    workflows.url = "github:deemp/flakes?dir=workflows";
+    lima.url = "github:deemp/flakes?dir=lima";
   };
   outputs =
     { self
@@ -20,7 +20,7 @@
     , drv-tools
     , haskell-tools
     , devshell
-    , workflows
+    , lima
     , ...
     }:
     flake-utils.lib.eachDefaultSystem (system:
@@ -32,24 +32,21 @@
       pkgs = nixpkgs.legacyPackages.${system};
       inherit (my-codium.functions.${system}) writeSettingsJSON mkCodium;
       inherit (my-codium.configs.${system}) extensions settingsNix;
-      inherit (flakes-tools.functions.${system}) mkFlakesTools;
       inherit (devshell.functions.${system}) mkCommands mkShell;
       inherit (haskell-tools.functions.${system}) toolsGHC;
-      inherit (workflows.functions.${system}) writeWorkflow;
-      inherit (workflows.configs.${system}) nixCI;
 
       # Next, set the desired GHC version
-      ghcVersion_ = "92";
+      ghcVersion_ = "925";
 
       # and the name of the package
       myPackageName = "nix-managed";
 
       # Then, we list separately the libraries that our package needs
-      myPackageDepsLib = [ pkgs.lzma ];
+      myPackageDepsLib = [ ];
 
       # And the binaries. 
       # In our case, the Haskell app will call the `hello` command
-      myPackageDepsBin = [ pkgs.hello ];
+      myPackageDepsBin = [ ];
 
       # --- shells ---
 
@@ -75,12 +72,19 @@
       override = {
         overrides = self: super: {
           lzma = dontCheck (doJailbreak super.lzma);
-          myPackage = pkgs.haskell.lib.overrideCabal
+          myPackage = overrideCabal
             (super.callCabal2nix myPackageName ./. { })
-            (_: {
+            (x: {
+              # we can combine the existing deps and new deps
               # these deps will be in haskellPackages.myPackage.getCabalDeps.librarySystemDepends
-              librarySystemDepends = myPackageDepsLib;
-              executableSystemDepends = myPackageDepsBin;
+              librarySystemDepends = myPackageDepsLib ++ (x.librarySystemDepends or [ ]);
+              # if we want to override the existing deps, we just don't include them
+              executableSystemDepends = myPackageDepsBin ++ (x.executableSystemDepends or [ ]);
+              # here's how we can add a package built from sources
+              # then, we may use this package in .cabal in a test-suite
+              testHaskellDepends = [
+                (super.callCabal2nix "lima" "${lima.outPath}/lima" { })
+              ] ++ (x.testHaskellDepends or [ ]);
             });
         };
       };
@@ -131,7 +135,14 @@
           packages = tools;
           # sometimes necessary for programs that work with files
           bash.extra = "export LANG=C.utf8";
-          commands = mkCommands "tools" tools;
+          commands = mkCommands "tools" tools ++ [
+            {
+              name = "mkdocs";
+              category = "docs";
+              help = "generate docs (`README.md`, etc.)";
+              command = "cabal v1-test";
+            }
+          ];
         };
       };
     });

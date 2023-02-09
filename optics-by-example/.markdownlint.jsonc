@@ -1,4 +1,5 @@
 {
     "no-duplicate-header": false,
-    "line-length": false
+    "line-length": false,
+    "ol-prefix": false
 }

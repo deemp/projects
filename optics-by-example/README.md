@@ -2,6 +2,10 @@
 
 `VSCodium` with extensions and executables for `Haskell`.
 
+## References
+
+- [Template Haskell](https://wiki.haskell.org/Template_Haskell) on Haskell Wiki
+    - 
 ## Prerequisites
 
 See these for additional info:

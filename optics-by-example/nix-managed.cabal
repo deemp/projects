@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -34,9 +34,14 @@ library
       ImportQualifiedPost
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
-    , lzma
-    , process
+      aeson
+    , base >=4.7 && <5
+    , containers
+    , lens
+    , lens-aeson
+    , mtl
+    , template-haskell
+    , text
   default-language: Haskell2010
 
 executable nix-managed
@@ -50,24 +55,22 @@ executable nix-managed
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , lzma
     , nix-managed
-    , process
   default-language: Haskell2010
 
-test-suite nix-managed-test
+test-suite docs
   type: exitcode-stdio-1.0
-  main-is: Spec.hs
+  main-is: test/Docs.hs
   other-modules:
       Paths_nix_managed
-  hs-source-dirs:
-      test
   default-extensions:
       ImportQualifiedPost
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-tool-depends:
+      lima:lima ==0.1.*
   build-depends:
       base >=4.7 && <5
-    , lzma
-    , nix-managed
-    , process
+    , string-interpolate
+    , text
+    , turtle
   default-language: Haskell2010
