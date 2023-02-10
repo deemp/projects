@@ -664,5 +664,364 @@ predicate = lens getter setter
 {- LIMA_DEDENT -}
 
 {-
-#### How do I update fields in deeply nested records?
+#### How do Lens Types Compose?
+
+We compose `Lens' a b` and `Lens' b c`.
+
+Inside, they are `b -> a` and `c -> b` so that we can compose them like `(b -> a) . (c -> b)`
 -}
+
+p :: forall a b c d e f. (e -> f)
+p = (d . s) m
+ where
+  m :: a -> b
+  m = undefined
+  s :: (a -> b) -> (c -> d)
+  s = undefined
+  d :: (c -> d) -> (e -> f)
+  d = undefined
+
+{-
+##### Example
+-}
+data Person
+data Address
+data StreetAddress
+
+personAddressLens :: forall f. Functor f => (Address -> f Address) -> Person -> f Person
+personAddressLens = undefined
+
+personAddressLens_ :: Lens Person Person Address Address
+personAddressLens_ = undefined
+
+addressStreetLens :: forall f. Functor f => (StreetAddress -> f StreetAddress) -> Address -> f Address
+addressStreetLens = undefined
+
+addressStreetLens_ :: Lens Address Address StreetAddress StreetAddress
+addressStreetLens_ = undefined
+
+personStreetLens :: Functor f => (StreetAddress -> f StreetAddress) -> Person -> f Person
+personStreetLens = personAddressLens . addressStreetLens
+
+personStreet :: StreetAddress
+personStreet = view personStreetLens (undefined :: Person)
+
+{-
+##### Exercises – Lens Composition
+
+1. Pairs
+-}
+
+{- LIMA_INDENT 4 -}
+-- >>> view (_2 . _1 . _2) ("Ginerva", (("Galileo", "Waldo"), "Malfoy"))
+-- "Waldo"
+
+{- 2. Domino -}
+
+data Five
+data Eight
+data Two
+data Three
+
+fiveEightDomino :: Lens' Five Eight
+fiveEightDomino = undefined
+twoThreeDomino :: Lens' Two Three
+twoThreeDomino = undefined
+dominoTrain :: Lens' Five Three
+dominoTrain = fiveEightDomino . mysteryDomino . twoThreeDomino
+
+mysteryDomino :: Lens' Eight Two
+mysteryDomino = undefined
+
+{- 3. Rewrite -}
+
+data Armadillo
+data Hedgehog
+data Platypus
+data BabySloth
+
+g :: Functor f => (Armadillo -> f Hedgehog) -> (Platypus -> f BabySloth)
+g = undefined
+
+h :: Lens Platypus BabySloth Armadillo Hedgehog
+h = undefined
+
+{- 4. Compose -}
+
+data Gazork
+data Trowlg
+data Bandersnatch
+data Yakka
+data Zink
+data Wattoom
+data Grug
+data Pubbawup
+data Foob
+data Mog
+data Boojum
+data Jabberwock
+data Snark
+data JubJub
+
+snajubjumwock :: Lens Snark JubJub Boojum Jabberwock
+snajubjumwock = undefined
+boowockugwup :: Lens Boojum Jabberwock Grug Pubbawup
+boowockugwup = undefined
+gruggazinkoom :: Lens Grug Pubbawup Zink Wattoom
+gruggazinkoom = undefined
+zinkattumblezz :: Lens Zink Wattoom Chumble Spuzz
+zinkattumblezz = undefined
+spuzorktrowmble :: Lens Chumble Spuzz Gazork Trowlg
+spuzorktrowmble = undefined
+gazorlglesnatchka :: Lens Gazork Trowlg Bandersnatch Yakka
+gazorlglesnatchka = undefined
+banderyakoobog :: Lens Bandersnatch Yakka Foob Mog
+banderyakoobog = undefined
+
+s :: (Foob -> [Mog]) -> Snark -> [JubJub]
+s = snajubjumwock @[] . boowockugwup . gruggazinkoom . zinkattumblezz . spuzorktrowmble . gazorlglesnatchka . banderyakoobog
+
+{- LIMA_DEDENT-}
+
+{-
+### 5. Operators
+
+<b>Fixity</b> - operator precedence
+-}
+
+-- >>>:t _1 . _2 .~ 3
+-- _1 . _2 .~ 3 :: (Field1 s t a1 b1, Field2 a1 b1 a2 b2, Num b2) => s -> t
+
+{- is equivalent to -}
+
+-- >>>:t (_1 . _2) .~ 3
+-- (_1 . _2) .~ 3 :: (Field1 s t a1 b1, Field2 a1 b1 a2 b2, Num b2) => s -> t
+
+{-
+We can use `&` to make a convenient-to-read chain
+-}
+
+-- >>>((2,3),4) & (_1 . _2) .~ 5
+-- ((2,5),4)
+
+-- >>> :{
+-- unknown command '{'
+multiline :: Integer
+multiline = 3
+
+{- Or even -}
+
+ex9 :: ((Integer, Integer), (Integer, Integer))
+ex9 =
+  ((2, 3), (4, 6))
+    & (_1 . _2) .~ 5
+    & (_2 . _1) .~ 5
+
+-- >>>ex9
+-- ((2,5),(5,6))
+
+{-
+Optics operators - [src](https://github.com/Zelenya/chrome-annotation-extension-optics/blob/6d9d4459fefc80b36b5e2fc2271fbaaee2923911/src/content.js#L11-L138)
+
+- `<|` `cons`
+- `|>` `snoc`
+- `^..` `toListOf`
+- `^?` `preview`/`head`
+- `^?!` **UNSAFE** `preview`/`head`
+- `^@..` `itoListOf`
+- `^@?` **SAFE** `head` (with index)
+- `^@?!` **UNSAFE** `head` (with index)
+- `^.` `view`
+- `^@.` `iview`
+- `<.` a function composition (`Indexed` with non-indexed)
+- `.>` a function composition (non-indexed with `Indexed`)
+- `<.>` a composition of Indexed functions
+- `%%~` modify target; extract functorial/applicative result
+- `%%=` modify target in state; return extra information
+- `&~` used to chain lens operations
+- `<&>` a flipped version of `<$>`
+- `??` used to flip argument order of composite functions
+- `<%~` `modify` lens target; return result
+- `<+~` increment lens target; return result
+- `<-~` decrement lens target; return result
+- `<*~` multiply lens target; return result
+- `<//~` divide lens target; return result
+- `<^~` raise lens target; return result
+- `<^^~` raise lens target; return result
+- `<**~` raise lens target; return result
+- `<||~` logically-or lens target; return result
+- `<&&~` logically-and lens target; return result
+- `<<%~` `modify` lens target, return old value
+- `<<.~` replace lens target, return old value
+- `<<?~` replace lens target (with `Just value`), return old value
+- `<<+~` increment lens target; return old value
+- `<<-~` decrement lens target; return old value
+- `<<*~` multiply lens target; return old value
+- `<<//~` divide lens target; return old value
+- `<<^~` raise lens target; return old value
+- `<<^^~` raise lens target; return old value
+- `<<**~` raise lens target; return old value
+- `<||~` logically-or lens target; return old value
+- `<&&~` logically-and lens target; return old value
+- `<<<>~` `modify` lens target with (`<>`); return old value
+- `<%=` `modify` target in state; return result
+- `<+=` add to target in state; return result
+- `<-=` subtract from target in state; return result
+- `<*=` multiple the target in state; return result
+- `<//=` divide the target in state; return result
+- `<^=` raise lens target in state; return result
+- `<^^=` raise lens target in state; return result
+- `<**=` raise lens target in state; return result
+- `<||=` logically-or lens target in state; return result
+- `<&&=` logically-and lens target in state; return result
+- `<<%=` `modify` lens target in state; return old value
+- `<<.=` replace lens target in state; return old value
+- `<<?=` replace target (with Just value) in state, return old value
+- `<<+=` add to target in state; return old value
+- `<<-=` subtract from target in state; return old value
+- `<<*=` multiple the target in state; return old value
+- `<<//=` divide the target in state; return old value
+- `<<^=` raise lens target in state; return old value
+- `<<^^=` raise lens target in state; return old value
+- `<<**=` raise lens target in state; return old value
+- `<<||=` logically-or lens target in state; return old value
+- `<<&&=` logically-and lens target in state; return old value
+- `<<<>=` `modify` target with (`<>`) in state; return old value
+- `<<~` run monadic action, set lens target
+- `<<>~` (`<>`) onto the end of lens target; return result
+- `<<>=` (`<>`) onto the end of lens target in state; return result
+- `<%@~` `modify` `IndexedLens` target; return intermediate result
+- `<<%@~` modify `IndexedLens` target; return old value
+- `%%@~` modify `IndexedLens` target; return supplementary result
+- `%%@=` modify `IndexedLens` target in state; return supplementary result
+- `<%@=` modify `IndexedLens` target in state; return intermediate result
+- `<<%@=` modify `IndexedLens` target in state; return old value
+- `^#` `view` (`ALens` version)
+- `#~` `set` (`ALens` version)
+- `#%~` `over` (`ALens` version)
+- `#%%~` `modify` `ALens` target; extract functorial/applicative result
+- `%%=` `modify` target in state; return extra information
+- `#=` `assign` (`ALens` version)
+- `#%=` `map` over `ALens` target(s) in state
+- `<#%~` `modify` `ALens` target; return result
+- `<#%=` `modify` `ALens` target in state; return result
+- `#%%=` `modify` `ALens` target in state; return extra information
+- `<#~` `set` with pass-through (`ALens` version)
+- `<#=` `set` with pass-through in state (`ALens` version)
+- `%~` `over` / `modify` target(s)
+- `.~` `set`
+- `?~` `set` to `Just value`
+- `<.~` `set` with pass-through
+- `<?~` `set` to `Just value` with pass-through
+- `+~` increment target(s)
+- `*~` multiply target(s)
+- `-~` decrement target(s)
+- `//~` divide target(s)
+- `^~` raise target(s)
+- `^~` raise target(s)
+- `^^~` raise target(s)
+- `**~` raise target(s)
+- `||~` logically-or target(s)
+- `&&~` logically-and target(s)
+- `.=` assign in state
+- `%=` map over target(s) in state
+- `?=` `set` target(s) to `Just value` in state
+- `+=` add to target(s) in state
+- `*=` multiply target(s) in state
+- `-=` decrement from target(s) in state
+- `//=` divide target(s) in state
+- `^=` raise target(s) in state
+- `^=` raise target(s) in state
+- `^^=` raise target(s) in state
+- `**=` raise target(s) in state
+- `||=` logically-or target(s) in state
+- `&&=` logically-and target(s) in state
+- `<~` run monadic action, `set` target(s) in state
+- `<.=` `set` with pass-through in state
+- `<?=` `set` `Just value` with pass-through in state
+- `<>~` `modify` target with (`<>`)
+- `<>=` `modify` target with (`<>`) in state
+- `.@~` `iset` / set target(s) with index
+- `.@=` set target(s) in state with index
+- `%@~` `iover` / `modify` target(s) with index
+- `%@=` `modify` target(s) in state with index
+- `&` a reverse application operator
+- `#` review
+- `id` focus the `full` structure
+
+-}
+
+{-
+##### 5.9 Exercises – Operators
+-}
+
+{-
+1. Get to
+-}
+
+{- LIMA_INDENT 4 -}
+
+data Gate = Gate {_open :: Bool, _oilTemp :: Float} deriving (Show)
+makeLenses ''Gate
+data Army = Army {_archers :: Int, _knights :: Int} deriving (Show)
+makeLenses ''Army
+data Kingdom = Kingdom {_name1 :: String, _army :: Army, _gate :: Gate} deriving (Show)
+makeLenses ''Kingdom
+duloc :: Kingdom
+duloc = Kingdom{_name1 = "Duloc", _army = Army{_archers = 22, _knights = 14}, _gate = Gate{_open = True, _oilTemp = 10.0}}
+
+goalA :: Kingdom
+goalA = duloc & name1 <>~ ": a perfect place" & army . knights *~ 3 & gate . open &&~ False
+
+-- >>>goalA
+-- Kingdom {_name1 = "Duloc: a perfect place", _army = Army {_archers = 22, _knights = 42}, _gate = Gate {_open = False, _oilTemp = 10.0}}
+
+goalB :: Kingdom
+goalB = duloc & name1 <>~ "cinstein" & army . archers -~ 5 & army . knights +~ 12 & gate . oilTemp *~ 10
+
+-- >>>goalB
+-- Kingdom {_name1 = "Duloccinstein", _army = Army {_archers = 17, _knights = 26}, _gate = Gate {_open = True, _oilTemp = 100.0}}
+
+goalC :: (String, Kingdom)
+goalC = duloc & gate . oilTemp //~ 2 & name1 <>~ ": Home" & name1 <<%~ (<> "of the talking Donkeys")
+
+-- >>>goalC
+-- ("Duloc: Home",Kingdom {_name1 = "Duloc: Homeof the talking Donkeys", _army = Army {_archers = 22, _knights = 14}, _gate = Gate {_open = True, _oilTemp = 5.0}})
+
+{-
+2. Enter code
+-}
+
+ex10 :: (Bool, [Char])
+ex10 = (False, "opossums") & _1 ||~ True
+
+-- >>>ex10
+-- (True,"opossums")
+
+ex11 :: Integer
+ex11 = 2 & id *~ 3
+
+-- >>>ex11
+-- 6
+
+ex12 :: ((Bool, [Char]), Double)
+ex12 =
+  ((True, "Dudley"), 55.0)
+    & (_1 . _2 <>~ " - the worst")
+    & (_2 -~ 15)
+    & (_2 //~ 2)
+    & (_1 . _2 %~ map toUpper)
+    & (_1 . _1 .~ False)
+
+-- >>>ex12
+-- ((False,"DUDLEY - THE WORST"),20.0)
+
+{-
+3. `&`
+-}
+
+{-
+4. `(%~) :: Lens s t a b -> (a -> b) -> s -> t`
+-}
+
+{- LIMA_DEDENT -}
