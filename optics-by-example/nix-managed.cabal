@@ -23,39 +23,23 @@ source-repository head
   type: git
   location: https://github.com/value/nix-managed
 
-library
-  exposed-modules:
-      Lib
+executable nix-managed
+  main-is: README.hs
   other-modules:
       Paths_nix_managed
-  hs-source-dirs:
-      src
   default-extensions:
       ImportQualifiedPost
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
     , base >=4.7 && <5
+    , bytestring
     , containers
     , lens
     , lens-aeson
     , mtl
     , template-haskell
     , text
-  default-language: Haskell2010
-
-executable nix-managed
-  main-is: Main.hs
-  other-modules:
-      Paths_nix_managed
-  hs-source-dirs:
-      app
-  default-extensions:
-      ImportQualifiedPost
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      base >=4.7 && <5
-    , nix-managed
   default-language: Haskell2010
 
 test-suite docs

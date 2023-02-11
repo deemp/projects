@@ -9,12 +9,14 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE LambdaCase #-}
 {- FOURMOLU_ENABLE -}
 
 module Main where
 
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (wait, withAsync)
+import Control.Monad.Fix (fix)
 import Control.Monad.Identity (Identity)
 import Data.Kind (Type)
 import Language.Haskell.TH.Syntax (Dec, Quasi, runQ)
@@ -79,7 +81,15 @@ class Applicative f => Alternative f where
 
 {-
     - In case of `Maybe`, leave the first `Just result`
+-}
+{-
+#### Foldable
+-}
 
+-- >>>Right ['a'] <> Left ['b'] <> Right ['c']
+-- Right "a"
+
+{-
 #### Traversable
 
 - [Haskell wikibooks](https://en.wikibooks.org/wiki/Haskell/Traversable):
@@ -278,9 +288,17 @@ data Sub1D a = Sub1D
 
 Haskell wiki ([src](https://wiki.haskell.org/GHC/Type_families#What_are_type_families.3F)):
 
-> The concept of a type family comes from type theory. An indexed type family in type theory is a partial function at the type level. Applying the function to parameters (called type indices) yields a type. Type families permit a program to compute what data constructors it will operate on, rather than having them fixed statically (as with simple type systems) or treated as opaque unknowns (as with parametrically polymorphic types).
+> The concept of a type family comes from type theory. An indexed type family in type theory is a partial function at the type level.
+Applying the function to parameters (called type indices) yields a type.
+Type families permit a program to compute what data constructors it will operate on,
+rather than having them fixed statically (as with simple type systems) or treated as opaque unknowns
+(as with parametrically polymorphic types).
 
-> Type families are to vanilla data types what type class methods are to regular functions. Vanilla polymorphic data types and functions have a single definition, which is used at all type instances. Classes and type families, on the other hand, have an interface definition and any number of instance definitions. A type family's interface definition declares its kind and its arity, or the number of type indices it takes. Instance definitions define the type family over some part of the domain.
+> Type families are to vanilla data types what type class methods are to regular functions.
+Vanilla polymorphic data types and functions have a single definition, which is used at all type instances.
+Classes and type families, on the other hand, have an interface definition and any number of instance definitions.
+A type family's interface definition declares its kind and its arity, or the number of type indices it takes.
+Instance definitions define the type family over some part of the domain.
 
 - **Type Families: The Definitive Guide** - [src](https://serokell.io/blog/type-families-haskell)
   - `Non-generative` type can be reduced to other types:
@@ -585,9 +603,18 @@ instance MonadReader PersonReader where
 - `` force b = b `deepseq` b `` - eval `b` to `NF` and return `b`
   - If we have `let a = force b`, `a` is not in `NF`
   - To get `a` in `NF`, we need to `!a`
-- `fix`
 - [Thunks, Sharing, Laziness](https://youtu.be/I4lnCG18TaY) via `ghc-viz` (available in `nixpkgs`)
 
+### Fix combinator
+-}
+
+ex13 :: [Int] -> Int
+ex13 = fix (\t c -> \case (a0 : a1 : as) -> t (c + fromEnum (signum a0 /= signum a1)) (a1 : as); _ -> c) 0
+
+-- >>>ex13 [-3,0,2,0,5]
+-- 4
+
+{-
 ### File IO
 
 - There are several representations of text in `Haskell` - `ByteString`, `Text`, `String`

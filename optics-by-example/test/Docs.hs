@@ -11,7 +11,6 @@ module Main (main) where
 import Control.Monad (when)
 import Data.String.Interpolate (i)
 import Data.Text qualified as Text
-import Data.Text.IO qualified as Text
 import GHC.IO.Exception (ExitCode (..))
 import System.Exit (exitFailure, exitSuccess)
 import Turtle (Alternative (empty), shellStrictWithErr)
@@ -19,12 +18,11 @@ import Turtle (Alternative (empty), shellStrictWithErr)
 main :: IO ()
 main = do
   putStrLn "Converting README"
-  let lib = "src/Lib"
-  (exitCode, stdout, stderr_) <-
+  (exitCode, _stdout, stderr_) <-
     shellStrictWithErr
       [i|
-        lima hs2md -f #{lib}.hs
-        mv #{lib}.hs.md #{lib}.md
+        lima hs2md -f README.hs
+        mv README.hs.md README.md
       |]
       empty
   -- Text.putStrLn stderr_

@@ -1,6 +1,63 @@
 {-
-# Optics By Example
+# Optics by example
+
+Notes on [Optics by example](https://leanpub.com/optics-by-example).
+
+## Dev tools
+
+### Prerequisites
+
+See these for additional info:
+
+- [codium-generic](https://github.com/deemp/flakes/tree/main/templates/codium/generic#readme) - info just about `VSCodium` and extensions.
+- [codium-haskell](https://github.com/deemp/flakes/tree/main/templates/codium/haskell#readme) - an advanced version of this flake.
+- [flake.nix](./flake.nix) - extensively commented code.
+- [Haskell](https://github.com/deemp/flakes/blob/main/README/Haskell.md)
+- [Troubleshooting](https://github.com/deemp/flakes/blob/main/README/Troubleshooting.md)
+- [Prerequisites](https://github.com/deemp/flakes#prerequisites)
+
+### Quick start
+
+1. Install Nix - see [how](https://github.com/deemp/flakes/blob/main/README/InstallNix.md).
+
+1. In a new terminal, run `VSCodium` from a devshell:
+
+```console
+nix flake new my-project -t github:deemp/flakes#codium-haskell-simple
+cd my-project
+git init && git add
+nix develop
+cabal run
+```
+
+1. Write `settings.json` and start `VSCodium`:
+
+```console
+nix run .#writeSettings
+nix run .#codium .
+```
+
+#### Tools
+
+#### GHC
+
+This template uses `GHC 9.2`. You can switch to `GHC 9.0`:
+
+- In `flake.nix`, change `"92"` to `"90"`
+
+### Configs
+
+- [package.yaml](./package.yaml) - used by `hpack` to generate a `.cabal`
+- [.markdownlint.jsonc](./.markdownlint.jsonc) - for `markdownlint` from the extension `davidanson.vscode-markdownlint`
+- [.ghcid](./.ghcid) - for [ghcid](https://github.com/ndmitchell/ghcid)
+- [.envrc](./.envrc) - for [direnv](https://github.com/direnv/direnv)
+- [fourmolu.yaml](./fourmolu.yaml) - for [fourmolu](https://github.com/fourmolu/fourmolu#configuration)
+- [.github/workflows/ci.yaml] - a generated `GitHub Actions` workflow. See [workflows](https://github.com/deemp/flakes/tree/main/workflows). Generate a workflow via `nix run .#writeWorkflows`.
+- `hie.yaml` - not present, but can be generated via [implicit-hie](https://github.com/Avi-D-coder/implicit-hie) (available on devshell) to verify the `Haskell Language Server` setup.
+
+## Book
 -}
+
 {- FOURMOLU_DISABLE -}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
@@ -12,37 +69,44 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedStrings #-}
 {- LIMA_DISABLE -}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE ViewPatterns #-}
 {- LIMA_ENABLE -}
 {- FOURMOLU_ENABLE -}
 
-module Lib (someFunc) where
+module Main (main) where
 
 import Control.Lens
 
 import Control.Applicative
 import Control.Lens
 import Control.Lens.Unsound (lensProduct)
+import Control.Monad.Fix (fix)
+import Data.Bitraversable (Bitraversable)
+import Data.ByteString qualified as BS
 import Data.Char
 import Data.Foldable (Foldable (..))
 import Data.Map qualified as M
 import Data.Set qualified as S
 import Data.Text qualified as T
+import GHC.Word qualified
 import Language.Haskell.TH (Dec, Q, Quote, runQ)
 import Language.Haskell.TH.Syntax (Quasi)
 
-someFunc :: IO ()
-someFunc = print "hello"
+main :: IO ()
+main = print "hello"
 
 {-
 ## 3. Lenses
 
-- A Lens focuses (i.e. selects) a single piece of data within a larger structure.
-- A Lens must never fail to get or modify that focus.
+- A Lens must focus ONE thing inside a structure.
+- A Lens must never fail to get or set that focus.
 
 ### 3.1 Introduction to Lenses
 
@@ -172,7 +236,7 @@ makeLenses ''Ship
 {- LIMA_DEDENT -}
 
 {-
-##### Exercises - Records Part Two
+#### Exercises - Records Part Two
 -}
 
 {- 2. Rewrite -}
@@ -240,6 +304,7 @@ Allow to reason about a lens' behavior.
 When using unlawful lenses in a library, should write a note.
 
 `lensProduct` combines two lenses to get a new one
+
 - these lenses should be **disjoint**. Otherwise, how to set?
 
 -}
@@ -577,7 +642,9 @@ prices = ProducePrices 1.50 1.48
 {-
 ## 4 Polymorphic Optics
 
-In `Lens s t a b`:
+```hs
+type Lens s t a b = forall f. Functor f => (a -> f b) -> s -> f t
+```
 
 - `s`: structure before action
 - `t`: structure after action
@@ -616,7 +683,7 @@ item = lens getter setter
   setter (_, b) c = (c, b)
 
 {-
-##### Exercises – Polymorphic Lenses
+#### Exercises – Polymorphic Lenses
 -}
 
 {- 1. `Vorpal` -}
@@ -671,8 +738,8 @@ We compose `Lens' a b` and `Lens' b c`.
 Inside, they are `b -> a` and `c -> b` so that we can compose them like `(b -> a) . (c -> b)`
 -}
 
-p :: forall a b c d e f. (e -> f)
-p = (d . s) m
+ex9 :: forall a b c d e f. (e -> f)
+ex9 = (d . s) m
  where
   m :: a -> b
   m = undefined
@@ -707,7 +774,7 @@ personStreet :: StreetAddress
 personStreet = view personStreetLens (undefined :: Person)
 
 {-
-##### Exercises – Lens Composition
+#### Exercises – Lens Composition
 
 1. Pairs
 -}
@@ -778,13 +845,13 @@ gazorlglesnatchka = undefined
 banderyakoobog :: Lens Bandersnatch Yakka Foob Mog
 banderyakoobog = undefined
 
-s :: (Foob -> [Mog]) -> Snark -> [JubJub]
-s = snajubjumwock @[] . boowockugwup . gruggazinkoom . zinkattumblezz . spuzorktrowmble . gazorlglesnatchka . banderyakoobog
+ex10 :: (Foob -> [Mog]) -> Snark -> [JubJub]
+ex10 = snajubjumwock @[] . boowockugwup . gruggazinkoom . zinkattumblezz . spuzorktrowmble . gazorlglesnatchka . banderyakoobog
 
 {- LIMA_DEDENT-}
 
 {-
-### 5. Operators
+## 5. Operators
 
 <b>Fixity</b> - operator precedence
 -}
@@ -811,8 +878,8 @@ multiline = 3
 
 {- Or even -}
 
-ex9 :: ((Integer, Integer), (Integer, Integer))
-ex9 =
+ex11 :: ((Integer, Integer), (Integer, Integer))
+ex11 =
   ((2, 3), (4, 6))
     & (_1 . _2) .~ 5
     & (_2 . _1) .~ 5
@@ -952,7 +1019,7 @@ Optics operators - [src](https://github.com/Zelenya/chrome-annotation-extension-
 -}
 
 {-
-##### 5.9 Exercises – Operators
+### 5.9 Exercises – Operators
 -}
 
 {-
@@ -982,6 +1049,12 @@ goalB = duloc & name1 <>~ "cinstein" & army . archers -~ 5 & army . knights +~ 1
 -- >>>goalB
 -- Kingdom {_name1 = "Duloccinstein", _army = Army {_archers = 17, _knights = 26}, _gate = Gate {_open = True, _oilTemp = 100.0}}
 
+goalB_ :: Kingdom
+goalB_ = duloc & name1 <>~ "cinstein" & army %~ (\x -> x & archers -~ 5 & knights +~ 12) & gate . oilTemp *~ 10
+
+-- >>>goalB_
+-- Kingdom {_name1 = "Duloccinstein", _army = Army {_archers = 17, _knights = 26}, _gate = Gate {_open = True, _oilTemp = 100.0}}
+
 goalC :: (String, Kingdom)
 goalC = duloc & gate . oilTemp //~ 2 & name1 <>~ ": Home" & name1 <<%~ (<> "of the talking Donkeys")
 
@@ -992,20 +1065,20 @@ goalC = duloc & gate . oilTemp //~ 2 & name1 <>~ ": Home" & name1 <<%~ (<> "of t
 2. Enter code
 -}
 
-ex10 :: (Bool, [Char])
-ex10 = (False, "opossums") & _1 ||~ True
+ex12 :: (Bool, [Char])
+ex12 = (False, "opossums") & _1 ||~ True
 
 -- >>>ex10
 -- (True,"opossums")
 
-ex11 :: Integer
-ex11 = 2 & id *~ 3
+ex13 :: Integer
+ex13 = 2 & id *~ 3
 
 -- >>>ex11
 -- 6
 
-ex12 :: ((Bool, [Char]), Double)
-ex12 =
+ex14 :: ((Bool, [Char]), Double)
+ex14 =
   ((True, "Dudley"), 55.0)
     & (_1 . _2 <>~ " - the worst")
     & (_2 -~ 15)
@@ -1025,3 +1098,112 @@ ex12 =
 -}
 
 {- LIMA_DEDENT -}
+
+{-
+## 6. Folds
+
+### 6.1 Introduction to Folds
+
+- Folds can focus **MANY** things, Lenses must focus **ONE** thing
+- Folds can only **get** zero or more things, Lenses must always be able to **get** and **set**
+- Folds aren't polymorphic
+
+#### Focusing all elements of a container
+
+```hs
+type Fold s a = forall m. Monoid m => Getting m s a
+type Getting r s a = (a -> Const r a) -> s -> Const r s
+newtype Const a (b :: k) = Const { getConst :: a }
+```
+
+- `s`: structure
+- `a`: focus
+
+#### Collapsing the Set
+
+```hs
+folded :: Foldable f => Fold (f a) a
+```
+-}
+
+ex15 :: [Integer]
+ex15 = [Just 3, Nothing, Nothing] ^.. folded . _Just
+
+-- >>>ex15
+-- [3]
+
+{-
+#### Using lenses as folds
+
+We have
+
+```hs
+type Lens s t a b = forall f. Functor f => (a -> f b) -> s -> f t
+type Fold s a = forall m. Monoid m => Getting m s a
+type Getting r s a = (a -> Const r a) -> s -> Const r s
+```
+
+So, we can use a `Lens' s a` as a `Fold s a`
+-}
+
+getPair2 :: Fold (a, b) b
+getPair2 = _2
+
+-- >>>(3,4) ^.. getPair2
+-- [4]
+
+{-
+#### Foundational fold combinators
+
+- `both` - Traverse both parts of a Bitraversable container with matching types
+- `each` - generalizes `both` for tuples
+-}
+
+ex16 :: [Integer]
+ex16 = (1, 2) ^.. both
+
+-- >>>ex16
+-- [1,2]
+
+ex17 :: [Integer]
+ex17 = (1, 2, 4, 5, 6) ^.. each
+
+-- >>>ex17
+-- [1,2,4,5,6]
+
+ex18 :: [GHC.Word.Word8]
+ex18 = ("Do or do not" :: BS.ByteString) ^.. each
+
+{-
+#### Exercises – Simple Folds
+-}
+
+beastSizes :: [(Int, String)]
+beastSizes = [(3, "Sirens"), (882, "Kraken"), (92, "Ogopogo")]
+
+-- >>> beastSizes ^.. folded
+-- [(3,"Sirens"),(882,"Kraken"),(92,"Ogopogo")]
+
+-- >>> beastSizes ^.. folded . folded
+-- ["Sirens","Kraken","Ogopogo"]
+
+-- >>> beastSizes ^.. folded . folded . folded
+-- "SirensKrakenOgopogo"
+
+-- >>> beastSizes ^.. folded . _2
+-- ["Sirens","Kraken","Ogopogo"]
+
+-- >>> toListOf (folded . folded) [[1, 2, 3], [4, 5, 6]]
+-- [1,2,3,4,5,6]
+
+ex19 :: [Char]
+ex19 = toListOf (folded . folded @[]) (M.fromList [("Jack", "Captain"), ("Will", "First Mate")])
+
+-- >>> ex19
+-- "CaptainFirst Mate"
+
+-- >>> ("Hello" :: String, "It's me") ^.. both . folded
+-- "HelloIt's me"
+
+-- >>> ("Why", "So", "Serious?") ^.. each
+-- ["Why","So","Serious?"]
