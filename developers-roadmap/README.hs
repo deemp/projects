@@ -6,18 +6,21 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE LambdaCase #-}
 {- FOURMOLU_ENABLE -}
 
-module Main where
+module Main (main) where
 
+import Control.Applicative
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (wait, withAsync)
 import Control.Monad.Fix (fix)
 import Control.Monad.Identity (Identity)
+import Data.Foldable (fold, Foldable (foldl'))
 import Data.Kind (Type)
 import Language.Haskell.TH.Syntax (Dec, Quasi, runQ)
 
@@ -40,15 +43,20 @@ It explains what's available in this project.
 
 ## Quick start
 
-1. If you haven't yet started `VSCodium` provided by this flake:
+1. Start a devshell
 
-    ```terminal
-    nix develop
-    write-settings-json
-    codium .
-    ```
+  ```terminal
+  nix develop
+  ```
 
-1. Open a `Haskell` file `src/Main.hs` and hover over a function. `Haskell Language Server` should start giving you type info.
+1. (Optionally) Start `VSCodium`:
+
+  ```terminal
+  nix run .#writeSettings
+  nix run .#codium .
+  ```
+
+1. Open a `README.hs` and hover over a function. `Haskell Language Server` should start giving you hints.
 
 ## Junior 1
 
@@ -62,32 +70,85 @@ It explains what's available in this project.
 
 ### Type classes
 
+#### Foldable
+
+```hs
+class Foldable t where
+```
+
+- When using folds, can force the evaluation of an accumulator
+  - `deepseq`
+  - [BangPatterns](http://downloads.haskell.org/~ghc/7.6.3/docs/html/users_guide/bang-patterns.html) with pattern matching on the element of an accumulator to force.
+-}
+
+{- LIMA_INDENT 4 -}
+
+-- >>> foldl (\(!a1, !a2) x -> (a1 + x, a2 + x)) (0, 0) [1..9]
+-- (45,45)
+
+{- LIMA_DEDENT -}
+
+{-
+- `foldl'` - fold a list from the left: `f (f (f x a1) a2) ...` and have accumulator in WHNF.
+- `foldr` - calculate the full list and fold it from the right: `f (f (f x a5) a4) ...`.
+  - Can terminate early if an operation is strict in the left argument (like `&&`) - [SO](https://stackoverflow.com/a/27682341)
+-}
+
+{- LIMA_INDENT 4 -}
+
+-- >>> foldr (&&) False (repeat False)
+-- False
+
+{- LIMA_DEDENT -}
+
+{-
+- `fold :: (Foldable t, Monoid m) => t m -> m`
+  - folds a container with elements that have a `Monoid` instance
+-}
+
+{- LIMA_INDENT 4 -}
+-- >>> fold [Just "a", Nothing, Just "c"]
+-- Just "ac"
+{- LIMA_DEDENT -}
+
+{-
+- `foldMap` - maps each element to a `Monoid` and `fold`s the container
+-}
+
+{- LIMA_INDENT 4 -}
+-- >>> foldMap Just ["a", "b", "c"]
+-- Just "abc"
+{- LIMA_DEDENT -}
+
+{-
 #### Alternative and MonadPlus
 
 - [Haskell wikibooks](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus):
 -}
 
-{- LIMA_INDENT 4 -}
-
 {-
   - `Alternative`
+    - Definition
+
+      ```hs
+      class Applicative f => Alternative f where
+        empty :: f a
+        (<|>) :: f a -> f a -> f a
+      ```
+
+    - There's no instance for `Either a`
+    - As it's an associative operation, it produces the same result for either fold
 -}
 
-class Applicative f => Alternative f where
-  empty :: f a
-  (<|>) :: f a -> f a -> f a
+{- LIMA_INDENT 6 -}
+
+-- >>> foldr (<|>) empty [Just "a", Nothing, Just "c", Nothing, Just "e"]
+-- Just "a"
+
+-- >>> foldl' (<|>) empty [Just "a", Nothing, Just "c", Nothing, Just "e"]
+-- Just "a"
 
 {- LIMA_DEDENT -}
-
-{-
-    - In case of `Maybe`, leave the first `Just result`
--}
-{-
-#### Foldable
--}
-
--- >>>Right ['a'] <> Left ['b'] <> Right ['c']
--- Right "a"
 
 {-
 #### Traversable
@@ -256,7 +317,7 @@ data Sub1D a = Sub1D
     - Cons: need to recompile the whole project on changes in that module - [src](https://tech.freckle.com/2018/12/12/a-home-for-orphan-instances/#decrease-the-surplus-compilation)
 - How the problem of orphans and overlapping is solved in other languages or by different overloading implementation techniques?
   - Scala
-    - An orphan instance in Scala means an instance that exists neither in the type’s companion object nor the type class’ companion object - [src](https://pjrt.medium.com/orphan-instances-in-scala-322caa78e382)
+    - An orphan instance in Scala means an instance that exists neither in the type's companion object nor the type class' companion object - [src](https://pjrt.medium.com/orphan-instances-in-scala-322caa78e382)
     - Import packages with type and instance declaration separately
 - What are the problems of current typeclasses implementation?
   - There's no formal proof that instance resolution is coherent
@@ -311,6 +372,7 @@ Instance definitions define the type family over some part of the domain.
 -}
 
 {- LIMA_INDENT 6 -}
+
 type MaybeIf :: Bool -> Type -> Type
 type family MaybeIf b t where
   MaybeIf True t = Maybe t

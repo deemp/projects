@@ -6,16 +6,21 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE LambdaCase #-}
 {- FOURMOLU_ENABLE -}
 
-module Main where
+module Main (main) where
 
+import Control.Applicative
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (wait, withAsync)
+import Control.Monad.Fix (fix)
 import Control.Monad.Identity (Identity)
+import Data.Foldable (fold)
 import Data.Kind (Type)
 import Language.Haskell.TH.Syntax (Dec, Quasi, runQ)
 
@@ -37,15 +42,20 @@ It explains what's available in this project.
 
 ## Quick start
 
-1. If you haven't yet started `VSCodium` provided by this flake:
+1. Start a devshell
 
-    ```terminal
-    nix develop
-    write-settings-json
-    codium .
-    ```
+  ```terminal
+  nix develop
+  ```
 
-1. Open a `Haskell` file `src/Main.hs` and hover over a function. `Haskell Language Server` should start giving you type info.
+1. (Optionally) Start `VSCodium`:
+
+  ```terminal
+  nix run .#writeSettings
+  nix run .#codium .
+  ```
+
+1. Open a `README.hs` and hover over a function. `Haskell Language Server` should start giving you hints.
 
 ## Junior 1
 
@@ -59,23 +69,88 @@ It explains what's available in this project.
 
 ### Type classes
 
-#### Alternative and MonadPlus
+#### Foldable
 
-- [Haskell wikibooks](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus):
+```hs
+class Foldable t where
+```
+
+- When using folds, can force the evaluation of an accumulator
+  - `deepseq`
+  - [BangPatterns](http://downloads.haskell.org/~ghc/7.6.3/docs/html/users_guide/bang-patterns.html) with pattern matching on the element of an accumulator to force.
 
     <!-- LIMA_INDENT 4 -->
 
-  - `Alternative`
-
     ```haskell
-    class Applicative f => Alternative f where
-      empty :: f a
-      (<|>) :: f a -> f a -> f a
+    -- >>> foldl (\(!a1, !a2) x -> (a1 + x, a2 + x)) (0, 0) [1..9]
+    -- (45,45)
     ```
 
     <!-- LIMA_DEDENT -->
 
-    - In case of `Maybe`, leave the first `Just result`
+- `foldl'` - fold a list from the left: `f (f (f x a1) a2) ...` and have accumulator in WHNF.
+- `foldr` - calculate the full list and fold it from the right: `f (f (f x a5) a4) ...`.
+  - Can terminate early if an operation is strict in the left argument (like `&&`) - [SO](https://stackoverflow.com/a/27682341)
+
+    <!-- LIMA_INDENT 4 -->
+
+    ```haskell
+    -- >>> foldr (&&) False (repeat False)
+    -- False
+    ```
+
+    <!-- LIMA_DEDENT -->
+
+- `fold :: (Foldable t, Monoid m) => t m -> m`
+  - folds a container with elements that have a `Monoid` instance
+
+    <!-- LIMA_INDENT 4 -->
+
+    ```haskell
+    -- >>> fold [Just "a", Nothing, Just "c"]
+    -- Just "ac"
+    ```
+
+    <!-- LIMA_DEDENT -->
+
+- `foldMap` - maps each element to a `Monoid` and `fold`s the container
+
+    <!-- LIMA_INDENT 4 -->
+
+    ```haskell
+    -- >>> foldMap Just ["a", "b", "c"]
+    -- Just "abc"
+    ```
+
+    <!-- LIMA_DEDENT -->
+
+#### Alternative and MonadPlus
+
+- [Haskell wikibooks](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus):
+
+  - `Alternative`
+    - Definition
+
+      ```hs
+      class Applicative f => Alternative f where
+        empty :: f a
+        (<|>) :: f a -> f a -> f a
+      ```
+
+    - There's no instance for `Either a`
+    - As it's an associative operation, it produces the same result for either fold
+
+      <!-- LIMA_INDENT 6 -->
+
+      ```haskell
+      -- >>> foldr (<|>) empty [Just "a", Nothing, Just "c", Nothing, Just "e"]
+      -- Just "a"
+      
+      -- >>> foldl (<|>) empty [Just "a", Nothing, Just "c", Nothing, Just "e"]
+      -- Just "a"
+      ```
+
+      <!-- LIMA_DEDENT -->
 
 #### Traversable
 
@@ -243,7 +318,7 @@ Test types:
     - Cons: need to recompile the whole project on changes in that module - [src](https://tech.freckle.com/2018/12/12/a-home-for-orphan-instances/#decrease-the-surplus-compilation)
 - How the problem of orphans and overlapping is solved in other languages or by different overloading implementation techniques?
   - Scala
-    - An orphan instance in Scala means an instance that exists neither in the type’s companion object nor the type class’ companion object - [src](https://pjrt.medium.com/orphan-instances-in-scala-322caa78e382)
+    - An orphan instance in Scala means an instance that exists neither in the type's companion object nor the type class' companion object - [src](https://pjrt.medium.com/orphan-instances-in-scala-322caa78e382)
     - Import packages with type and instance declaration separately
 - What are the problems of current typeclasses implementation?
   - There's no formal proof that instance resolution is coherent
@@ -275,9 +350,17 @@ Test types:
 
 Haskell wiki ([src](https://wiki.haskell.org/GHC/Type_families#What_are_type_families.3F)):
 
-> The concept of a type family comes from type theory. An indexed type family in type theory is a partial function at the type level. Applying the function to parameters (called type indices) yields a type. Type families permit a program to compute what data constructors it will operate on, rather than having them fixed statically (as with simple type systems) or treated as opaque unknowns (as with parametrically polymorphic types).
+> The concept of a type family comes from type theory. An indexed type family in type theory is a partial function at the type level.
+Applying the function to parameters (called type indices) yields a type.
+Type families permit a program to compute what data constructors it will operate on,
+rather than having them fixed statically (as with simple type systems) or treated as opaque unknowns
+(as with parametrically polymorphic types).
 
-> Type families are to vanilla data types what type class methods are to regular functions. Vanilla polymorphic data types and functions have a single definition, which is used at all type instances. Classes and type families, on the other hand, have an interface definition and any number of instance definitions. A type family's interface definition declares its kind and its arity, or the number of type indices it takes. Instance definitions define the type family over some part of the domain.
+> Type families are to vanilla data types what type class methods are to regular functions.
+Vanilla polymorphic data types and functions have a single definition, which is used at all type instances.
+Classes and type families, on the other hand, have an interface definition and any number of instance definitions.
+A type family's interface definition declares its kind and its arity, or the number of type indices it takes.
+Instance definitions define the type family over some part of the domain.
 
 - **Type Families: The Definitive Guide** - [src](https://serokell.io/blog/type-families-haskell)
   - `Non-generative` type can be reduced to other types:
@@ -589,8 +672,17 @@ Haskell wiki ([src](https://wiki.haskell.org/GHC/Type_families#What_are_type_fam
 - `` force b = b `deepseq` b `` - eval `b` to `NF` and return `b`
   - If we have `let a = force b`, `a` is not in `NF`
   - To get `a` in `NF`, we need to `!a`
-- `fix`
 - [Thunks, Sharing, Laziness](https://youtu.be/I4lnCG18TaY) via `ghc-viz` (available in `nixpkgs`)
+
+### Fix combinator
+
+```haskell
+ex13 :: [Int] -> Int
+ex13 = fix (\t c -> \case (a0 : a1 : as) -> t (c + fromEnum (signum a0 /= signum a1)) (a1 : as); _ -> c) 0
+
+-- >>>ex13 [-3,0,2,0,5]
+-- 4
+```
 
 ### File IO
 
