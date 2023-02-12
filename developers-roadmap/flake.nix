@@ -39,7 +39,7 @@
       inherit (devshell.functions.${system}) mkCommands mkShell;
       inherit (haskell-tools.functions.${system}) toolsGHC;
 
-      ghcVersion_ = "92";
+      ghcVersion_ = "925";
 
       # and the name of the package
       myPackageName = "nix-managed";
@@ -92,7 +92,6 @@
       };
 
       codiumTools = [
-        writeSettings
         ghcid
         hpack
         implicit-hie
@@ -105,7 +104,7 @@
         runtimeDependencies = codiumTools;
       };
 
-      tools = codiumTools ++ [ codium ];
+      tools = codiumTools;
 
       defaultShell = mkShell {
         packages = tools;
@@ -125,6 +124,7 @@
     {
       packages = {
         inherit (flakesTools) updateLocks pushToCachix;
+        inherit writeSettings codium;
       };
 
       devShells = {
