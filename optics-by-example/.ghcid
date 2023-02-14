@@ -1,6 +1,5 @@
--c cabal repl app/Main.hs
+-c cabal repl README.hs
 -W
--r=:main
 --reload=./
 --reverse-errors
 --allow-eval
