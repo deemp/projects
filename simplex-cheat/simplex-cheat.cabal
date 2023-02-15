@@ -42,7 +42,6 @@ library
     , directory
     , exceptions
     , filepath
-    , fmt
     , focus
     , hashable
     , http-client
@@ -55,8 +54,8 @@ library
     , servant-server
     , stm
     , stm-containers
+    , string-interpolate
     , text
-    , text-show
     , time
     , transformers
     , unordered-containers
@@ -83,7 +82,6 @@ executable simplex-cheat
     , directory
     , exceptions
     , filepath
-    , fmt
     , focus
     , hashable
     , http-client
@@ -97,8 +95,8 @@ executable simplex-cheat
     , simplex-cheat
     , stm
     , stm-containers
+    , string-interpolate
     , text
-    , text-show
     , time
     , transformers
     , unordered-containers
@@ -126,7 +124,6 @@ test-suite simplex-cheat-test
     , directory
     , exceptions
     , filepath
-    , fmt
     , focus
     , hashable
     , http-client
@@ -140,8 +137,8 @@ test-suite simplex-cheat-test
     , simplex-cheat
     , stm
     , stm-containers
+    , string-interpolate
     , text
-    , text-show
     , time
     , transformers
     , unordered-containers

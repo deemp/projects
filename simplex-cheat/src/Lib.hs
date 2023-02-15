@@ -14,6 +14,7 @@ We'll need the following language extensions and pragmas:
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
@@ -66,47 +67,28 @@ import Control.Concurrent.STM (
   writeTVar,
  )
 import Control.Exception (SomeException, bracketOnError)
-import Control.Monad (
-  forM_,
-  forever,
-  replicateM,
-  unless,
-  when,
- )
-import Control.Monad.Catch (
-  Exception (toException),
- )
+import Control.Monad (forM_, forever, replicateM, unless, when)
+import Control.Monad.Catch (Exception (toException))
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Reader (MonadReader (ask), ReaderT (..), asks)
 import Control.Monad.Trans.Except (runExceptT, throwE)
 import Data.Aeson.Key (fromString, toText)
 import Data.Aeson.KeyMap (toList)
-import Data.Binary (encode)
 import Data.Function ((&))
 import Data.Functor ((<&>))
 import qualified Data.HashMap.Strict as HM
 import Data.Hashable (Hashable)
 import Data.Maybe (fromJust)
+import Data.String.Interpolate (i)
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text as Text
 import qualified Data.Text.IO as T
 import Data.Time (UTCTime)
 import Data.Time.Clock (getCurrentTime)
 import Data.Tuple (swap)
 import Data.Yaml (ParseException)
-import Data.Yaml.Aeson (
-  FromJSON (parseJSON),
-  Parser,
-  ToJSON,
-  Value,
-  decodeFileEither,
-  decodeFileThrow,
-  encodeFile,
-  withObject,
-  (.:),
- )
-import Fmt ((|+))
-import Fmt.Internal.Core ((+|))
+import Data.Yaml.Aeson (FromJSON (parseJSON), Parser, ToJSON, Value, decodeFileEither, decodeFileThrow, encodeFile, withObject, (.:))
 import GHC.Generics (Generic)
 import Network.HTTP.Client (Manager, defaultManagerSettings, newManager)
 import Network.Wai.Handler.Warp (run)
@@ -119,7 +101,6 @@ import System.Directory (createDirectoryIfMissing, doesDirectoryExist, doesFileE
 import System.FilePath (takeDirectory)
 import System.Random.Shuffle (shuffle')
 import System.Random.Stateful (StdGen, globalStdGen, initStdGen, uniformRM)
-import TextShow (Builder, TextShow (showb, showt), fromText)
 import Prelude hiding (log, lookup)
 
 {-
@@ -184,8 +165,12 @@ With a shared log queue, the logs of all entities will come one-by-one to stdout
 -}
 
 newtype Name = Name Text
-  deriving (Generic, Show, Eq, FromJSON, ToJSON)
+  deriving (Generic, Eq, FromJSON, ToJSON)
   deriving anyclass (Hashable)
+
+instance Show Name where
+  show :: Name -> String
+  show (Name name) = Text.unpack name
 
 newtype MessageMakeChat = MessageMakeChat
   { file :: FilePath
@@ -381,7 +366,7 @@ runSpawner :: App ClientEnv ()
 runSpawner = do
   config <- liftIO $ newTVarIO HM.empty
   users <- liftIO $ newTVarIO (HM.empty :: HM.HashMap Names User)
-  let spawnerB = showb (Name "Spawner")
+  let spawnerB = br $ Name "Spawner"
   env <- ask
   forever do
     liftIO $ sleepRandom env._DELAY_SPAWNER (env._DELAY_SPAWNER + 1)
@@ -411,14 +396,14 @@ runSpawner = do
                                 chatConfig :: Either ParseException ChatConfig <- liftIO $ decodeFileEither file
                                 either'
                                   chatConfig
-                                  (\err -> writeLog $ spawnerB |+ "couldn't parse the chat config " +| showb (toException err))
+                                  (\err -> writeLog [i|#{spawnerB} couldn't parse the chat config: #{err}|])
                                   ( \conf -> do
                                       let queues = [conf.starts, conf.another]
                                       res <- liftIO $ req_ env.manager (removeQueues MessageRemoveQueues{queues})
                                       either'
                                         res
-                                        (\err -> writeLog $ spawnerB |+ "unsuccessfully requested to remove queues: " +| showb err)
-                                        (\_ -> writeLog $ spawnerB |+ "successfully requested to remove queues: " +| showb queues)
+                                        (\err -> writeLog [i|#{spawnerB} unsuccessfully requested to remove queues: #{err}|])
+                                        (\_ -> writeLog [i|#{spawnerB} successfully requested to remove queues: #{queues}|])
                                   )
                                 liftIO $ removeFile file
                           )
@@ -445,7 +430,7 @@ runSpawner = do
                 do
                   -- spawn a user
                   newQueue <- liftIO newTQueueIO
-                  writeLog $ spawnerB |+ "created a user:" +| showb name1 |+ "for" +| showb name2
+                  writeLog [i|#{spawnerB} created a user: #{br name1} for #{br name2}|]
                   threadId_ <- liftIO $ forkIO $ runReaderT' env (runUser name1 newQueue)
 
                   -- record new user
@@ -467,12 +452,15 @@ runSpawner = do
         )
     either'
       res
-      (\x -> writeLog $ spawnerB |+ "error: " +| showb x)
+      (\x -> writeLog [i|#{spawnerB} error: #{x}|])
       return
 
-instance TextShow Name where
-  showb :: Name -> Builder
-  showb (Name name) = " [ " +| fromText name |+ " ] "
+class Show a => ShowBracketed a where
+  br :: a -> String
+
+instance Show a => ShowBracketed a where
+  br :: a -> String
+  br x = [i|[ #{x} ]|]
 
 data ChatConfig = ChatConfig
   { starts :: Int
@@ -502,16 +490,12 @@ sleepRandom ::
 sleepRandom mini maxi =
   threadDelay =<< (uniformRM ((mini `seconds`), (maxi `seconds`)) globalStdGen :: IO Int)
 
-instance TextShow ClientError where
-  showb :: ClientError -> Builder
-  showb err = showb (toException err)
-
 newtype ContactError = ContactUnavailable {name :: Name}
-  deriving (Show, Exception)
+  deriving (Exception)
 
-instance TextShow ContactError where
-  showb :: ContactError -> Builder
-  showb ContactUnavailable{..} = "Contact" +| showb name |+ "is unavailable"
+instance Show ContactError where
+  show :: ContactError -> String
+  show ContactUnavailable{..} = [i|Contact #{br name} is unavailable|]
 
 req_ :: Manager -> ClientM a -> IO (Either ClientError a)
 req_ manager clientM = do
@@ -522,15 +506,13 @@ runUser :: Name -> TQueue Contact -> App ClientEnv ()
 runUser selfName queue = do
   env <- ask
   let req = req_ env.manager
-      selfB :: Builder
-      selfB = showb selfName
+      selfB = br selfName
       delayContact = liftIO $ sleepRandom env._DELAY_CONTACT_MIN env._DELAY_CONTACT_MAX
   forever do
     delayContact
     res :: Either SomeException () <- runExceptT do
       contact <- liftIO $ atomically $ readTQueue queue
-      let anotherB :: Builder
-          anotherB = showb contact.name
+      let anotherB = br contact.name
       existsFile <- liftIO $ doesFileExist contact.file
       unless existsFile do
         if contact.retryTimes > 0
@@ -539,20 +521,16 @@ runUser selfName queue = do
               Self -> do
                 res <- liftIO $ req (makeChat MessageMakeChat{file = contact.file})
                 either
-                  ( \err ->
-                      writeLog $
-                        (selfB |+ "error when requesting a connection with ")
-                          +| (anotherB |+ ": " +| showb err)
-                  )
-                  (\_ -> writeLog $ selfB |+ "sent a request to connect with" +| anotherB)
+                  (\err -> writeLog [i|#{selfB} error when requesting a connection with #{anotherB}: #{br err}|])
+                  (\_ -> writeLog [i|#{selfB} sent a request to connect with #{anotherB}|])
                   res
               Another -> do
-                writeLog $ selfB |+ "waits until" +| anotherB |+ "sends a request to connect"
+                writeLog [i|#{selfB} waits until #{anotherB} sends a request to connect|]
             -- TODO decide where to write updated contact
             let updatedContact = contact{retryTimes = contact.retryTimes - 1}
             liftIO $ atomically $ writeTQueue queue updatedContact
             throwE $ toException (ContactUnavailable contact.name)
-          else writeLog $ selfB |+ "was unable to connect with" +| anotherB |+ ". No attempts left"
+          else writeLog [i|#{selfB} was unable to connect with #{anotherB}. No attempts left|]
       config :: ChatConfig <- liftIO $ decodeFileThrow contact.file
       let (sendTo, receiveFrom) =
             (config.starts, config.another)
@@ -566,31 +544,31 @@ runUser selfName queue = do
             ( sendMessage
                 sendTo
                 MessageSend
-                  { contents = selfB |+ ": " +| showb contact.messageNumber
+                  { contents = [i|#{selfB}: #{contact & messageNumber}|]
                   , sentAt = curTime
                   , key = config.key
                   }
             )
       either'
         sendMessageRes
-        ( \err -> writeLog $ selfB |+ "was unable to send a message to" +| anotherB |+ ": " +| showb err
+        ( \err -> writeLog [i|#{selfB} was unable to send a message to #{anotherB}: #{err}|]
         )
         ( \_ -> do
-            writeLog $ selfB |+ "sent a message #" +| showb contact.messageNumber |+ " to" +| anotherB
+            writeLog [i|#{selfB} sent a message \##{contact & messageNumber} to #{anotherB}|]
             liftIO $ atomically $ writeTQueue queue contact{messageNumber = contact.messageNumber + 1}
         )
       receiveMessagesRes <- liftIO $ req (receiveMessage receiveFrom config.key)
       either'
         receiveMessagesRes
-        ( \err -> writeLog $ selfB |+ "was unable to receive messages from" +| anotherB |+ ": " +| showb err
+        ( \err -> writeLog [i|#{selfB} was unable to receive messages from #{anotherB}: #{err}|]
         )
         ( \messages -> do
             let messages_ :: [Text] = (\x -> x.contents) <$> messages.messages
-            writeLogConsecutive ((selfB |+ "received messages from" +| anotherB |+ ":") : messages_)
+            writeLogConsecutive ([i|#{selfB} received messages from #{anotherB}: |] : messages_)
         )
     either'
       res
-      ( \err -> writeLog $ selfB |+ "got an error when processing the contacts queue: " +| showb err
+      ( \err -> writeLog [i|#{selfB} got an error when processing the contacts queue: #{err}|]
       )
       return
 
@@ -651,7 +629,7 @@ app s = serve api $ hoistServer api (nt s) runServer
 runServer :: ServerT Api ServerM
 runServer = handleSendMessage :<|> handleReceiveMessage :<|> handleMakeChat :<|> handleRemoveQueues
  where
-  serverB = " [ Server ] " :: Builder
+  server_ = "[ Server ]" :: String
   handleMakeChat :: MessageMakeChat -> ServerM ()
   handleMakeChat MessageMakeChat{..} = do
     let dir = takeDirectory file
@@ -671,18 +649,18 @@ runServer = handleSendMessage :<|> handleReceiveMessage :<|> handleMakeChat :<|>
       insert Queue{queue = queue1, key = key_} id1 env.queues
       queue2 <- newTQueue
       insert Queue{queue = queue2, key = key_} id2 env.queues
-    writeLog $ serverB |+ "created queues: " +| showb id1 |+ " and " +| showb id2
+    writeLog [i|#{server_} created queues with ids: #{id1} and #{id2}|]
   handleSendMessage :: QueueID -> MessageSend -> ServerM ()
   handleSendMessage qid msg = do
     env <- ask
     queue_ <- liftIO $ atomically $ lookup qid env.queues
     maybe'
       queue_
-      (throwError err404{errBody = "Sorry, there is no queue with id" <> encode qid})
+      (throwError err404{errBody = [i|Sorry, there is no queue #{qid}|]})
       ( \q@Queue{..} -> do
           when
             (q.key /= msg.key)
-            (throwError err404{errBody = "You can't send messages to the queue " <> encode qid})
+            (throwError err404{errBody = [i|You can't send messages to the queue #{qid}|]})
           liftIO $ atomically $ writeTQueue queue msg
       )
   handleReceiveMessage :: QueueID -> SecretKey -> ServerM MessagesReceive
@@ -691,11 +669,11 @@ runServer = handleSendMessage :<|> handleReceiveMessage :<|> handleMakeChat :<|>
     queue_ <- liftIO $ atomically $ lookup qid env.queues
     maybe'
       queue_
-      (throwError err404{errBody = "Sorry, there is no queue with id" <> encode qid})
+      (throwError err404{errBody = [i|Sorry, there is no queue #{qid}|]})
       ( \q -> do
           when
             (q.key /= key)
-            (throwError err404{errBody = "You can't read messages from the queue " <> encode qid})
+            (throwError err404{errBody = [i|You can't read messages from the queue #{qid}|]})
           msgs <- liftIO $ atomically $ flushTQueue q.queue
           curTime <- liftIO getCurrentTime
           let msgs_ = (\MessageSend{contents, sentAt} -> MessageReceive{..}) <$> msgs
@@ -779,4 +757,4 @@ main = do
         runAll
     )
     return
-    (\err -> T.putStrLn $ "Terminating app on error: " <> showt err)
+    (\err -> T.putStrLn [i|Terminating app on error: #{err}|])

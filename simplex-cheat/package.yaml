@@ -45,8 +45,7 @@ dependencies:
 - hashable
 - exceptions
 - directory
-- text-show
-- fmt
+- string-interpolate
 - servant-client
 - http-client
 - filepath
