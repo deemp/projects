@@ -14,22 +14,22 @@ default-extensions:
 
 dependencies:
   - base >= 4.7 && < 5
-  - text
-  - managed
-  - directory
-  - bytestring
-  - mtl
-  - filepath
-  - temporary
-  - system-filepath
   - aeson
-  - optparse-applicative
-  - yaml
-  - unordered-containers
-  - lens-aeson
-  - lens
-  - process
+  - bytestring
   - Cabal
+  - directory
+  - filepath
+  - lens
+  - lens-aeson
+  - managed
+  - mtl
+  - optparse-applicative
+  - process
+  - system-filepath
+  - temporary
+  - text
+  - unordered-containers
+  - yaml
 
 executables:
   manager:
@@ -37,12 +37,6 @@ executables:
     source-dirs: app
     dependencies:
       manager
-  drafts.autocomplete:
-    main: Main.hs
-    source-dirs: drafts/autocomplete
-  drafts.lens:
-    main: Main.hs
-    source-dirs: drafts/lens
 
 library:
   source-dirs: src

@@ -5,10 +5,11 @@ module Main (main) where
 
 import Control.Exception (Exception, catch)
 import Control.Exception.Base (SomeException, throwIO)
-import Control.Lens (At (at), Identity, filtered, non, over, withIndex, (^..), (^?), _2)
+import Control.Lens (At (at), Identity, non, over, traversed, withIndex, (%~), (^..), (^?), _1, _2)
 import Control.Monad.Except (MonadIO (liftIO), unless)
 import Control.Monad.Managed (runManaged)
-import Data.Aeson (Value (..), object)
+import Data.Aeson (Key, Value (..), object)
+import Data.Aeson.Key (fromString, fromText, toString, toText)
 import Data.Aeson.KeyMap as KM (fromHashMapText)
 import Data.Aeson.Lens (AsValue (..), key, members, values, _Object, _String)
 import Data.ByteString.Char8 as C (cons, head, lines, null, tail, unlines)
@@ -20,7 +21,6 @@ import Data.HashMap.Strict as HM (fromList)
 import Data.List (intercalate, intersperse)
 import Data.Maybe (fromMaybe, isJust)
 import Data.String (IsString)
-import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
 import Data.Yaml as Y (ParseException, decodeEither', encode)
@@ -35,7 +35,6 @@ import Options.Applicative.Help.Pretty (parens, space, text)
 import System.Directory (doesDirectoryExist, doesPathExist)
 import System.Exit (exitFailure)
 import System.FilePath (dropTrailingPathSeparator, isValid, pathSeparator, splitDirectories, (<.>), (</>))
-import System.FilePath.Posix (takeDirectory)
 import System.Process (callCommand)
 
 main :: IO ()
@@ -68,12 +67,6 @@ modulesDir = "Modules"
 
 packageYaml :: FilePath
 packageYaml = "package.yaml"
-
-stackYaml :: String
-stackYaml = "stack.yaml"
-
-defaultTemplate :: String
-defaultTemplate = "Contest"
 
 ghci :: FilePath
 ghci = ".ghci"
@@ -144,9 +137,6 @@ mkModuleHs x = mkDir x <.> hs
 mkMainHs :: FilePath -> FilePath
 mkMainHs x = mkDir x </> mainHs
 
-mkParent :: FilePath -> FilePath
-mkParent x = takeDirectory (mkModuleHs x)
-
 module' :: String
 module' = "module"
 
@@ -156,30 +146,30 @@ fill' = fill 100 $ text ""
 header' :: Doc
 header' =
   descriptionBlock
-    [ "To simplify references to directories and Haskell modules,",
-      bb manager <+> "uses" <+> bb locators <> dot,
-      locatorForm,
-      fill',
-      bb packageYaml <+> "contains an object" <+> bb executables <> dot,
-      "Each" <+> bb executable <+> "has a" <+> bb main' <+> "attribute" <> dot,
-      "Its value corresponds to this" <+> bb executable <> "'s main module" <> dot,
-      "To simplify references to these modules,",
-      bb manager <+> "uses" <+> bb locators,
-      fold (intersperse (comma <> space) $ bb <$> [_NEW, _EXISTING]) <> dot,
-      "Each of these" <+> bb _LOCATORs <+> "refers to an" <+> bb executable,
-      "with" <+> bb main' <+> "at" <+> bb (mkMainHs _LOCATOR) <> dot,
-      "In" <+> bb packageYaml <> comma <+> "this" <+> bb executable,
-      "has a name" <+> bb _EXECUTABLE <> dot,
-      bb _EXECUTABLE <+> "is a" <+> bb _LOCATOR,
-      "with all" <+> squotes (bb "/") <+> "replaced by" <+> squotes dot <> dot,
-      fill',
-      "There are other" <+> bb locator <> "s:",
-      fold (intersperse (comma <> space) $ bb <$> [_GHCID_TARGET]) <> dot,
-      "Each of these" <+> bb _LOCATORs <+> "refers to a" <+> bb module',
-      "at" <+> bb (mkModuleHs _LOCATOR),
-      fill',
-      "Run" <+> bb "manager COMMAND --help",
-      "to learn more about a" <+> bb "COMMAND"
+    [ "To simplify references to directories and Haskell modules,"
+    , bb manager <+> "uses" <+> bb locators <> dot
+    , locatorForm
+    , fill'
+    , bb packageYaml <+> "contains an object" <+> bb executables <> dot
+    , "Each" <+> bb executable <+> "has a" <+> bb main' <+> "attribute" <> dot
+    , "Its value corresponds to this" <+> bb executable <> "'s main module" <> dot
+    , "To simplify references to these modules,"
+    , bb manager <+> "uses" <+> bb locators
+    , fold (intersperse (comma <> space) $ bb <$> [_NEW, _EXISTING]) <> dot
+    , "Each of these" <+> bb _LOCATORs <+> "refers to an" <+> bb executable
+    , "with" <+> bb main' <+> "at" <+> bb (mkMainHs _LOCATOR) <> dot
+    , "In" <+> bb packageYaml <> comma <+> "this" <+> bb executable
+    , "has a name" <+> bb _EXECUTABLE <> dot
+    , bb _EXECUTABLE <+> "is a" <+> bb _LOCATOR
+    , "with all" <+> squotes (bb "/") <+> "replaced by" <+> squotes dot <> dot
+    , fill'
+    , "There are other" <+> bb locator <> "s:"
+    , fold (intersperse (comma <> space) $ bb <$> [_GHCID_TARGET]) <> dot
+    , "Each of these" <+> bb _LOCATORs <+> "refers to a" <+> bb module'
+    , "at" <+> bb (mkModuleHs _LOCATOR)
+    , fill'
+    , "Run" <+> bb "manager COMMAND --help"
+    , "to learn more about a" <+> bb "COMMAND"
     ]
 
 -- Types
@@ -188,15 +178,15 @@ data Command
   | CommandInit
   | CommandUpdate
   | CommandAdd
-      { name :: String,
-        template :: String
+      { name :: String
+      , template :: String
       }
   | CommandRemove
       { name :: String
       }
   | CommandSet
-      { name :: String,
-        function :: String
+      { name :: String
+      , function :: String
       }
   deriving (Show)
 
@@ -236,10 +226,10 @@ instance Pretty ActionType where
 
 data ProcessError
   = FileError
-      { actionType :: ActionType,
-        fileType :: PathType,
-        filePath :: FilePath,
-        message :: String
+      { actionType :: ActionType
+      , fileType :: PathType
+      , filePath :: FilePath
+      , message :: String
       }
   | NameError {name :: String}
 
@@ -254,8 +244,8 @@ x <+> y = x <> softline <> y
 
 instance Pretty ProcessError where
   pretty :: ProcessError -> Doc
-  pretty FileError {..} = "Error" <+> pretty actionType <+> pretty fileType <+> pretty filePath <+> ":" <+> pretty message
-  pretty NameError {name} =
+  pretty FileError{..} = "Error" <+> pretty actionType <+> pretty fileType <+> pretty filePath <+> ":" <+> pretty message
+  pretty NameError{name} =
     descriptionBlock
       [ "Error: the" <+> bb _LOCATOR <+> "of the form" <+> bb name <+> "is bad." <> locatorForm
       ]
@@ -263,11 +253,11 @@ instance Pretty ProcessError where
 locatorForm :: Doc
 locatorForm =
   descriptionBlock'
-    [ "Each" <+> bb locator <+> "called" <+> bb _LOCATOR,
-      "should be of the form" <+> bb "A(/A)*",
-      "like" <+> bb "A" <+> "or" <+> bb "A/A",
-      "where" <+> bb "A" <+> "is an alphanumeric sequence",
-      "starting with an uppercase letter" <> dot
+    [ "Each" <+> bb locator <+> "called" <+> bb _LOCATOR
+    , "should be of the form" <+> bb "A(/A)*"
+    , "like" <+> bb "A" <+> "or" <+> bb "A/A"
+    , "where" <+> bb "A" <+> "is an alphanumeric sequence"
+    , "starting with an uppercase letter" <> dot
     ]
 
 instance Show ProcessError where
@@ -310,66 +300,66 @@ makeCommand =
     f
       "add"
       addCommand
-      [ "Create an" <+> bb executable <+> "with a locator" <+> bb _NEW,
-        "from an existing" <+> bb executable <+> "with a locator" <+> bb _EXISTING,
-        "Other modules can be created in" <+> bb (modulesDir </> _NEW),
-        "and, e.g., be imported into" <+> bb (modulesDir </> _NEW </> mainHs)
+      [ "Create an" <+> bb executable <+> "with a locator" <+> bb _NEW
+      , "from an existing" <+> bb executable <+> "with a locator" <+> bb _EXISTING
+      , "Other modules can be created in" <+> bb (modulesDir </> _NEW)
+      , "and, e.g., be imported into" <+> bb (modulesDir </> _NEW </> mainHs)
       ]
       <> f
         "rm"
         removeCommand
-        [ "Remove an executable with a" <+> bb locator <+> bb _EXISTING,
-          "and its empty parent directories"
+        [ "Remove an executable with a" <+> bb locator <+> bb _EXISTING
+        , "and its empty parent directories"
         ]
       <> f
         "list"
         listCommand
-        [ "List" <+> bb "executables" <+> "and their" <+> bb "source-dirs" <> dot,
-          "These are also available in" <+> bb packageYaml <> dot
+        [ "List" <+> bb "executables" <+> "and their" <+> bb "source-dirs" <> dot
+        , "These are also available in" <+> bb packageYaml <> dot
         ]
       <> f
         "set"
         setCommand
-        [ "Set" <+> bb dotGhcid <+> "config",
-          "so that when you run" <+> bb ghcid,
-          "in current directory,",
-          bb ghcid <+> "will restart",
-          "the function" <+> bb _FUNCTION_NAME <+> "from" <+> bb ghcidTargetHs,
-          "when any files change in" <+> bb modulesDir
+        [ "Set" <+> bb dotGhcid <+> "config"
+        , "so that when you run" <+> bb ghcid
+        , "in current directory,"
+        , bb ghcid <+> "will restart"
+        , "the function" <+> bb _FUNCTION_NAME <+> "from" <+> bb ghcidTargetHs
+        , "when any files change in" <+> bb modulesDir
         ]
       <> f
         "init"
         initCommand
-        [ "Initialize a" <+> bb manager <+> "project",
-          "in current directory.",
-          "Also, initialize a git repository.",
-          "This action will remove all user files",
-          "except for" <+> bb ".git",
-          "(if they exist)",
-          "in current directory."
+        [ "Initialize a" <+> bb manager <+> "project"
+        , "in current directory."
+        , "Also, initialize a git repository."
+        , "This action will remove all user files"
+        , "except for" <+> bb ".git"
+        , "(if they exist)"
+        , "in current directory."
         ]
       <> f
         "update"
         updateCommand
-        [ "Generate again" <+> bb ".cabal" <+> "and" <+> bb hieYaml <> dot,
-          bb manager <+> "commands update these files automatically.",
-          "Run this command whenever you" <+> bb "manually",
-          "add or remove a Haskell module."
+        [ "Generate again" <+> bb ".cabal" <+> "and" <+> bb hieYaml <> dot
+        , bb manager <+> "commands update these files automatically."
+        , "Run this command whenever you" <+> bb "manually"
+        , "add or remove a Haskell module."
         ]
-  where
-    targetDir = modulesDir </> _GHCID_TARGET
-    ghcidTargetHs = targetDir <.> hs
-    f name' command' desc =
-      command
-        name'
-        ( info
-            (helper <*> command')
-            ( fullDesc
-                <> progDescDoc
-                  ( Just $ descriptionBlock desc
-                  )
-            )
-        )
+ where
+  targetDir = modulesDir </> _GHCID_TARGET
+  ghcidTargetHs = targetDir <.> hs
+  f name' command' desc =
+    command
+      name'
+      ( info
+          (helper <*> command')
+          ( fullDesc
+              <> progDescDoc
+                ( Just $ descriptionBlock desc
+                )
+          )
+      )
 
 -- | concatenate strings with a space
 (<->) :: (IsString a, Semigroup a) => a -> a -> a
@@ -396,15 +386,15 @@ nixFlakeInit = do
       removeConflicts =
         "rm -rf"
           <-> unwords
-            [ "*.cabal",
-              "src",
-              "app",
-              "test",
-              "README.md",
-              packageYaml,
-              modulesDir,
-              hieYaml,
-              gitignore
+            [ "*.cabal"
+            , "src"
+            , "app"
+            , "test"
+            , "README.md"
+            , packageYaml
+            , modulesDir
+            , hieYaml
+            , gitignore
             ]
       gitInit = "git init"
       gitCommit = "git add . && git commit -m 'manager init'"
@@ -434,28 +424,29 @@ putDoc' x = putDoc (x <> hardline)
 throwEx :: Doc -> IO a
 throwEx x = throwIO $ Ex x
 
--- | safely handle command
--- collect into a monoid and rethrow the exceptions that occur when doing or undoing actions
+{- | safely handle command
+ collect into a monoid and rethrow the exceptions that occur when doing or undoing actions
+-}
 handleCommand :: Command -> IO ()
 handleCommand cmd = runManaged $ case cmd of
   CommandInit -> liftIO nixFlakeInit
   CommandUpdate -> liftIO updateHsProjectFiles
-  CommandAdd {name, template} -> do
+  CommandAdd{name, template} -> do
     throwIfBadName name
     throwIfBadName template
     readPackageYaml $ \y1 atKey nempty -> do
       let templateExe = mkExe template
           atTemplate = y1 ^? key executables' . key templateExe
-      liftIO $ unless (isJust atTemplate) (throwEx $ "No such executable" <+> bb (T.unpack templateExe) <+> "in" <+> bb packageYaml)
-      let atExe k = key executables' . atKey (mkExe k) . nempty
+      liftIO $ unless (isJust atTemplate) (throwEx $ "No such executable" <+> bb (toString templateExe) <+> "in" <+> bb packageYaml)
+      let atExe k = key executables' . atKey k . nempty
           atExeKey k v =
             over
               (key executables' . atKey (mkExe name) . nempty . atKey k)
               (\_ -> Just $ String (T.pack v))
           y2 =
             y1
-              & over (atExe name) (\_ -> fromMaybe (object mempty) atTemplate)
-              & atExeKey (T.pack main') mainHs
+              & over (atExe $ fromString name) (\_ -> fromMaybe (object mempty) atTemplate)
+              & atExeKey (fromString main') mainHs
               & atExeKey sourceDirs targetDir
       writePackageYaml y2
     liftIO $ putDoc' $ "Creating" <+> bb targetDir
@@ -465,24 +456,25 @@ handleCommand cmd = runManaged $ case cmd of
     liftIO $ unless ex (throwEx $ bb fromDir <+> "does not exist")
     liftIO $ copyDirectoryRecursive silent fromDir targetDir
     liftIO updateHsProjectFiles
-    where
-      targetDir = mkDir name
-      fromDir = mkDir template
+   where
+    targetDir = mkDir name
+    fromDir = mkDir template
   CommandList -> readPackageYaml $ \y1 _ _ -> do
     liftIO $ putDoc' "Executable ( source-dirs ):"
     let y2 =
-          y1 ^.. key executables' . members . withIndex
-            <&> over
-              _2
-              ( \y ->
-                  T.intercalate
-                    ", "
-                    ( y ^.. key sourceDirs . values . _String
-                        <> y ^.. key sourceDirs . _String
-                    )
-              )
+          (y1 ^.. key executables' . members . withIndex)
+            & traversed . _2
+              %~ ( \y ->
+                    T.intercalate
+                      ", "
+                      ( y ^.. key sourceDirs . values . _String
+                          <> y ^.. key sourceDirs . _String
+                      )
+                 )
+            & traversed . _1 %~ toText
+
     traverse_ (\(name, path) -> liftIO $ putDoc' $ text (T.unpack name) <+> parens ("" <+> text (T.unpack path) <+> "")) y2
-  CommandRemove {name} -> do
+  CommandRemove{name} -> do
     throwIfBadName name
     ex <- liftIO $ doesDirectoryExist targetDir
     liftIO $ unless ex $ throwEx $ bb targetDir <+> "doesn't exist"
@@ -492,63 +484,63 @@ handleCommand cmd = runManaged $ case cmd of
       let withoutExe x =
             Object $
               KM.fromHashMapText $
-                HM.fromList (x ^.. members . withIndex . filtered (\(y, _) -> y /= mkExe name))
+                HM.fromList ((x ^.. members . withIndex) & traversed . _1 %~ toText)
           y2 = y1 & over (key executables') withoutExe
       writePackageYaml y2
     liftIO updateHsProjectFiles
-    where
-      targetDir = mkDir name
-  CommandSet {name, function} -> do
+   where
+    targetDir = mkDir name
+  CommandSet{name, function} -> do
     throwIfBadName name
     tWriteFile dotGhcid (encodeUtf8 txtGhcid) (mapThrow EWrite Ghci dotGhcid)
-    where
-      txtGhcid =
-        T.pack $
-          intercalate
-            "\n"
-            [ "-c stack ghci" <-> mkModuleHs name,
-              "-W",
-              "-r=" <> function,
-              "--reload=" <> modulesDir
-            ]
-  where
-    sourceDirs = "source-dirs"
-    executables' = T.pack executables
-    isOkName name =
-      isValid name
-        && hasNoTrailingSeparator
-        && all
-          (\x -> all (`elem` alphabet) x && isUpper (Prelude.head x))
-          (splitDirectories name)
-      where
-        hasNoTrailingSeparator = dropTrailingPathSeparator name == name
-        alphabet = ['A' .. 'Z'] ++ ['a' .. 'z'] ++ ['0' .. '9'] ++ ['_']
-    throwIfBadName name = mBefore (liftIO $ unless (isOkName name) (throwIO $ NameError name)) id
-    replace cond rep s = (\x -> if cond x then rep else x) <$> s
-    mkExe x = T.pack $ replace (== pathSeparator) '.' x
-    -- read a package.yaml and run the continuation ok if everything is OK
-    readPackageYaml ok = do
-      liftIO $ putDoc' $ "Reading" <-> bb packageYaml
-      y1 <- tReadFile packageYaml (mapThrow ERead PackageYaml packageYaml)
-      let (y2 :: Either ParseException Value) = decodeEither' y1
-      case y2 of
-        Left l -> liftIO $ throwIO $ FileError ERead PackageYaml packageYaml (show l)
-        Right r ->
-          let atKey :: Text -> (Maybe Value -> Identity (Maybe Value)) -> Value -> Identity Value
-              atKey k = _Object . at k
-              nempty :: (Value -> Identity Value) -> Maybe Value -> Identity (Maybe Value)
-              nempty = non (Object mempty)
-           in ok r atKey nempty
-    -- write package.yaml
-    writePackageYaml y1 = do
-      liftIO $ putDoc' $ "Updating" <-> bb packageYaml
-      let y2 =
-            C.lines (Y.encode y1)
-              <&> (\x -> if not (C.null x) && isAlpha (C.head x) then C.cons '\n' x else x)
-              & C.unlines
-              & C.tail
-      tWriteFile packageYaml y2 (mapThrow EWrite PackageYaml packageYaml)
-    -- catch, map an exception into a custom exception for easier handling, throw it
-    mapThrow :: ActionType -> PathType -> FilePath -> IO a -> IO a
-    mapThrow actionType fileType filePath x =
-      x `catch` (\(e :: SomeException) -> throwIO $ FileError actionType fileType filePath (show e))
+   where
+    txtGhcid =
+      T.pack $
+        intercalate
+          "\n"
+          [ "-c stack ghci" <-> mkModuleHs name
+          , "-W"
+          , "-r=" <> function
+          , "--reload=" <> modulesDir
+          ]
+ where
+  sourceDirs = fromText "source-dirs"
+  executables' = fromText $ T.pack executables
+  isOkName name =
+    isValid name
+      && hasNoTrailingSeparator
+      && all
+        (\x -> all (`elem` alphabet) x && isUpper (Prelude.head x))
+        (splitDirectories name)
+   where
+    hasNoTrailingSeparator = dropTrailingPathSeparator name == name
+    alphabet = ['A' .. 'Z'] ++ ['a' .. 'z'] ++ ['0' .. '9'] ++ ['_']
+  throwIfBadName name = mBefore (liftIO $ unless (isOkName name) (throwIO $ NameError name)) id
+  replace cond rep s = (\x -> if cond x then rep else x) <$> s
+  mkExe x = fromText $ T.pack $ replace (== pathSeparator) '.' x
+  -- read a package.yaml and run the continuation ok if everything is OK
+  readPackageYaml ok = do
+    liftIO $ putDoc' $ "Reading" <-> bb packageYaml
+    y1 <- tReadFile packageYaml (mapThrow ERead PackageYaml packageYaml)
+    let (y2 :: Either ParseException Value) = decodeEither' y1
+    case y2 of
+      Left l -> liftIO $ throwIO $ FileError ERead PackageYaml packageYaml (show l)
+      Right r ->
+        let atKey :: Key -> (Maybe Value -> Identity (Maybe Value)) -> Value -> Identity Value
+            atKey k = _Object . at k
+            nempty :: (Value -> Identity Value) -> Maybe Value -> Identity (Maybe Value)
+            nempty = non (Object mempty)
+         in ok r atKey nempty
+  -- write package.yaml
+  writePackageYaml y1 = do
+    liftIO $ putDoc' $ "Updating" <-> bb packageYaml
+    let y2 =
+          C.lines (Y.encode y1)
+            <&> (\x -> if not (C.null x) && isAlpha (C.head x) then C.cons '\n' x else x)
+            & C.unlines
+            & C.tail
+    tWriteFile packageYaml y2 (mapThrow EWrite PackageYaml packageYaml)
+  -- catch, map an exception into a custom exception for easier handling, throw it
+  mapThrow :: ActionType -> PathType -> FilePath -> IO a -> IO a
+  mapThrow actionType fileType filePath x =
+    x `catch` (\(e :: SomeException) -> throwIO $ FileError actionType fileType filePath (show e))

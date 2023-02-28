@@ -2,85 +2,161 @@
   inputs = {
     nixpkgs_.url = "github:deemp/flakes?dir=source-flake/nixpkgs";
     nixpkgs.follows = "nixpkgs_/nixpkgs";
-    my-codium.url = "github:deemp/flakes?dir=codium";
+    codium.url = "github:deemp/flakes?dir=codium";
+    drv-tools.url = "github:deemp/flakes?dir=drv-tools";
     flake-utils_.url = "github:deemp/flakes?dir=source-flake/flake-utils";
     flake-utils.follows = "flake-utils_/flake-utils";
     haskell-tools.url = "github:deemp/flakes?dir=language-tools/haskell";
-    flake-compat = {
-      url = "github:edolstra/flake-compat";
-      flake = false;
-    };
     devshell.url = "github:deemp/flakes?dir=devshell";
+    flakes-tools.url = "github:deemp/flakes?dir=flakes-tools";
+    workflows.url = "github:deemp/flakes?dir=workflows";
+    lima.url = "github:deemp/flakes?dir=lima";
   };
-  outputs =
-    { self
-    , flake-utils
-    , nixpkgs
-    , my-codium
-    , haskell-tools
-    , devshell
-    , ...
-    }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs = inputs: inputs.flake-utils.lib.eachDefaultSystem (system:
     let
-      pkgs = nixpkgs.legacyPackages.${system};
-      inherit (my-codium.functions.${system}) writeSettingsJSON mkCodium;
-      inherit (my-codium.configs.${system}) extensions settingsNix;
-      inherit (devshell.functions.${system}) mkCommands mkShell;
-      inherit (haskell-tools.functions.${system}) toolsGHC;
-      inherit (toolsGHC "90") stack hls hpack implicit-hie ghcid;
+      # We're going to make some dev tools for our Haskell package
+      # The NixOS wiki has more info - https://nixos.wiki/wiki/Haskell
 
-      writeSettings = writeSettingsJSON {
-        inherit (settingsNix) haskell todo-tree files editor gitlens
-          git nix-ide workbench markdown-all-in-one
-          json-language-features markdown-language-features;
+      # --- Imports ---
+
+      pkgs = inputs.nixpkgs.legacyPackages.${system};
+      inherit (inputs.codium.functions.${system}) writeSettingsJSON mkCodium;
+      inherit (inputs.drv-tools.functions.${system}) mkBin withAttrs withMan withDescription mkShellApp;
+      inherit (inputs.drv-tools.configs.${system}) man;
+      inherit (inputs.codium.configs.${system}) extensions settingsNix;
+      inherit (inputs.flakes-tools.functions.${system}) mkFlakesTools;
+      inherit (inputs.devshell.functions.${system}) mkCommands mkRunCommandsDir mkShell;
+      inherit (inputs.haskell-tools.functions.${system}) toolsGHC;
+      inherit (inputs.workflows.functions.${system}) writeWorkflow;
+      inherit (inputs.workflows.configs.${system}) nixCI;
+      inherit (inputs) lima;
+
+      # --- Parameters ---
+
+      # The desired GHC version
+      ghcVersion = "925";
+
+      # The name of a package
+      packageName = "nix-managed";
+
+      # The libraries that the package needs during a build
+      packageLibraryDependencies = [ pkgs.lzma ];
+
+      # The packages that provide the binaries that our package uses at runtime
+      packageRuntimeDependencies = [ ];
+
+      # --- Override ---
+
+      # We need to prepare an attrset of Haskell packages and include our packages into it,
+      # so we define an override - https://nixos.wiki/wiki/Haskell#Overrides.
+      # We'll supply the necessary dependencies to our packages.
+      # Sometimes, we need to fix the broken packages - https://gutier.io/post/development-fixing-broken-haskell-packages-nixpkgs/.
+      # For doing that, we use several helper functions.
+      # Overriding the packages may trigger multiple rebuilds,
+      # so we override as few packages as possible.
+
+      inherit (pkgs.haskell.lib)
+        # doJailbreak - remove package bounds from build-depends of a package
+        doJailbreak
+        # dontCheck - skip tests
+        dontCheck
+        # override deps of a package
+        overrideCabal
+        ;
+
+      # Here's our override
+      # Haskell overrides are described here: https://nixos.org/manual/nixpkgs/unstable/#haskell
+      override = {
+        overrides = self: super: {
+          "${packageName}" = overrideCabal
+            (super.callCabal2nix packageName ../. { })
+            (x: {
+              # See what can be overriden - https://github.com/NixOS/nixpkgs/blob/0ba44a03f620806a2558a699dba143e6cf9858db/pkgs/development/haskell-modules/generic-builder.nix#L13
+              # And the explanation of the deps - https://nixos.org/manual/nixpkgs/unstable/#haskell-derivation-deps
+
+              # Dependencies of the our package library
+              # New deps go before the existing deps and override them
+              librarySystemDepends = packageLibraryDependencies ++ (x.librarySystemDepends or [ ]);
+
+              # Dependencies of our package executables
+              executableSystemDepends = packageLibraryDependencies ++ (x.executableSystemDepends or [ ]);
+
+              # Here's how we can add a package built from sources
+              # Later, we may use this package in `.cabal` in a test-suite
+              # We should use `cabal v1-*` commands with it - https://github.com/NixOS/nixpkgs/issues/130556#issuecomment-1114239002
+              # Uncomment the text in parentheses to try `lima`
+              testHaskellDepends = [
+                # (super.callCabal2nix "lima" "${lima.outPath}/lima" { })
+              ] ++ (x.testHaskellDepends or [ ]);
+            });
+        };
       };
 
-      codiumTools = [
+      # --- Haskell tools ---
+
+      # We call a helper function that will give us tools for Haskell
+      inherit (toolsGHC {
+        version = ghcVersion;
+        inherit override;
+        runtimeDependencies = packageRuntimeDependencies;
+        # If we work on multiple packages, we need to supply all of them.
+        # Suppose we develop packages A and B, where B is in deps of A.
+        # GHC will be given dependencies of both A and B.
+        # However, we don't want B to be in the list of deps of GHC
+        # because build of GHC may fail due to errors in B.
+        packages = (ps: [ ps.${packageName} ]);
+      })
+        hls cabal implicit-hie justStaticExecutable
+        ghcid callCabal2nix haskellPackages hpack ghc;
+
+      # --- Tools ---
+
+      # We list the tools that we'd like to use
+      tools = [
         hpack
-        stack
-        writeSettings
+        cabal
         hls
-        pkgs.jq
-        implicit-hie
       ];
 
-      codium = mkCodium {
-        extensions = { inherit (extensions) nix haskell misc github markdown; };
-        runtimeDependencies = codiumTools;
+      # --- Packages ---
+
+      packages = {
+        # --- IDE ---
+
+        # This part can be removed if you don't use `VSCodium`
+        # We compose `VSCodium` with dev tools and `HLS`
+        # This is to let `VSCodium` run on its own, outside of a devshell
+        codium = mkCodium {
+          extensions = { inherit (extensions) nix haskell misc github markdown; };
+          runtimeDependencies = tools;
+        };
+
+        # a script to write `.vscode/settings.json`
+        writeSettings = writeSettingsJSON {
+          inherit (settingsNix) haskell todo-tree files editor gitlens
+            git nix-ide workbench markdown-all-in-one markdown-language-features;
+        };
       };
 
-      tools = codiumTools ++ [ codium ];
+      # --- devShells ---
+
+      devShells = {
+        default = mkShell {
+          packages = tools;
+          # sometimes necessary for programs that work with files
+          bash.extra = "export LANG=C.utf8";
+          commands =
+            mkCommands "tools" tools
+            ++ mkRunCommandsDir "nix-dev" "ide" {
+              "codium ." = packages.codium; inherit (packages) writeSettings;
+            };
+        };
+      };
     in
     {
-      packages = {
-        default = codium;
-      };
+      inherit packages devShells;
 
-      devShells.default =
-        mkShell
-          {
-            packages = tools;
-            bash.extra = "";
-            commands =
-              (mkCommands "tools" tools) ++
-              [
-                {
-                  name = "test-gen-hie";
-                  category = "test";
-                  help = "run gen-hie from a Haskell script";
-                  command = ''
-                    cat <<EOT > Ex.hs
-                    module Ex where
-                    import System.Process
-                    main = putStrLn =<< readProcess "gen-hie" ["--help"] ""
-                    EOT
-                    stack runghc -- Ex
-                    rm Ex.*
-                  '';
-                }
-              ];
-          };
+      ghcVersions = pkgs.lib.attrsets.mapAttrsToList (name: _: pkgs.lib.strings.removePrefix "ghc" name) pkgs.haskell.compiler;
     });
 
   nixConfig = {

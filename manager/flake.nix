@@ -22,74 +22,48 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         inherit (haskell-tools.functions.${system}) toolsGHC;
-        inherit (toolsGHC "90") staticExecutable implicit-hie hpack;
+        inherit (toolsGHC {
+          version = "925";
+        }) justStaticExecutable callCabal2nix hpack haskellPackages;
         inherit (drv-tools.functions.${system}) withDescription withMan withAttrs;
         inherit (drv-tools.configs.${system}) man;
-        managerTools = [
+
+        packageName = "manager";
+
+        package = callCabal2nix packageName ./. { };
+
+        runtimeDependencies = [
           pkgs.coreutils
           pkgs.nix
           pkgs.git
-          implicit-hie
           hpack
         ];
-        manager =
+
+        packageExecutableName = "manager";
+        packageExe =
           let
-            name = "manager";
-            exe = staticExecutable name ./.;
+            packageWithCompletion = haskellPackages.generateOptparseApplicativeCompletions [ packageExecutableName ] package;
+            staticExecutable = justStaticExecutable { package = packageWithCompletion; };
           in
           withMan
-            (withDescription
-              (withAttrs
-                (pkgs.symlinkJoin {
-                  name = name;
-                  paths = [ exe ];
-                  buildInputs = [ pkgs.makeBinaryWrapper ];
-                  postBuild = ''
-                    # wrapProgram $out/bin/${name} \
-                      # --set PATH ${
-                        pkgs.lib.makeBinPath managerTools
-                        }
-                    # COMPLETIONS=$out/share/bash-completion/completions
-                    # MANAGER=${exe}/bin/${name}
-                    # mkdir -p $COMPLETIONS
-                    # cat <($MANAGER --bash-completion-script $MANAGER) > $COMPLETIONS/${name}
-                  '';
-                })
-                { pname = name; }
-              ) "Manage repetitive Haskell modules. Run `manager -h`"
-            )
-            (
-              x: ''
-                ${man.DESCRIPTION}
-                ${x.meta.description}
-              ''
-            )
+            (withDescription staticExecutable (_: "Manage Haskell modules in a stack project. Run `manager -h`"))
+            (x: ''
+              ${man.DESCRIPTION}
+              ${x.meta.description}
+            '')
         ;
       in
       {
         packages = {
-          default = manager;
+          default = packageExe;
+          inherit package;
         };
-
         devShells.default = pkgs.mkShell {
-          buildInputs = [ manager ];
+          buildInputs = [ packageExe ];
           shellHook = ''
-            # source <(manager --bash-completion-script `which manager`)
-            # manager
+            source ${packageExe}/share/bash-completion/completions/${packageExecutableName}
           '';
         };
-
-        stack-shell = { ghcVersion }:
-
-          pkgs.haskell.lib.buildStackProject {
-            name = "nix-stack-shell";
-
-            ghc = pkgs.haskell.compiler.${ghcVersion};
-
-            buildInputs = [
-              pkgs.zlib
-            ] ++ managerTools;
-          };
       }
       ) // {
       templates = {
