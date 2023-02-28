@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 
@@ -26,12 +26,19 @@ library
   hs-source-dirs:
       src
   default-extensions:
-      TypeApplications
-      ImportQualifiedPost
+      AllowAmbiguousTypes
       BlockArguments
-      QuasiQuotes
-      NoOverloadedStrings
+      DataKinds
+      FlexibleContexts
+      FlexibleInstances
+      ImportQualifiedPost
       InstanceSigs
+      MultiParamTypeClasses
+      NoOverloadedStrings
+      QuasiQuotes
+      RankNTypes
+      TypeApplications
+      TypeFamilies
   build-depends:
       aeson
     , async
@@ -65,12 +72,19 @@ executable Breakpoint
   other-modules:
       Paths_nix_managed
   default-extensions:
-      TypeApplications
-      ImportQualifiedPost
+      AllowAmbiguousTypes
       BlockArguments
-      QuasiQuotes
-      NoOverloadedStrings
+      DataKinds
+      FlexibleContexts
+      FlexibleInstances
+      ImportQualifiedPost
       InstanceSigs
+      MultiParamTypeClasses
+      NoOverloadedStrings
+      QuasiQuotes
+      RankNTypes
+      TypeApplications
+      TypeFamilies
   build-depends:
       aeson
     , async
@@ -104,12 +118,19 @@ executable README
   other-modules:
       Paths_nix_managed
   default-extensions:
-      TypeApplications
-      ImportQualifiedPost
+      AllowAmbiguousTypes
       BlockArguments
-      QuasiQuotes
-      NoOverloadedStrings
+      DataKinds
+      FlexibleContexts
+      FlexibleInstances
+      ImportQualifiedPost
       InstanceSigs
+      MultiParamTypeClasses
+      NoOverloadedStrings
+      QuasiQuotes
+      RankNTypes
+      TypeApplications
+      TypeFamilies
   build-depends:
       aeson
     , async
@@ -143,12 +164,19 @@ executable RandomNumbers
   other-modules:
       Paths_nix_managed
   default-extensions:
-      TypeApplications
-      ImportQualifiedPost
+      AllowAmbiguousTypes
       BlockArguments
-      QuasiQuotes
-      NoOverloadedStrings
+      DataKinds
+      FlexibleContexts
+      FlexibleInstances
+      ImportQualifiedPost
       InstanceSigs
+      MultiParamTypeClasses
+      NoOverloadedStrings
+      QuasiQuotes
+      RankNTypes
+      TypeApplications
+      TypeFamilies
   build-depends:
       aeson
     , async
@@ -183,14 +211,19 @@ test-suite docs
   other-modules:
       Paths_nix_managed
   default-extensions:
-      TypeApplications
-      ImportQualifiedPost
+      AllowAmbiguousTypes
       BlockArguments
-      QuasiQuotes
-      NoOverloadedStrings
+      DataKinds
+      FlexibleContexts
+      FlexibleInstances
+      ImportQualifiedPost
       InstanceSigs
-  build-tool-depends:
-      lima:lima ==0.1.*
+      MultiParamTypeClasses
+      NoOverloadedStrings
+      QuasiQuotes
+      RankNTypes
+      TypeApplications
+      TypeFamilies
   build-depends:
       aeson
     , async
@@ -199,6 +232,7 @@ test-suite docs
     , breakpoint
     , bytestring
     , containers
+    , data-default
     , deepseq
     , effectful
     , exceptions
@@ -208,6 +242,7 @@ test-suite docs
     , http-client-tls
     , http-types
     , lifted-base
+    , lima
     , managed
     , monad-control
     , mtl

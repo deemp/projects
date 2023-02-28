@@ -1,10 +1,17 @@
 default-extensions:
-  - TypeApplications
-  - ImportQualifiedPost
+  - AllowAmbiguousTypes
   - BlockArguments
-  - QuasiQuotes
-  - NoOverloadedStrings
+  - DataKinds
+  - FlexibleContexts
+  - FlexibleInstances
+  - ImportQualifiedPost
   - InstanceSigs
+  - MultiParamTypeClasses
+  - NoOverloadedStrings
+  - QuasiQuotes
+  - RankNTypes
+  - TypeApplications
+  - TypeFamilies
 
 dependencies:
   - base >= 4.7 && < 5
@@ -41,7 +48,6 @@ executables:
     main: app/RandomNumbers.hs
   README:
     main: README.hs
-      
 
 library:
   source-dirs:
@@ -54,7 +60,8 @@ tests:
       - turtle
       - string-interpolate
       - text
-    build-tools: lima:lima ^>= 0.1
+      - lima
+      - data-default
 
 license: BSD3
 

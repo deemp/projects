@@ -20,7 +20,7 @@ import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (wait, withAsync)
 import Control.Monad.Fix (fix)
 import Control.Monad.Identity (Identity)
-import Data.Foldable (fold)
+import Data.Foldable (Foldable (foldl'), fold)
 import Data.Kind (Type)
 import Language.Haskell.TH.Syntax (Dec, Quasi, runQ)
 
@@ -30,7 +30,9 @@ LIMA_ENABLE -->
 
 # Developers roadmap
 
-for backend - [src](https://github.com/fullstack-development/developers-roadmap)
+For backend - [src](https://github.com/fullstack-development/developers-roadmap).
+
+Source code for this `README.md` is in [README.hs](README.hs).
 
 ## Prerequisites
 
@@ -75,9 +77,9 @@ It explains what's available in this project.
 class Foldable t where
 ```
 
-- When using folds, can force the evaluation of an accumulator
-  - `deepseq`
-  - [BangPatterns](http://downloads.haskell.org/~ghc/7.6.3/docs/html/users_guide/bang-patterns.html) with pattern matching on the element of an accumulator to force.
+- When using folds, one can force the evaluation of an accumulator
+  - `deepseq` - [YT](https://www.youtube.com/watch?v=eAcNGbnuTYs&list=PLe7Ei6viL6jGp1Rfu0dil1JH1SHk9bgDV&index=32)
+  - [BangPatterns](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/strict.html) with pattern matching on the element of an accumulator to force.
 
     <!-- LIMA_INDENT 4 -->
 
@@ -89,8 +91,10 @@ class Foldable t where
     <!-- LIMA_DEDENT -->
 
 - `foldl'` - fold a list from the left: `f (f (f x a1) a2) ...` and have accumulator in WHNF.
+  - May need to force the accumulator
 - `foldr` - calculate the full list and fold it from the right: `f (f (f x a5) a4) ...`.
   - Can terminate early if an operation is strict in the left argument (like `&&`) - [SO](https://stackoverflow.com/a/27682341)
+  - Can cause stack overflow as it has to evaluate the whole list first - [wiki](https://wiki.haskell.org/Foldr_Foldl_Foldl'#Foldr)
 
     <!-- LIMA_INDENT 4 -->
 
@@ -113,7 +117,7 @@ class Foldable t where
 
     <!-- LIMA_DEDENT -->
 
-- `foldMap` - maps each element to a `Monoid` and `fold`s the container
+- `foldMap :: (Foldable t, Monoid m) => (a -> m) -> t a -> m` - maps each element of a container to a `Monoid` and `fold`s the container
 
     <!-- LIMA_INDENT 4 -->
 
@@ -146,7 +150,7 @@ class Foldable t where
       -- >>> foldr (<|>) empty [Just "a", Nothing, Just "c", Nothing, Just "e"]
       -- Just "a"
       
-      -- >>> foldl (<|>) empty [Just "a", Nothing, Just "c", Nothing, Just "e"]
+      -- >>> foldl' (<|>) empty [Just "a", Nothing, Just "c", Nothing, Just "e"]
       -- Just "a"
       ```
 
@@ -171,13 +175,22 @@ class Foldable t where
 
     <!-- LIMA_DEDENT -->
 
-#### Handle pattern
+#### Contravariant
+
+- [Contravariant](https://github.com/ocharles/blog/blob/master/guest-posts/2013-12-21-24-days-of-hackage-contravariant.md)
+
+#### Profunctor
+
+- [Profunctor](https://github.com/ocharles/blog/blob/master/guest-posts/2013-12-22-24-days-of-hackage-profunctors.md)
+
+
+### Handle pattern
 
 - [src](https://www.metalamp.ru/articles/service-handle-pattern)
 
 - Take functions from a **given** environment, e.g. from `ReaderT`
 
-#### Exceptions
+### Exceptions
 
 - [Safe exception handling](https://www.fpcomplete.com/haskell/tutorial/exceptions/)
   - Types of exceptions:
@@ -729,6 +742,9 @@ ex2 = runQ [d|decl :: Int; decl = 1 + 2|]
 -- >>>ex2
 -- [SigD decl_0 (ConT GHC.Types.Int),ValD (VarP decl_0) (NormalB (InfixE (Just (LitE (IntegerL 1))) (VarE GHC.Num.+) (Just (LitE (IntegerL 2))))) []]
 ```
+
+### Generics
+- [Higher-Kinded Data](https://reasonablypolymorphic.com/blog/higher-kinded-data/)
 
 ## Misc
 

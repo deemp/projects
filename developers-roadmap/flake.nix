@@ -81,7 +81,11 @@
         };
       };
 
-      inherit (toolsGHC ghcVersion_ override (ps: [ ps.myPackage ]) [ ])
+      inherit (toolsGHC {
+        version = ghcVersion_;
+        inherit override;
+        packages = (ps: [ ps.myPackage ]);
+      })
         hls cabal implicit-hie justStaticExecutable
         ghcid callCabal2nix haskellPackages hpack;
 
@@ -100,7 +104,7 @@
       ];
 
       codium = mkCodium {
-        extensions = { inherit (extensions) nix haskell misc github markdown kubernetes postgresql; };
+        extensions = { inherit (extensions) nix haskell misc github markdown; };
         runtimeDependencies = codiumTools;
       };
 
@@ -116,14 +120,21 @@
             help = "generate docs (`README.md`, etc.)";
             command = "cabal v1-test";
           }
+          {
+            name = "nix run .#codium .";
+            category = "ide";
+            help = "Run " + codium.meta.description + " in the current dir";
+          }
+          {
+            name = "nix run .#writeSettings";
+            category = "ide";
+            help = writeSettings.meta.description;
+          }
         ];
       };
-
-      flakesTools = mkFlakesTools [ "." ];
     in
     {
       packages = {
-        inherit (flakesTools) updateLocks pushToCachix;
         inherit writeSettings codium;
       };
 
