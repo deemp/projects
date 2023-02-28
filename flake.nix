@@ -2,42 +2,56 @@
   inputs = {
     nixpkgs_.url = "github:deemp/flakes?dir=source-flake/nixpkgs";
     nixpkgs.follows = "nixpkgs_/nixpkgs";
+    codium.url = "github:deemp/flakes?dir=codium";
     flake-utils_.url = "github:deemp/flakes?dir=source-flake/flake-utils";
     flake-utils.follows = "flake-utils_/flake-utils";
+    vscode-extensions_.url = "github:deemp/flakes?dir=source-flake/nix-vscode-extensions";
+    vscode-extensions.follows = "vscode-extensions_/vscode-extensions";
+    devshell.url = "github:deemp/flakes?dir=devshell";
     flakes-tools.url = "github:deemp/flakes?dir=flakes-tools";
-    drv-tools.url = "github:deemp/flakes?dir=drv-tools";
-    formatter.url = "github:deemp/flakes?dir=source-flake/formatter";
-    my-codium.url = "github:deemp/flakes?dir=codium";
-    my-devshell.url = "github:deemp/flakes?dir=devshell";
     workflows.url = "github:deemp/flakes?dir=workflows";
   };
-  outputs =
-    { self
-    , nixpkgs
-    , flake-utils
-    , flakes-tools
-    , drv-tools
-    , my-codium
-    , formatter
-    , my-devshell
-    , workflows
-    , ...
-    }: flake-utils.lib.eachDefaultSystem
-      (system:
+  outputs = inputs: inputs.flake-utils.lib.eachDefaultSystem
+    (system:
       let
-        inherit (my-codium.configs.${system}) extensions;
-        inherit (my-codium.functions.${system}) mkCodium writeSettingsJSON;
-        inherit (my-codium.configs.${system}) settingsNix;
-        inherit (drv-tools.functions.${system}) readDirectories;
-        inherit (flakes-tools.functions.${system}) mkFlakesTools;
-        inherit (my-devshell.functions.${system}) mkCommands;
-        inherit (workflows.functions.${system}) writeWorkflow;
-        inherit (workflows.configs.${system}) nixCI;
-        pkgs = nixpkgs.legacyPackages.${system};
-        devshell = my-devshell.devshell.${system};
+        pkgs = inputs.nixpkgs.legacyPackages.${system};
+        inherit (inputs.codium.functions.${system}) mkCodium writeSettingsJSON;
+        inherit (inputs.codium.configs.${system}) extensions settingsNix;
+        inherit (inputs.vscode-extensions.extensions.${system}) vscode-marketplace open-vsx;
+        inherit (inputs.devshell.functions.${system}) mkCommands mkRunCommands mkShell;
+        inherit (inputs.workflows.functions.${system}) writeWorkflow;
+        inherit (inputs.workflows.configs.${system}) nixCI;
+        inherit (inputs.flakes-tools.functions.${system}) mkFlakesTools;
 
-        flakesTools = (mkFlakesTools (
-          [
+        tools = [ pkgs.hello ];
+
+        packages = {
+          # --- IDE ---
+
+          # This part can be removed if you don't use `VSCodium`
+          # We compose `VSCodium` with dev tools
+          # This is to let `VSCodium` run on its own, outside of a devshell
+          codium = mkCodium {
+            extensions = {
+              inherit (extensions) nix haskell misc github markdown;
+              # We can include more extensions by providing them in an attrset here
+              extra = {
+                inherit (vscode-marketplace.golang) go;
+              };
+            };
+            runtimeDependencies = tools;
+          };
+
+          # a script to write `.vscode/settings.json`
+          writeSettings = writeSettingsJSON {
+            inherit (settingsNix) todo-tree files editor gitlens
+              git nix-ide workbench markdown-all-in-one markdown-language-features;
+          };
+
+          # --- Flakes ---
+
+          # Scripts that can be used in CI
+          inherit (mkFlakesTools [
             "blockchain"
             "db-hs"
             "developers-roadmap"
@@ -49,29 +63,27 @@
             "manager/nix-dev"
             "optics-by-example"
             "."
-          ]
-        ));
+          ]) updateLocks pushToCachix;
 
-        writeSettings = writeSettingsJSON settingsNix;
-        codiumTools = [ writeSettings ];
-        codium = mkCodium {
-          extensions = { inherit (extensions) nix misc github markdown; };
-          runtimeDependencies = codiumTools;
-        };
-        tools = [ codium writeSettings ];
-      in
-      {
-        devShells.default = devshell.mkShell
-          {
-            packages = tools;
-            commands = mkCommands "tools" tools;
-          };
+          # --- GH Actions
 
-        packages = {
-          pushToCachix = flakesTools.pushToCachix;
-          updateLocks = flakesTools.updateLocks;
+          # A script to write GitHub Actions workflow file into `.github/ci.yaml`
           writeWorkflows = writeWorkflow "ci" nixCI;
         };
+
+        devShells.default = mkShell {
+          packages = tools;
+          bash.extra = "hello";
+          commands =
+            mkCommands "tools" tools
+            ++ mkRunCommands "ide" {
+              "codium ." = packages.codium;
+              inherit (packages) writeSettings;
+            };
+        };
+      in
+      {
+        inherit packages devShells;
       });
 
   nixConfig = {
