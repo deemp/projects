@@ -54,6 +54,4 @@ let
       '';
     };
 in
-{
-  inherit writeConfigs;
-}
+writeConfigs

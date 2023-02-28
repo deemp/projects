@@ -14,12 +14,26 @@ These might be useful if you'd like to learn `Nix` and my flakes:
 
 1. Install Nix - see [how](https://github.com/deemp/flakes/blob/main/README/InstallNix.md).
 
-1. Start a devshell and run app
+1. Start a devshell and run app.
 
-    ```console
-    nix develop
-    cabal run
-    ```
+    - with `cabal`
+
+        ```console
+        cabal run
+        ```
+
+    - with `nix develop`
+
+        ```console
+        nix develop
+        cabal run
+        ```
+
+    - with `nix run`
+
+        ```console
+        nix run
+        ```
 
 1. Here's a sample log:
 
@@ -27,15 +41,20 @@ These might be useful if you'd like to learn `Nix` and my flakes:
 
 ## Contribute
 
-1. Start a devshell and open `VSCodium`
+1. Start a devshell.
 
     ```console
-    nix develop
-    write-settings-json
-    codium .
+    nix develop    
     ```
 
-1. Open a `Haskell` file and wait until `HLS` starts giving you type hints
+1. (Optionally) Run `VSCodium`.
+
+    ```console
+    nix run .#writeSettings
+    nix run .#codium .
+    ```
+
+1. Open a `Haskell` file and wait until `HLS` starts giving you type hints.
 
 ## References
 
@@ -43,5 +62,5 @@ These might be useful if you'd like to learn `Nix` and my flakes:
 - [The ReaderT Design Pattern](https://www.fpcomplete.com/blog/2017/06/readert-design-pattern/)
 - [Practical STM: An Async Job Queue, by Jake Keuhlen](https://www.youtube.com/watch?v=KAlSoytmVFA)
 
-  - `TMVar` - don't forget to put a value inside
-  - `stdout` is a shared resource - can put log into a `TVar`
+  - `TMVar` - don't forget to put a value inside.
+  - `stdout` is a shared resource - can put log into a `TVar`.
