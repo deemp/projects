@@ -25,7 +25,6 @@
     let
       pkgs = nixpkgs.legacyPackages.${system};
       inherit (my-codium.functions.${system}) writeSettingsJSON mkCodium;
-      inherit (drv-tools.functions.${system}) mkBin withAttrs withMan withDescription mkShellApp;
       inherit (drv-tools.configs.${system}) man;
       inherit (my-codium.configs.${system}) extensions settingsNix;
       inherit (flakes-tools.functions.${system}) mkFlakesTools;
