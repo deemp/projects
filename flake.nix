@@ -42,9 +42,11 @@
             "db-hs"
             "developers-roadmap"
             "scala"
+            "simplex-cheat"
             "sockets-and-pipes"
             "webchat"
             "manager"
+            "manager/nix-dev"
             "optics-by-example"
             "."
           ]
