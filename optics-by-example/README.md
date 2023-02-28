@@ -54,6 +54,12 @@ This template uses `GHC 9.2`. You can switch to `GHC 9.0`:
 - [.github/workflows/ci.yaml] - a generated `GitHub Actions` workflow. See [workflows](https://github.com/deemp/flakes/tree/main/workflows). Generate a workflow via `nix run .#writeWorkflows`.
 - `hie.yaml` - not present, but can be generated via [implicit-hie](https://github.com/Avi-D-coder/implicit-hie) (available on devshell) to verify the `Haskell Language Server` setup.
 
+## Additional resources
+
+- [lens ipynb](https://github.com/Elvecent/notebooks/blob/master/lens-aeson/Main.ipynb)
+- [operators](https://github.com/ekmett/lens/wiki/Operators)
+- [optics derivation](https://github.com/ekmett/lens/wiki/Derivation#traversals)
+
 ## Book
 <!-- FOURMOLU_DISABLE -->
 
@@ -84,25 +90,15 @@ LIMA_ENABLE -->
 module Main (main) where
 
 import Control.Lens
-
-import Control.Applicative
-import Control.Lens
 import Control.Lens.Unsound (lensProduct)
-import Control.Monad.Fix (fix)
-import Data.Bitraversable (Bitraversable)
 import Data.ByteString qualified as BS
-import Data.Char
+import Data.Char (toUpper)
 import Data.Foldable (Foldable (..))
 import Data.Map qualified as M
-import Data.Maybe (fromJust)
 import Data.Monoid (Sum (..))
 import Data.Ord (comparing)
-import Data.Set qualified as S
 import Data.Text qualified as T
-import Data.Text qualified as Text
 import GHC.Word qualified
-import Language.Haskell.TH (Dec, Q, Quote, runQ)
-import Language.Haskell.TH.Syntax (Quasi)
 
 main :: IO ()
 main = print "hello"
@@ -1605,6 +1601,8 @@ ex30 = maximumByOf (folded . actors . folded) (comparingOf birthYear) tvShows
 
 #### Folding with effects
 
+Effectful folding
+
 - `traverse_ :: (Foldable t, Applicative f) => (a -> f b) -> t a -> f ()` - fold with effects
 
 Similar to ordinary `Foldable` functions:
@@ -2152,3 +2150,269 @@ Other helpers
     ```
 
     <!-- LIMA_DEDENT -->
+
+### 7. Traversals
+
+#### 7.1. Introduction to Traversals
+
+Can get or set many focuses **in-place**.
+
+- **rows** - optics that we **have**
+- **columns** - how want to **use** that optics
+
+![alt](README/tableTraversals.png)
+
+#### From fold to traversal
+
+```hs
+both :: Bitraversable r => Traversal (r a a) (r b b) a b
+```
+
+In case of tuples, `both` focuses both sides of a tuple.
+
+`Traversal s t a b`:
+
+- `s`: structure before action
+- `t`: structure after action
+- `a`: focus before action
+- `b`: focus after action
+
+Let's modify both elements of a tuple
+
+```haskell
+ex49 :: (String, String)
+ex49 = ("Bubbles", "Buttercup") & both %~ (++ "!")
+
+-- >>> ex49
+-- ("Bubbles!","Buttercup!")
+```
+
+Focuses may change type as long as the type of a structure remains valid. In case of each, we have to change types of all elements of a tuple.
+
+```haskell
+-- >>> ("Bubbles", "Buttercup") & each %~ length
+-- (7,9)
+
+-- >>> [1, 2, 3, 4, 5] & dropping 3 traversed %~ show
+-- No instance for (Num String) arising from the literal `1'
+-- In the expression: 1
+-- In the first argument of `(&)', namely `[1, 2, 3, 4, 5]'
+-- In the expression: [1, 2, 3, 4, 5] & dropping 3 traversed %~ show
+```
+
+Some structures disallow changing the type.
+
+```haskell
+-- >>> ("Houston we have a problem" :: T.Text) & each .~ (22 :: Int)
+-- Couldn't match type `Int' with `Char' arising from a use of `each'
+-- In the first argument of `(.~)', namely `each'
+-- In the second argument of `(&)', namely `each .~ (22 :: Int)'
+-- In the expression:
+--   ("Houston we have a problem" :: Text) & each .~ (22 :: Int)
+```
+
+Can use some functions that we used for `Fold`s, e.g., `filtered`.
+
+```haskell
+-- Reverse only the long strings
+ex50 :: (String, String)
+ex50 =
+  ("short", "really long")
+    & both . filtered ((> 5) . length)
+      %~ reverse
+
+-- >>>ex50
+-- ("short","gnol yllaer")
+```
+
+### 7.2 Traversal Combinators
+
+#### Traversing each element of a container
+
+Some optics are incompatible in types, e.g., `folded` and `%~`. That is, you can't modify focuses in a fold
+
+```haskell
+-- >>> [1, 2, 3] & folded %~ (*10)
+-- Could not deduce (Contravariant Identity)
+--   arising from a use of `folded'
+-- from the context: Num b_aNbRI[sk:1]
+--   bound by the inferred type of
+--              it_aNbPv :: Num b_aNbRI[sk:1] => [b_aNbRI[sk:1]]
+--   at /home/eyjafjallajokull/Desktop/projects/optics-by-example/README.hs:2207:2-28
+-- In the first argument of `(%~)', namely `folded'
+-- In the second argument of `(&)', namely `folded %~ (* 10)'
+-- In the expression: [1, 2, 3] & folded %~ (* 10)
+```
+
+That's why there is a specific function for traversing.
+
+Book:
+
+```hs
+traversed :: Traversable f => Traversal (f a) (f b) a b
+```
+
+Real:
+```hs
+traversed :: Traversable f => IndexedTraversal Int (f a) (f b) a b
+class (Functor t, Foldable t) => Traversable t
+```
+
+If you compose a `Traversal` and a `Fold`, you get a `Fold`.
+
+```haskell
+-- >>>[[3 :: Int, 4]] & traversed . folded %~ (*10)
+-- No instance for (Contravariant Identity)
+--   arising from a use of `folded'
+-- In the second argument of `(.)', namely `folded'
+-- In the first argument of `(%~)', namely `traversed . folded'
+-- In the second argument of `(&)', namely
+--   `traversed . folded %~ (* 10)'
+
+-- >>>[[3 :: Int, 4]] ^.. traversed . folded
+-- [3,4]
+```
+
+Compared to **folded**, **traversed** operates on **less** containers with **more** operations.
+
+```haskell
+powerLevels :: M.Map String Integer
+powerLevels =
+  M.fromList
+    [ ("Gohan", 710)
+    , ("Goku", 9001)
+    , ("Krillin", 5000)
+    , ("Piccolo", 408)
+    ]
+
+-- operate on the values of a map
+ex51 :: M.Map String String
+ex51 =
+  powerLevels
+    & traversed %~ \n ->
+      if n > 9000
+        then "Over 9000"
+        else show n
+
+-- >>>ex51
+-- fromList [("Gohan","710"),("Goku","Over 9000"),("Krillin","5000"),("Piccolo","408")]
+```
+
+#### More Combinators
+
+Book:
+
+- `worded :: Traversal' String String` - focus on words
+- `lined :: Traversal' String String` - focus on lines
+
+Real:
+
+- `worded :: Applicative f => IndexedLensLike' Int f String String`
+- `lined :: Applicative f => IndexedLensLike' Int f String String`
+
+Unlawful, because they wrongly reconstruct the results. E.g., like `unwords . words`, they substitute a single space for multiple spaces.
+
+```haskell
+-- >>> "blue \n suede \n \n shoes" & worded %~ \(x:xs) -> toUpper x : xs
+-- "Blue Suede Shoes"
+```
+
+#### Traversing multiple paths at once
+
+Focus on all `a`s from both structures in a tuple.
+
+```hs
+beside :: Traversal s t a b -> Traversal s' t' a b -> Traversal (s,s') (t,t') a b
+beside :: Lens s t a b      -> Lens s' t' a b      -> Traversal (s,s') (t,t') a b
+beside :: Fold s a          -> Fold s' a           -> Fold (s,s') a
+```
+
+```haskell
+-- >>> let dinos = ("T-Rex", (42, "Stegosaurus"))
+-- >>>  dinos ^.. beside id _2
+-- ["T-Rex","Stegosaurus"]
+
+ex52 :: (String, [String])
+ex52 =
+  ("Cowabunga", ["let's", "order", "pizza"])
+    -- Each half of the tuple has a different path to focus the characters
+    & beside traversed (traversed . traversed)
+      %~ toUpper
+
+-- >>>ex52
+-- ("COWABUNGA",["LET'S","ORDER","PIZZA"])
+```
+
+There are other `Bitraversable`s like `Either`.
+
+```haskell
+-- >>> Left (1, 2) & beside both traversed %~ negate
+-- Left (-1,-2)
+```
+
+#### Focusing a specific traversal element
+
+Focuses a single element with a given index. Can't change the type of that focus because it can't change the type of other focuses.
+
+```hs
+element :: Traversable f => Int -> Traversal' (f a) a
+```
+
+```haskell
+-- >>> [0, 1, 2, 3, 4] & element 2 *~ 100
+-- [0,1,200,3,4]
+```
+
+Focus an element of a traversal or a fold
+
+```hs
+elementOf :: Traversal' s a -> Int -> Traversal' s a
+elementOf :: Fold s a       -> Int -> Fold s a
+```
+
+```haskell
+-- >>> [[0, 1, 2], [3, 4], [5, 6, 7, 8]] & elementOf (traversed . traversed) 6 *~ 100
+-- [[0,1,2],[3,4],[5,600,7,8]]
+```
+
+### 7.3 Traversal Composition
+
+```haskell
+-- Add "Rich " to the names of people with more than $1000
+ex53 :: ((String, Integer), (String, Integer), (String, Integer))
+ex53 =
+  (("Ritchie", 100000), ("Archie", 32), ("Reggie", 4350))
+    & each
+      . filtered ((> 1000) . snd)
+      . _1
+      %~ ("Rich " ++)
+
+-- >>>ex53
+-- (("Rich Ritchie",100000),("Archie",32),("Rich Reggie",4350))
+```
+
+#### Exercises – Simple Traversals
+
+1. What type of optic do you get when you compose a traversal with a fold?
+    - fold
+
+      <!-- LIMA_INDENT 6 -->
+
+      ```haskell
+      -- >>> [[3 :: Int, 4]] ^.. traversed . folded
+      -- [3,4]
+      
+      -- >>> [[3 :: Int, 4]] & traversed . folded .~ 2
+      -- No instance for (Contravariant Identity)
+      --   arising from a use of `folded'
+      -- In the second argument of `(.)', namely `folded'
+      -- In the first argument of `(.~)', namely `traversed . folded'
+      -- In the second argument of `(&)', namely `traversed . folded .~ 2'
+      ```
+
+1. Which of the optics we’ve learned can act as a traversal?
+    - lens and traversal
+
+1.  Which of the optics we’ve learned can act as a fold?
+    - lens, traversal, fold
+      <!-- LIMA_DEDENT 6 -->
