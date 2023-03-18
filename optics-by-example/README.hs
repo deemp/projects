@@ -80,24 +80,35 @@ This template uses `GHC 9.2`. You can switch to `GHC 9.0`:
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 {- LIMA_DISABLE -}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
+{-# LANGUAGE TupleSections #-}
 {- LIMA_ENABLE -}
 {- FOURMOLU_ENABLE -}
 
 module Main (main) where
 
+import Control.Applicative (Applicative (..))
 import Control.Lens
+import Control.Lens (_1)
 import Control.Lens.Unsound (lensProduct)
+import Control.Monad.State
 import Data.ByteString qualified as BS
-import Data.Char (toUpper)
+import Data.Char (toLower, toUpper)
+import Data.Either.Validation
 import Data.Foldable (Foldable (..))
+import Data.List
+import Data.Map (fromList)
 import Data.Map qualified as M
 import Data.Monoid (Sum (..))
 import Data.Ord (comparing)
+import Data.Set qualified as S (Set (..), fromList)
 import Data.Text qualified as T
+import Data.Tree (Tree (..))
 import GHC.Word qualified
+import Text.Read (readMaybe)
 
 main :: IO ()
 main = print "hello"
@@ -557,7 +568,7 @@ celsius_ = lens getter setter
 data User = User
   { _firstName :: String
   , _lastName :: String
-  , _email :: String
+  , _userEmail :: String
   }
   deriving (Show)
 
@@ -566,8 +577,8 @@ makeLenses ''User
 username :: Lens' User String
 username = lens getter setter
  where
-  getter = view email
-  setter user_ s = set email s user_
+  getter = view userEmail
+  setter user_ s = set userEmail s user_
 
 {-
 2. unlawful `fullName` lens
@@ -1216,7 +1227,7 @@ beastSizes = [(3, "Sirens"), (882, "Kraken"), (92, "Ogopogo")]
 -- [1,2,3,4,5,6]
 
 ex19 :: [Char]
-ex19 = toListOf (folded . folded @[]) (M.fromList [("Jack", "Captain"), ("Will", "First Mate")])
+ex19 = toListOf (folded . folded) (M.fromList [("Jack" :: String, "Captain" :: String), ("Will", "First Mate")])
 
 -- >>> ex19
 -- "CaptainFirst Mate"
@@ -1310,16 +1321,20 @@ crewMembers = folding collectCrewMembers
 - converts a function into a `Getter`.
 - that's why, should never fail to get something from a structure.
 
-- Book version:
+- Book:
 
   ```hs
   to :: (s -> a) -> Fold s a
   ```
 
-- Real version:
+- Real:
+-}
 
+-- >>>:t to
+-- to :: (Profunctor p, Contravariant f) => (s -> a) -> Optic' p f s a
+
+{-
   ```hs
-  to :: (Profunctor p, Contravariant f) => (s -> a) -> Optic' p f s a
   class Profunctor (p :: Type -> Type -> Type) where
     dimap :: (a -> b) -> (c -> d) -> p b c -> p a d
   ```
@@ -1759,6 +1774,8 @@ There're optics combinators that **alter other optics**. They accept an optic an
 
 (real types are complex)
 
+take N focuses
+
 ```hs
 taking :: Int -> Fold s a -> Fold s a
 dropping :: Int -> Fold s a -> Fold s a
@@ -1800,17 +1817,22 @@ We can move the combinator to operate on the necessary set of focuses, e.g., the
 
 Reverses the order of a fold.
 
-Real:
-
-  ```hs
-  backwards :: (Profunctor p, Profunctor q) => Optical p q (Backwards f) s t a b -> Optical p q f s t a b
-  ```
-
 Book:
 
   ```hs
   backwards :: Fold s a -> Fold s a
   ```
+
+Real:
+-}
+
+-- >>>:t backwards
+-- backwards
+--   :: (Profunctor p, Profunctor q) =>
+--      Optical p q (Backwards f) s t a b -> Optical p q f s t a b
+
+{-
+Examples:
 -}
 
 -- >>> [1, 2, 3] ^.. backwards folded
@@ -1902,18 +1924,24 @@ trimmingWhile c f = backwards (droppingWhile c (backwards (droppingWhile c f)))
 - Can run a separate fold to calculate the filter condition
 - Can go deeper after filtering
 
-Book
+Book:
 
 - `filtered :: (s -> Bool) -> Fold s s` - filter a fold
 - `filteredBy :: Fold s a -> Fold s s` or `filteredBy :: Fold s a -> IndexedTraversal' a s s` - filter by a condition represented as a fold
 
-Real
-
-- `filtered :: (Choice p, Applicative f) => (a -> Bool) -> Optic' p f a a`
-- `filteredBy :: (Indexable i p, Applicative f) => Getting (First i) a i -> p a (f a) -> a -> f a`
-
+Real:
 -}
+-- >>>:t filtered
+-- filtered :: (Choice p, Applicative f) => (a -> Bool) -> Optic' p f a a
 
+-- >>>:t filteredBy
+-- filteredBy
+--   :: (Indexable i p, Applicative f) =>
+--      Getting (First i) a i -> p a (f a) -> a -> f a
+
+{-
+Examples:
+-}
 -- >>> [1, 2, 3, 4] ^.. folded . filtered even
 -- [2,4]
 
@@ -2132,6 +2160,8 @@ ex48 = sumOf (folded . filtered (\x -> x ^. aura /= Leafy) . moves . folded . mo
 {-
 ### 7. Traversals
 
+Have multiple focuses. Can transform them.
+
 #### 7.1. Introduction to Traversals
 
 Can get or set many focuses **in-place**.
@@ -2141,7 +2171,7 @@ Can get or set many focuses **in-place**.
 
 ![alt](README/tableTraversals.png)
 
-#### From fold to traversal
+#### From Fold to Traversal
 
 ```hs
 both :: Bitraversable r => Traversal (r a a) (r b b) a b
@@ -2233,8 +2263,13 @@ traversed :: Traversable f => Traversal (f a) (f b) a b
 ```
 
 Real:
+-}
+
+-- >>> :t traversed
+-- traversed :: Traversable f => IndexedTraversal Int (f a) (f b) a b
+
+{-
 ```hs
-traversed :: Traversable f => IndexedTraversal Int (f a) (f b) a b
 class (Functor t, Foldable t) => Traversable t
 ```
 
@@ -2286,11 +2321,16 @@ Book:
 - `lined :: Traversal' String String` - focus on lines
 
 Real:
+-}
 
-- `worded :: Applicative f => IndexedLensLike' Int f String String`
-- `lined :: Applicative f => IndexedLensLike' Int f String String`
+-- >>> :t worded
+-- worded :: Applicative f => IndexedLensLike' Int f String String
 
-Unlawful, because they wrongly reconstruct the results. E.g., like `unwords . words`, they substitute a single space for multiple spaces.
+-- >>> :t lined
+-- lined :: Applicative f => IndexedLensLike' Int f String String
+
+{-
+They're unlawful, because they wrongly reconstruct the results. E.g., like `unwords . words`, they substitute a single space for multiple spaces.
 -}
 
 -- >>> "blue \n suede \n \n shoes" & worded %~ \(x:xs) -> toUpper x : xs
@@ -2332,7 +2372,8 @@ There are other `Bitraversable`s like `Either`.
 {-
 #### Focusing a specific traversal element
 
-Focuses a single element with a given index. Can't change the type of that focus because it can't change the type of other focuses.
+Focuses a single element with a given index.
+Can't change the type of that focus because it can't change the type of other focuses.
 
 ```hs
 element :: Traversable f => Int -> Traversal' (f a) a
@@ -2397,4 +2438,802 @@ ex53 =
     - lens, traversal, fold
 -}
 
-{- LIMA_DEDENT 6 -}
+{- LIMA_DEDENT -}
+
+-- >>>("Jurassic", "Park") & both .~ "N/A"
+-- ("N/A","N/A")
+
+-- >>> ("Jurassic" :: String, "Park") & both . traversed .~ 'x'
+-- ("xxxxxxxx","xxxx")
+
+-- >>>("Malcolm", ["Kaylee", "Inara", "Jayne"]) & beside id traversed %~ take 3
+-- ("Mal",["Kay","Ina","Jay"])
+
+-- >>>("Malcolm", ["Kaylee", "Inara", "Jayne"]) & _2 . elementOf traversed 1 .~ "River"
+-- ("Malcolm",["Kaylee","River","Jayne"])
+
+-- >>> ["Die Another Day", "Live and Let Die", "You Only Live Twice"] & traversed . elementOf worded 1 . traversed .~ 'x'
+-- ["Die xxxxxxx Day","Live xxx Let Die","You xxxx Live Twice"]
+
+-- >>>((1, 2), (3, 4)) & both . both +~ 1
+-- ((2,3),(4,5))
+
+-- >>>(1, (2, [3, 4])) & beside id (beside id traversed) +~ 1
+-- (2,(3,[4,5]))
+
+ex54 = ((True, "Strawberries" :: String), (False, "Blueberries"), (True, "Blackberries")) & each . filtered fst . _2 . taking 5 traversed %~ toUpper
+
+-- >>> ex54
+-- ((True,"STRAWberries"),(False,"Blueberries"),(True,"BLACKberries"))
+
+ex55 = ((True, "Strawberries"), (False, "Blueberries"), (True, "Blackberries" :: String)) & each %~ snd
+
+-- >>> ex55
+-- ("Strawberries","Blueberries","Blackberries")
+
+{-
+### 7.4 Traversal Actions
+
+```hs
+sequenceA :: (Traversable t, Applicative f) => t (f a) -> f (t a)
+```
+-}
+
+-- >>>sequenceA $ Just (Left "Whoops")
+-- Left "Whoops"
+
+-- >>>sequenceA $ Just (Right "Whoops")
+-- Right (Just "Whoops")
+
+-- >>> :t readMaybe
+-- readMaybe :: Read a => String -> Maybe a
+
+-- >>>traverse readMaybe ["1", "2", "3"] :: Maybe [Int]
+-- Just [1,2,3]
+
+-- >>>traverse readMaybe ["1", "snark", "3"] :: Maybe [Int]
+-- Nothing
+
+{-
+#### Traverse on Traversals
+
+Can run `traverse` on arbitrary focuses!
+-}
+
+-- >>>:t traverseOf
+-- traverseOf :: LensLike f s t a b -> (a -> f b) -> s -> f t
+
+-- >>> :t traverse
+-- traverse :: (Traversable t, Applicative f) => (a -> f b) -> t a -> f (t b)
+
+-- >>> :t traverseOf traversed
+-- traverseOf traversed
+--   :: (Traversable f1, Applicative f2) =>
+--      (a -> f2 b) -> f1 a -> f2 (f1 b)
+
+-- >>>traverseOf both readMaybe ("1", "2") :: Maybe (Int, Int)
+-- Just (1,2)
+
+-- >>> traverseOf both (\c -> [toLower c, toUpper c]) ('a', 'b')
+-- [('a','b'),('a','B'),('A','b'),('A','B')]
+
+-- >>> traverseOf (both . traversed) (\c -> [toLower c, toUpper c]) ("ab", "c")
+-- [("ab","c"),("ab","C"),("aB","c"),("aB","C"),("Ab","c"),("Ab","C"),("AB","c"),("AB","C")]
+
+validateEmail :: String -> Validation [String] String
+validateEmail email
+  | elem '@' email = Success email
+  | otherwise =
+      Failure ["missing '@': " <> email]
+
+-- >>> traverseOf (both . traversed) validateEmail (["mike@tmnt.io", "raph@tmnt.io"], ["don@tmnt.io", "leo@tmnt.io"])
+-- Success (["mike@tmnt.io","raph@tmnt.io"],["don@tmnt.io","leo@tmnt.io"])
+
+-- >>> traverseOf (both . traversed) validateEmail (["mike@tmnt.io", "raph.io"], ["don@tmnt.io", "leo.io"])
+-- Failure ["missing '@': raph.io","missing '@': leo.io"]
+
+{-
+Other functions:
+-}
+
+-- >>>:t forOf
+-- forOf :: LensLike f s t a b -> s -> (a -> f b) -> f t
+
+-- >>>:t sequenceAOf
+-- sequenceAOf :: LensLike f s t (f b) b -> s -> f t
+
+-- >>> sequenceAOf _1 (Just "Garfield", "Lasagna")
+-- Just ("Garfield","Lasagna")
+
+-- >>> sequenceAOf (both . traversed) ([Just "apples"], [Just "oranges"])
+-- Just (["apples"],["oranges"])
+
+{-
+#### Infix `traverseOf`
+-}
+
+-- >>> (("1", "2") & both %%~ readMaybe) :: Maybe (Int, Int)
+-- Just (1,2)
+
+{-
+#### Use Traversals directly
+
+Actual definitions:
+
+```
+traverseOf = id
+(%%~) = id
+```
+
+So, we can (but should not!) use `Traversal`s without `traverseOf`:
+-}
+
+-- >>>both readMaybe ("1", "2") :: Maybe (Int, Int)
+-- Just (1,2)
+
+{-
+#### Exercises - Traversal Actions
+-}
+
+-- >>> sequenceAOf _1 (Nothing, "Rosebud")
+-- Nothing
+
+-- >>> sequenceAOf (traversed . _1) [("ab" :: String,1),("cd",2)]
+-- [[('a',1),('c',2)],[('a',1),('d',2)],[('b',1),('c',2)],[('b',1),('d',2)]]
+
+ex56 :: (([Integer], (Integer, Integer)), Integer)
+ex56 = runState result 0
+ where
+  result = traverseOf (beside traversed both) (\n -> modify (+ n) >> get) ([1, 1, 1], (1, 1))
+
+-- >>>ex56
+-- (([1,2,3],(4,5)),5)
+
+ex57 :: [([Char], Bool)]
+ex57 =
+  ("ab" :: String, True)
+    & (_1 . traversed)
+      %%~ (\c -> [toLower c, toUpper c])
+
+ex58 =
+  [('a', True), ('b', False)]
+    & (traversed . _1)
+      %%~ (\c -> [toLower c, toUpper c])
+
+data UserWithAge = UserWithAge
+  { _userName :: String
+  , _userAge :: Int
+  }
+  deriving (Show)
+makeLenses ''UserWithAge
+data Account = Account
+  { _accountId :: String
+  , _userWithAge :: UserWithAge
+  }
+  deriving (Show)
+makeLenses ''Account
+
+validateAge :: Account -> Validation String Account
+validateAge acc
+  | age' <= 0 = Failure "Age is below 0"
+  | age' >= 150 = Failure "Age is above 150"
+  | otherwise = Success acc
+ where
+  age' = acc ^. userWithAge . userAge
+
+{-
+### 7.5 Custom traversals
+
+van Laarhoven optics are
+
+```hs
+type LensLike f s t a b = (a -> f b) -> (s -> f t)
+```
+
+plus constraints
+
+```hs
+type Lens s t a b = forall f. Functor f => (a -> f b) -> (s -> f t)
+type Traversal s t a b = forall f. Applicative f => (a -> f b) -> (s -> f t)
+type Fold s a = forall f. (Contravariant f, Applicative f) => (a -> f a) -> (s -> f s)
+```
+
+And LensLike is very similar to `traverse` signature:
+
+```hs
+traverse :: (Traversable g, Applicative f) => (a -> f b) -> (g a -> f (g b))
+myTraversal :: myTraversal :: (Applicative f) => (a -> f b) -> (s -> f t)
+```
+
+<b>Most optics are really just traverse wearing different pants.</b>
+
+#### Our first custom traversal
+
+`traversed` for lists
+-}
+
+-- values :: Traversal [a] [b] a b
+values :: Applicative f => (a -> f b) -> [a] -> f [b]
+values _ [] = pure []
+values handler (a : as) = liftA2 (:) (handler a) (values handler as)
+
+-- >>> ["one", "two", "three"] & values %~ length
+-- [3,3,5]
+
+{-
+#### Traversals with custom logic
+
+Some bank software
+-}
+
+data Transaction
+  = Withdrawal {_amount :: Int}
+  | Deposit {_amount :: Int}
+  deriving (Show)
+makeLenses ''Transaction
+
+newtype BankAccount = BankAccount
+  { _transactions :: [Transaction]
+  }
+  deriving (Show)
+makeLenses ''BankAccount
+
+aliceAccount :: BankAccount
+aliceAccount = BankAccount [Deposit 100, Withdrawal 20, Withdrawal 10]
+
+-- >>>aliceAccount ^.. transactions . traversed . amount
+-- [100,20,10]
+
+{-
+#### Case study: Transaction Traversal
+
+Need a traversal which focuses on only the dollar amounts of **deposits** within a given account.
+-}
+
+-- deposits :: Traversal' [Transaction] Int
+-- deposits :: Traversal [Transaction] [Transaction] Int Int
+deposits :: Applicative f => (Int -> f Int) -> [Transaction] -> f [Transaction]
+deposits _ [] = pure []
+deposits handler (Withdrawal amt : rest) = fmap (Withdrawal amt :) (deposits handler rest)
+deposits handler (Deposit amt : rest) = liftA2 (:) (Deposit <$> handler amt) (deposits handler rest)
+
+-- >>>[Deposit 10, Withdrawal 20, Deposit 30] & deposits *~ 10
+-- [Deposit {_amount = 100},Withdrawal {_amount = 20},Deposit {_amount = 300}]
+
+deposits' :: Traversal' [Transaction] Int
+deposits' = traversed . filtered (\case Deposit _ -> True; _ -> False) . amount
+
+{-
+Exercises - Custom traversals
+-}
+
+{- LIMA_INDENT 4 -}
+
+{-
+1. custom traversal
+-}
+-- amountT :: Traversal' Transaction Int
+amountT :: Applicative f => (Int -> f Int) -> Transaction -> f Transaction
+amountT f = \case Deposit am -> Deposit <$> f am; Withdrawal am -> Withdrawal <$> f am
+
+{-
+2. custom `both`
+-}
+both' :: Traversal (a, a) (b, b) a b
+both' f (x, y) = liftA2 (,) (f x) (f y)
+
+{-
+3. delta
+
+Similar to change of coordinates via matrix pre- and post-multiplication
+-}
+
+transactionDelta :: Traversal' Transaction Int
+transactionDelta f = \case Deposit amt -> Deposit <$> f amt; Withdrawal amt -> Withdrawal . negate <$> f (negate amt)
+
+-- >>> Deposit 10 ^? transactionDelta
+-- Just 10
+
+-- Withdrawal's delta is negative
+-- >>> Withdrawal 10 ^? transactionDelta
+-- Just (-10)
+-- >>> Deposit 10 & transactionDelta .~ 15
+-- Deposit {_amount = 15}
+-- >>> Withdrawal 10 & transactionDelta .~ (-15)
+-- Withdrawal {_amount = 15}
+-- >>> Deposit 10 & transactionDelta +~ 5
+-- Deposit {_amount = 15}
+-- >>> Withdrawal 10 & transactionDelta +~ 5
+-- Withdrawal {_amount = 5}
+
+-- left :: Traversal (Either a b) (Either a' b) a a'
+
+{- LIMA_DEDENT -}
+
+left' :: Traversal (Either a b) (Either a' b) a a'
+left' f = \case Left e -> Left <$> f e; Right x -> pure $ Right x
+
+beside' :: Traversal s t a b -> Traversal s' t' a b -> Traversal (s, s') (t, t') a b
+beside' l r f (l1, r1) = liftA2 (,) (l f l1) (r f r1)
+
+{-
+### 7.6 Traversal Laws
+
+#### Law One: Respect Purity
+
+Running the pure handler (which has no effects) using our traversal should be exactly
+the same as running `pure` on the original structure without using the traversal at all.
+
+  ```hs
+  traverseOf myTraversal pure x == pure x
+  ```
+-}
+
+badTupleSnd :: Traversal (Int, a) (Int, b) a b
+badTupleSnd handler (n, a) = (n + 1,) <$> handler a
+
+-- >>> traverseOf badTupleSnd pure (10, "Yo")
+-- (11,"Yo")
+
+{-
+#### Law Two: Consistent Focuses
+
+Running a traversal twice in a row with **different** handlers should be equivalent
+to running it **once** with the composition of those handlers.
+
+  ```hs
+  x & myTraversal %~ f
+    & myTraversal %~ g
+  ==
+  x & myTraversal %~ (g . f)
+  ```
+
+The traversal should never change which elements it focuses due to
+alterations on those elements.
+
+`filtered` breaks this law!
+-}
+
+-- >>> 2 & filtered even %~ (+1) & filtered even %~ (*10)
+-- 3
+
+-- >>> 2 & filtered even %~ (*10) . (+1)
+-- 30
+
+{-
+#### Exercises – Traversal Laws
+
+1. `worded` violates the Law Two
+-}
+
+{- LIMA_INDENT 4 -}
+-- >>>("hit the road, jack" :: String) & worded %~ take 3 & worded %~ drop 2
+-- "t e a c"
+
+-- >>>("hit the road, jack" :: String) & worded %~ (take 3 . drop 2)
+-- "t e ad, ck"
+
+{-
+2. Break the Law One
+-}
+
+myTraversal :: Traversal Int Int Int Int
+myTraversal f _ = f 1
+
+-- >>>(traverseOf myTraversal pure 6) :: Identity Int
+-- Identity 1
+
+-- >>>pure 6 :: Identity Int
+-- Identity 6
+
+{-
+3. Break the Law Two
+-}
+
+ex60 :: Traversal' [Int] Int
+ex60 = traversed . filtered even
+
+-- >>> [1, 2, 3] & ex60 %~ (+ 1) & ex60 %~ (+ 2)
+-- [1,3,3]
+
+-- >>> [1, 2, 3] & ex60 %~ (+ 1) . (+ 2)
+-- [1,5,3]
+
+{-
+4. Check lawful
+
+- `taking` is lawful
+- `beside` is lawful
+- `each` is lawful
+- `lined` is unlawful
+- `traversed` is lawful
+-}
+
+-- >>>("hit\nthe\nroad,\njack" :: String) & lined %~ take 3 & lined %~ drop 2
+-- "t\ne\na\nc"
+
+-- >>>("hit\nthe\nroad,\njack" :: String) & lined %~ (take 3 . drop 2)
+-- "t\ne\nad,\nck"
+
+{-
+update function can insert newlines
+-}
+
+-- >>>("hit\nthe\nroad,\njack" :: String) & lined %~ (\(x:y:xs) -> (x:y:'\n':xs)) & lined %~ take 2
+-- "hi\nt\nth\ne\nro\nad\nja\nck"
+
+-- >>>("hit\nthe\nroad,\njack" :: String) & lined %~ (take 2 . \(x:y:xs) -> (x:y:'\n':xs))
+-- "hi\nth\nro\nja"
+
+{- LIMA_DEDENT -}
+
+{-
+### 7.7 Advanced manipulation
+
+#### partsOf
+
+Real:
+-}
+
+-- >>>:t partsOf
+-- partsOf :: Functor f => Traversing (->) f s t a a -> LensLike f s t [a] [a]
+
+{-
+Book:
+
+- Make a lens whose focuses are focuses of a provided traversal
+
+    ```hs
+    partsOf :: Traversal' s a -> Lens' s [a]
+    ```
+-}
+
+-- >>> [('a', 1 :: Int), ('b', 2), ('c', 3)] & partsOf (traversed . _2) .~ [4]
+-- [('a',4),('b',2),('c',3)]
+
+-- >>> [('a', 1 :: Int), ('b', 2), ('c', 3)] & partsOf (traversed . _2) .~ [4,5,6,7,8]
+-- [('a',4),('b',5),('c',6)]
+
+{-
+Cool example:
+1. focus all characters in strings
+1. concatenate, split into words, sort words, concatenate back
+1. place on corresponding places
+-}
+
+-- >>> ("how is a raven ", "like a ", "writing desk") & partsOf (each . traversed) %~ unwords . sort . words
+-- ("a a desk how is"," like r","aven writing")
+
+{-
+Placement matters
+-}
+
+-- Collect 'each' tuple element into a list, then traverse that list
+-- >>> ("abc", "def") ^.. partsOf each . traversed
+-- ["abc","def"]
+
+-- Collect each tuple element, then traverse those strings collecting each character into a list.
+-- >>> (("abc", "def") ^.. partsOf (each . traversed)) :: [String]
+-- ["abcdef"]
+
+{-
+Can use other focuses for calculating each
+-}
+
+ex61 =
+  [('a', 1), ('b', 2), ('c', 3)]
+    & partsOf (traversed . _2)
+      %~ \xs -> (/ sum xs) <$> xs
+
+-- >>>ex61
+-- [('a',0.16666666666666666),('b',0.3333333333333333),('c',0.5)]
+
+{-
+#### Polymorphic partsOf
+
+We can change type of focuses if supply enough elements
+
+```hs
+unsafePartsOf :: Traversal s t a b -> Lens s t [a] [b]
+```
+-}
+
+-- >>>[('a', 1), ('b', 2), ('c', 3)] & unsafePartsOf (traversed . _1) .~ [True, False]
+-- unsafePartsOf': not enough elements were supplied
+
+ex62 =
+  [('a', 1), ('b', 2), ('c', 3)]
+    & unsafePartsOf (traversed . _1)
+      %~ \xs -> zip xs ((Just <$> tail xs) ++ [Nothing])
+
+-- >>>ex62
+-- [(('a',Just 'b'),1),(('b',Just 'c'),2),(('c',Nothing),3)]
+
+{-
+#### partsOf and other data structures
+
+Replace each ID in a Tree with a User
+
+```hs
+userIds :: Tree UserId
+lookupUsers :: [UserId] -> IO [User]
+treeLookup :: Tree UserId -> IO (Tree User)
+treeLookup = traverseOf (unsafePartsOf traversed) lookupUsers
+```
+
+#### Exercises - partsOf
+-}
+
+-- >>> [1, 2, 3, 4] ^. partsOf (traversed . filtered even)
+-- [2,4]
+
+-- >>> ["Aardvark" :: String, "Bandicoot", "Capybara"] ^. traversed . partsOf (taking 3 traversed)
+-- "AarBanCap"
+
+ex63 :: [Int]
+ex63 = ([1, 2], M.fromList [('a', 3), ('b', 4)]) ^. partsOf (beside traversed traversed)
+
+-- >>> ex63
+-- [1,2,3,4]
+
+-- >>> [1, 2, 3, 4] & partsOf (traversed . filtered even) .~ [20, 40]
+-- [1,20,3,40]
+
+-- >>> ["Aardvark", "Bandicoot", "Capybara"] & partsOf (traversed . traversed) .~ "Kangaroo"
+-- ["Kangaroo","Bandicoot","Capybara"]
+
+-- >>> ["Aardvark", "Bandicoot", "Capybara"] & partsOf (traversed . traversed) .~ "Ant"
+-- ["Antdvark","Bandicoot","Capybara"]
+
+-- Modifying
+-- Tip: Map values are traversed in order by KEY
+-- >>> M.fromList [('a', 'a'), ('b', 'b'), ('c', 'c')] & partsOf traversed %~ \(x:xs) -> xs ++ [x]
+-- fromList [('a','b'),('b','c'),('c','a')]
+
+-- >>> ('a', 'b', 'c') & partsOf each %~ reverse
+-- ('c','b','a')
+
+-- >>> [1, 2, 3, 4, 5, 6] & partsOf (taking 3 traversed) %~ reverse
+-- [3,2,1,4,5,6]
+
+-- >>> ('a', 'b', 'c') & unsafePartsOf each %~ \xs -> fmap ((,) xs) xs
+-- (("abc",'a'),("abc",'b'),("abc",'c'))
+
+{-
+## 8. Indexable Structures
+
+### 8.1 What’s an “indexable” structure?
+
+<b>Indexable</b> structures store values at <b>named locations</b> which can be identified by some <b>index</b>.
+That is, an <b>index</b> represents a <b>specific location</b> within a data structure where a value <b>might</b> be stored.
+
+Data structures have different interfaces (lists, dicts)
+
+### 8.2 Accessing and updating values with ‘Ixed’
+
+#### The Ixed Class
+
+Unifies the interface to all data structures.
+
+```hs
+class Ixed m where
+  ix :: Index m -> Traversal' m (IxValue m)
+```
+
+makes a Traversal because an Index at a specified location may be missing.
+
+These are Type Families that calculate an index an a value types for a data structure.
+
+```hs
+type instance Index [a] = Int
+type instance IxValue [a] = a
+
+type instance Index (Map k a) = k
+type instance IxValue (Map k a) = a
+
+type instance Index Text = Int
+type instance IxValue Text = Char
+
+type instance Index ByteString = Int
+type instance IxValue ByteString = Word8
+```
+
+#### Accessing and setting values with ix
+
+Can't add or remove focuses.
+
+Lists:
+-}
+
+humanoids = ["Borg", "Cardassian", "Talaxian"]
+
+-- >>> -- Get the value at index 1:
+-- >>> humanoids & ix 1 .~ "Vulcan"
+-- ["Borg","Vulcan","Talaxian"]
+-- >>> -- There's no value at index 10 so the traversal doesn't focus anything
+-- >>> humanoids & ix 10 .~ "Romulan"
+-- ["Borg","Cardassian","Talaxian"]
+
+{-
+Maps:
+-}
+
+benders = M.fromList [("Katara", "Water"), ("Toph", "Earth"), ("Zuko", "Fire")]
+
+-- Get the value at key "Zuko"
+-- >>> benders ^? ix "Zuko"
+-- Just "Fire"
+
+-- If there's no value at a key, the traversal returns zero elements
+-- >>> benders ^? ix "Sokka"
+-- Nothing
+
+-- We can set the value at a key, but only if that key already exists
+-- >>> benders & ix "Toph" .~ "Metal"
+-- fromList [("Katara","Water"),("Toph","Metal"),("Zuko","Fire")]
+
+-- Setting a non-existent element of a Map does NOT insert it.
+-- >>> benders & ix "Iroh" .~ "Lightning"
+-- fromList [("Katara","Water"),("Toph","Earth"),("Zuko","Fire")]
+
+{-
+#### Indexed Structures
+-}
+
+-- >>> :kind! forall a. Index [a]
+-- forall a. Index [a] :: *
+-- = Int
+
+-- >>> :kind! forall a. IxValue [a]
+-- forall a. IxValue [a] :: *
+-- = a
+
+{-
+#### Indexing monomorphic types
+-}
+
+-- >>>("hello" :: T.Text) ^? ix 0
+-- Just 'h'
+
+-- We can edit a Word8 within a ByteString as though it's an integer.
+-- >>> ("hello" :: BS.ByteString) & ix 0 +~ 2
+-- "jello"
+
+{-
+Cool example:
+-}
+
+ex64 = ("hello" :: T.Text) & ix 1 %%~ const ("aeiou" :: [Char])
+
+{-
+Explanation:
+
+```hs
+type instance IxValue [a] = a
+instance Ixed [a] where
+  ix k f xs0 | k < 0     = pure xs0
+             | otherwise = go xs0 k where
+    go [] _ = pure []
+    go (a:as) 0 = f a <&> (:as)
+    go (a:as) i = (a:) <$> (go as $! i - 1)
+  {-# INLINE ix #-}
+```
+
+So, we'll pre- and append the not-focused parts inside the Functorial context.
+-}
+
+ex64' :: [String]
+ex64' = ('h' :) <$> (const "aeiou" 'e' <&> (: "llo"))
+
+-- >>>ex64'
+-- ["hallo","hello","hillo","hollo","hullo"]
+
+{-
+#### Indexing stranger structures
+
+Numbers denote node children
+-}
+
+tree :: Tree Int
+tree = Node 1 [Node 2 [Node 4 []], Node 3 [Node 5 [], Node 6 []]]
+
+-- >>> tree ^? ix [1, 1]
+-- Just 6
+
+-- >>> tree ^? ix [5, 6]
+-- Nothing
+
+{-
+Functions:
+
+> We can "set" or traverse individual results of a function!
+Here we overwrite the function's output at the input value "password"
+so it instead returns a new value.
+-}
+
+-- >>> myPass = (reverse & ix "password" .~ "You found the secret!")
+-- >>> "pass" & myPass
+-- "ssap"
+-- >>> "password" & myPass
+-- "You found the secret!"
+
+{-
+### 8.3 Inserting & Deleting with ‘At’
+
+#### Map-like structures
+
+Can be used with structures that support inserts by an arbitrary index.
+  - `Map k v`
+  - `Set k` (~ `Map k ()`)
+Lists don't support that. E.g., can't insert 10th element without having 9th.
+
+```hs
+class At where
+  at :: Index m -> Lens' m (Maybe (IxValue m))
+
+ix :: Index m -> Traversal' m (IxValue m)
+at :: Index m -> Lens' m (Maybe (IxValue m))
+
+(?~) :: Traversal s t a (Maybe b) -> b -> s -> t
+```
+-}
+
+-- >>>benders & at "Iroh" ?~ "Lightning"
+-- fromList [("Iroh","Lightning"),("Katara","Water"),("Toph","Earth"),("Zuko","Fire")]
+
+{-
+```hs
+sans :: At m => Index m -> m -> m
+sans k = at k .~ Nothing
+```
+-}
+
+-- >>> sans "Katara" benders
+-- fromList [("Toph","Earth"),("Zuko","Fire")]
+
+ps = foldl (\acc x -> acc <> check acc x) [2] [3 .. 100]
+ where
+  check (a : as) x
+    | a * a > x = [x]
+    | x `mod` a == 0 = []
+    | otherwise = check as x
+  check [] x = [x]
+
+-- >>> ps
+-- [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97]
+
+primes :: S.Set Int
+primes = S.fromList (ps ^.. taking 5 traversed)
+
+-- >>> primes & at 17 ?~ ()
+-- fromList [2,3,5,7,11,17]
+
+{-
+#### Exercises – Indexable Structures
+
+1. fill in blanks
+-}
+
+-- >>> ["Larry", "Curly", "Moe"] & ix 1 .~ "Wiggly"
+-- ["Larry","Wiggly","Moe"]
+
+heroesAndVillains = M.fromList [("Superman", "Lex"), ("Batman", "Joker")]
+
+-- >>> heroesAndVillains & at "Spiderman" .~ Just "Goblin"
+-- fromList [("Batman","Joker"),("Spiderman","Goblin"),("Superman","Lex")]
+
+-- >>> sans "Superman" heroesAndVillains
+-- fromList [("Batman","Joker")]
+
+-- >>> S.fromList ['a', 'e', 'i', 'o', 'u'] & at 'y' .~ Just () & at 'i' .~ Nothing
+-- fromList "aeouy"
+
+{-
+2. input -> output
+-}
+
+input = M.fromList [("candy bars", 13), ("gum", 7), ("soda", 34)]
+output = M.fromList [("candy bars", 13), ("ice cream", 5), ("soda", 37)]
+
+-- >>> input & at "soda" %~ ((+ 3) <$>) & sans "gum" & at "ice cream" ?~ 5
+-- fromList [("candy bars",13),("ice cream",5),("soda",37)]

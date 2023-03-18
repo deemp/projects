@@ -154,6 +154,7 @@
                 name = "mkdocs";
                 category = "scripts";
                 command = "cabal v1-test docs";
+                help = "generate docs";
               }
             ];
         };

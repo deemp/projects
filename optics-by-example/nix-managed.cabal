@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 
@@ -35,6 +35,7 @@ executable nix-managed
     , base >=4.7 && <5
     , bytestring
     , containers
+    , either
     , lens
     , lens-aeson
     , mtl
