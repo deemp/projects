@@ -34,6 +34,9 @@ dependencies:
 - async
 - with-utf8
 - pretty-simple
+- string-interpolate
+- aeson
+- yaml
 
 ghc-options:
 - -Wall

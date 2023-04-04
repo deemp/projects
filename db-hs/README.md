@@ -15,15 +15,30 @@
 
 1. In a new terminal, run `VSCodium` from a devshell:
 
-```console
-nix develop
-write-settings-json
-codium .
-```
+    ```console
+    nix run .#writeSettings
+    nix develop
+
+    nix run .#codium .
+    ```
 
 1. Open a `Haskell` file and hover over a function.
 
 1. Wait until `Haskell Language Server` (`HLS`) starts giving you type info.
+
+1. Run database in a terminal.
+
+    ```console
+    nix run .#runDB
+    ```
+
+1. Run app in a terminal.
+
+    ```console
+    nix run .#runApp
+    # or
+    cabal v1-run
+    ```
 
 ## Cabal
 
@@ -31,12 +46,6 @@ codium .
 nix develop
 cabal run
 ```
-
-### GHC
-
-This template uses `GHC 9.2`. You can switch to `GHC 9.0`:
-
-- In `flake.nix`, change `"92"` to `"90"`
 
 ## References
 

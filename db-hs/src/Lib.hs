@@ -1,10 +1,15 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE DataKinds #-}
+{-# HLINT ignore "Fuse on/on" #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE ImportQualifiedPost #-}
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
@@ -12,28 +17,30 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
-{-# HLINT ignore "Fuse on/on" #-}
-{-# LANGUAGE TupleSections #-}
-
 module Lib (main) where
 
-import Control.Monad (forM_)
+import Control.Monad (forM_, void)
 import Control.Monad.Logger (LogLevel (..), LoggingT, filterLogger, runStdoutLoggingT)
 import Control.Monad.Reader (ReaderT (..))
+import Data.Aeson (Options (..), defaultOptions, genericParseJSON)
+import Data.Data (Proxy (..))
 import Data.Foldable (for_)
+import Data.String.Interpolate (i)
 import Data.Text.IO.Utf8 ()
-import Database.Esqueleto.Experimental
+import Data.Yaml
+import Database.Esqueleto.Experimental (BackendKey (..), FieldDef (..), PersistEntity, PersistStoreWrite (insert), SqlPersistT, Value (..), delete, desc, from, innerJoin, on, orderBy, runMigration, select, table, val, where_, (=.), (==.), (>.), (^.), type (:&) ((:&)))
 import Database.Persist.Postgresql (ConnectionString, withPostgresqlConn)
 import Database.Persist.TH (mkMigrate, mkPersist, persistLowerCase, share, sqlSettings)
+import GHC.Generics (Generic)
 import Main.Utf8 (withUtf8)
 import Text.Pretty.Simple (pPrint)
-import qualified Data.Text.IO as LBS
 
 -- define schema
 -- TODO add cascade
@@ -59,8 +66,43 @@ share
 
 type Action a = SqlPersistT (LoggingT IO) a
 
--- TODO useful
--- entityVal
+data DBConfig = DBConfig
+  { host :: String
+  , port :: Int
+  , user :: String
+  , dbname :: String
+  , password :: String
+  }
+  deriving (Generic)
+
+aesonOptions :: Options
+aesonOptions = defaultOptions
+
+instance FromJSON DBConfig where
+  parseJSON :: Data.Yaml.Value -> Parser DBConfig
+  parseJSON = genericParseJSON aesonOptions
+
+type PGInfo = ConnectionString
+
+conn :: DBConfig -> PGInfo
+conn DBConfig{..} = [i|host=#{host} port=#{port} user=#{user} dbname=#{dbname} password=#{password}|]
+
+logFilter :: a -> LogLevel -> Bool
+logFilter _ LevelError = True
+logFilter _ LevelWarn = True
+logFilter _ LevelInfo = True
+logFilter _ LevelDebug = True
+logFilter _ (LevelOther _) = True
+
+runAction_ :: PGInfo -> Action a -> IO a
+runAction_ connectionString action =
+  runStdoutLoggingT $
+    filterLogger logFilter $
+      withPostgresqlConn connectionString $ \backend ->
+        runReaderT action backend
+
+runAction :: DBConfig -> Action a -> IO a
+runAction config = runAction_ (conn config)
 
 selectAllAction :: Action [(String, String, Double)]
 selectAllAction =
@@ -82,36 +124,18 @@ selectAllAction =
       return (book ^. BookTitle, genre ^. GenreName_genre, book ^. BookPrice)
     return $ (\(x, y, z) -> (unValue x, unValue y, unValue z)) <$> res
 
-type PGInfo = ConnectionString
-
-conn :: PGInfo
-conn = "host=192.168.58.2 port=30002 user=admin dbname=postgresdb password=psltest"
-
-logFilter :: a -> LogLevel -> Bool
-logFilter _ LevelError = True
-logFilter _ LevelWarn = True
-logFilter _ LevelInfo = True
-logFilter _ LevelDebug = True
-logFilter _ (LevelOther _) = True
-
-runAction_ :: PGInfo -> Action a -> IO a
-runAction_ connectionString action =
-  runStdoutLoggingT $
-    filterLogger logFilter $
-      withPostgresqlConn connectionString $ \backend ->
-        runReaderT action backend
-
-runAction :: Action a -> IO a
-runAction = runAction_ conn
-
--- privet = T.pack "Привет"
-
--- >>>privet
--- "\1055\1088\1080\1074\1077\1090"
+deleteAll :: Action ()
+deleteAll =
+  do del @Book >> del @Genre >> del @Author
+ where
+  del :: forall a. PersistEntity a => Action ()
+  del = delete $ void $ from $ table @a
 
 main :: IO ()
 main = withUtf8 do
-  books <- runAction do
+  config <- decodeFileThrow "config.yaml"
+  books <- runAction config do
+    deleteAll
     runMigration migrateAll
 
     -- insert authors
@@ -139,5 +163,5 @@ main = withUtf8 do
       ]
       insert
     selectAllAction
-  
+
   forM_ books pPrint

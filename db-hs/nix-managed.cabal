@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 
@@ -32,7 +32,8 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      async
+      aeson
+    , async
     , base >=4.7 && <5
     , esqueleto
     , fused-effects
@@ -42,9 +43,11 @@ library
     , persistent-postgresql
     , persistent-template
     , pretty-simple
+    , string-interpolate
     , text
     , transformers
     , with-utf8
+    , yaml
   default-language: Haskell2010
 
 executable nix-managed
@@ -55,7 +58,8 @@ executable nix-managed
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      async
+      aeson
+    , async
     , base >=4.7 && <5
     , esqueleto
     , fused-effects
@@ -66,9 +70,11 @@ executable nix-managed
     , persistent-postgresql
     , persistent-template
     , pretty-simple
+    , string-interpolate
     , text
     , transformers
     , with-utf8
+    , yaml
   default-language: Haskell2010
 
 test-suite nix-managed-test
@@ -80,7 +86,8 @@ test-suite nix-managed-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      async
+      aeson
+    , async
     , base >=4.7 && <5
     , esqueleto
     , fused-effects
@@ -91,7 +98,9 @@ test-suite nix-managed-test
     , persistent-postgresql
     , persistent-template
     , pretty-simple
+    , string-interpolate
     , text
     , transformers
     , with-utf8
+    , yaml
   default-language: Haskell2010
