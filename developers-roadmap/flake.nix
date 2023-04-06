@@ -13,31 +13,19 @@
       url = "github:fused-effects/fused-effects-exceptions";
       flake = false;
     };
-    lima.url = "github:deemp/flakes?dir=lima";
+    lima_.url = "github:deemp/flakes?dir=source-flake/lima";
+    lima.follows = "lima_/lima";
   };
-  outputs =
-    { self
-    , flake-utils
-    , flakes-tools
-    , nixpkgs
-    , my-codium
-    , drv-tools
-    , haskell-tools
-    , devshell
-    , fused-effects-exceptions-src
-    , lima
-    , ...
-    }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs = inputs: inputs.flake-utils.lib.eachDefaultSystem (system:
     let
-      pkgs = nixpkgs.legacyPackages.${system};
-      inherit (my-codium.functions.${system}) writeSettingsJSON mkCodium;
-      inherit (drv-tools.functions.${system}) mkBin withAttrs withMan withDescription mkShellApp;
-      inherit (drv-tools.configs.${system}) man;
-      inherit (my-codium.configs.${system}) extensions settingsNix;
-      inherit (flakes-tools.functions.${system}) mkFlakesTools;
-      inherit (devshell.functions.${system}) mkCommands mkShell;
-      inherit (haskell-tools.functions.${system}) toolsGHC;
+      pkgs = inputs.nixpkgs.legacyPackages.${system};
+      inherit (inputs.my-codium.functions.${system}) writeSettingsJSON mkCodium;
+      inherit (inputs.drv-tools.functions.${system}) mkBin withAttrs withMan withDescription mkShellApp;
+      inherit (inputs.drv-tools.configs.${system}) man;
+      inherit (inputs.my-codium.configs.${system}) extensions settingsNix;
+      inherit (inputs.flakes-tools.functions.${system}) mkFlakesTools;
+      inherit (inputs.devshell.functions.${system}) mkCommands mkShell;
+      inherit (inputs.haskell-tools.functions.${system}) toolsGHC;
 
       ghcVersion_ = "925";
 
@@ -63,7 +51,7 @@
 
       override = {
         overrides = self: super: {
-          fused-effects-exceptions = dontCheck (self.callCabal2nix "fused-effects-exceptions" fused-effects-exceptions-src { });
+          fused-effects-exceptions = dontCheck (self.callCabal2nix "fused-effects-exceptions" inputs.fused-effects-exceptions-src { });
           myPackage = overrideCabal
             (super.callCabal2nix myPackageName ./. { })
             (x: {
@@ -75,7 +63,7 @@
               # here's how we can add a package built from sources
               # then, we may use this package in .cabal in a test-suite
               testHaskellDepends = [
-                (super.callCabal2nix "lima" "${lima.outPath}/lima" { })
+                inputs.lima.packages.${system}.default
               ] ++ (x.testHaskellDepends or [ ]);
             });
         };
