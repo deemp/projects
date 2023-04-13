@@ -58,7 +58,5 @@ tests:
   docs:
     main: test/Docs.hs
     dependencies:
-      - turtle
-      - string-interpolate
       - text
-    build-tools: lima:lima ^>= 0.1
+      - lima

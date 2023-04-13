@@ -65,6 +65,7 @@ This template uses `GHC 9.2`. You can switch to `GHC 9.0`:
 -}
 
 {- FOURMOLU_DISABLE -}
+
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE InstanceSigs #-}
@@ -81,11 +82,16 @@ This template uses `GHC 9.2`. You can switch to `GHC 9.0`:
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+
 {- LIMA_DISABLE -}
+
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 {- LIMA_ENABLE -}
+
 {- FOURMOLU_ENABLE -}
 
 module Main (main) where
@@ -96,18 +102,23 @@ import Control.Lens (_1)
 import Control.Lens.Unsound (lensProduct)
 import Control.Monad.State
 import Data.ByteString qualified as BS
-import Data.Char (toLower, toUpper)
+import Data.Char (isUpper, toLower, toUpper)
 import Data.Either.Validation
 import Data.Foldable (Foldable (..))
 import Data.List
+import Data.List qualified as L
+import Data.List.NonEmpty (NonEmpty ((:|)), nonEmpty, toList)
 import Data.Map (fromList)
 import Data.Map qualified as M
+import Data.Maybe (fromMaybe)
 import Data.Monoid (Sum (..))
 import Data.Ord (comparing)
 import Data.Set qualified as S (Set (..), fromList)
 import Data.Text qualified as T
+import Data.Text.Lens (unpacked)
 import Data.Tree (Tree (..))
 import GHC.Word qualified
+import Numeric.Lens (adding, multiplying, negated)
 import Text.Read (readMaybe)
 
 main :: IO ()
@@ -169,9 +180,7 @@ Find: action, path, structure, focus
 - path: `(both . each)`
 - structure: `(["super", "cali"],["fragilistic", "expialidocious"])`
 - focus: `["super", "cali", "fragilistic", "expilidocious"]`
--}
 
-{-
 ### 3.2 Lens Actions
 -}
 
@@ -186,9 +195,9 @@ Find: action, path, structure, focus
 
 {-
 #### Exercises - Lens Actions
--}
 
-{- 2. solution: -}
+2. solution:
+-}
 
 {- LIMA_INDENT 4 -}
 
@@ -201,9 +210,9 @@ ex1 = undefined
     - get
     - set
     - modify
--}
 
-{- 4. focus on `c` -}
+4. focus on `c`
+-}
 
 -- >>>view _3 ('a','b','c')
 -- 'c'
@@ -233,7 +242,9 @@ name_ = lens getName setName
 purplePearl :: Ship
 purplePearl = Ship{_name = "Purple Pearl", _numCrew = 38}
 
-{- 1. apply lens -}
+{-
+1. apply lens
+-}
 
 {- LIMA_INDENT 4 -}
 
@@ -252,11 +263,12 @@ makeLenses ''Ship
 
 {-
 #### Exercises - Records Part Two
+
+2. Rewrite
 -}
 
-{- 2. Rewrite -}
-
 {- LIMA_INDENT 4 -}
+
 data Spuzz
 data Chumble
 gazork :: Functor f => (Spuzz -> f Spuzz) -> Chumble -> f Chumble
@@ -278,13 +290,17 @@ gazork_ = undefined
 -}
 
 {- LIMA_INDENT 4 -}
+
 get1 :: (a, b, c) -> b
 get1 (_, b, _) = b
 
 set1 :: (a, b, c) -> b -> (a, b, c)
 set1 (a, _, c) b_ = (a, b_, c)
 
-{- 2. Can't get from `Nothing`, so, can't have `inMaybe :: Lens' (Maybe a) a` not fail sometimes -}
+{-
+2. Can't get from `Nothing`, so, can't have `inMaybe :: Lens' (Maybe a) a` not fail sometimes
+-}
+
 get2 :: Maybe a -> a
 get2 (Just a) = a
 get2 _ = undefined
@@ -321,8 +337,8 @@ When using unlawful lenses in a library, should write a note.
 `lensProduct` combines two lenses to get a new one
 
 - these lenses should be **disjoint**. Otherwise, how to set?
-
 -}
+
 newtype Ex1 = Ex1 {_unEx1 :: String} deriving (Show, Eq)
 
 makeLenses ''Ex1
@@ -404,7 +420,9 @@ msgTest =
 -- >>>msgTest
 -- True
 
-{- 3. fail `get-set`, pass other -}
+{-
+3. fail `get-set`, pass other
+-}
 
 msg1 :: Lens' Err String
 msg1 = lens getMsg setMsg
@@ -425,7 +443,9 @@ msg1Test =
 -- >>>msg1Test
 -- True
 
-{- 4. like `msg1` -}
+{-
+4. like `msg1`
+-}
 
 data Sink = A Int | B String deriving (Show, Eq)
 
@@ -449,7 +469,9 @@ sinkTest =
 -- >>>sinkTest
 -- True
 
-{- 5. break all rules -}
+{-
+5. break all rules
+-}
 
 newtype Break = Break String deriving (Show, Eq)
 
@@ -471,7 +493,9 @@ breakAllTest =
 -- >>>breakAllTest
 -- True
 
-{- 6. builder -}
+{-
+6. builder
+-}
 
 data Builder = Builder
   { _context :: [String]
@@ -699,17 +723,20 @@ item = lens getter setter
 
 {-
 #### Exercises – Polymorphic Lenses
+
+1. `Vorpal`
 -}
 
-{- 1. `Vorpal` -}
-
 {- LIMA_INDENT 4 -}
+
 data Vorpal a
 
 vorpal :: Lens (Vorpal a) (Vorpal b) a b
 vorpal = undefined
 
-{- 2. Polymorphic unlawful -}
+{-
+2. Polymorphic unlawful
+-}
 
 data Preferences a = Preferences {_best :: a, _worst :: a} deriving (Show)
 
@@ -719,21 +746,27 @@ best = lens getter setter
   getter (Preferences a _) = a
   setter (Preferences _ _) c = Preferences{_best = c, _worst = c}
 
-{- 3. Result -}
+{-
+3. Result
+-}
 
 data Result e = Result {_lineNumber :: Int, _result :: Either e String}
 
 result :: Lens (Result a) (Result b) a b
 result = undefined
 
-{- 4. Multiple -}
+{-
+4. Multiple
+-}
 
 data Multi a b
 
 multi :: Lens (Multi a b) (Multi c d) (a, b) (c, d)
 multi = undefined
 
-{- 5. Predicate -}
+{-
+5. Predicate
+-}
 
 newtype Predicate a = Predicate (a -> Bool)
 
@@ -766,6 +799,7 @@ ex9 = (d . s) m
 {-
 ##### Example
 -}
+
 data Person
 data Address
 data StreetAddress
@@ -795,10 +829,13 @@ personStreet = view personStreetLens (undefined :: Person)
 -}
 
 {- LIMA_INDENT 4 -}
+
 -- >>> view (_2 . _1 . _2) ("Ginerva", (("Galileo", "Waldo"), "Malfoy"))
 -- "Waldo"
 
-{- 2. Domino -}
+{-
+2. Domino
+-}
 
 data Five
 data Eight
@@ -815,7 +852,9 @@ dominoTrain = fiveEightDomino . mysteryDomino . twoThreeDomino
 mysteryDomino :: Lens' Eight Two
 mysteryDomino = undefined
 
-{- 3. Rewrite -}
+{-
+3. Rewrite
+-}
 
 data Armadillo
 data Hedgehog
@@ -828,7 +867,9 @@ g = undefined
 h :: Lens Platypus BabySloth Armadillo Hedgehog
 h = undefined
 
-{- 4. Compose -}
+{-
+4. Compose
+-}
 
 data Gazork
 data Trowlg
@@ -863,7 +904,7 @@ banderyakoobog = undefined
 ex10 :: (Foob -> [Mog]) -> Snark -> [JubJub]
 ex10 = snajubjumwock @[] . boowockugwup . gruggazinkoom . zinkattumblezz . spuzorktrowmble . gazorlglesnatchka . banderyakoobog
 
-{- LIMA_DEDENT-}
+{- LIMA_DEDENT -}
 
 {-
 ## 5. Operators
@@ -874,7 +915,9 @@ ex10 = snajubjumwock @[] . boowockugwup . gruggazinkoom . zinkattumblezz . spuzo
 -- >>>:t _1 . _2 .~ 3
 -- _1 . _2 .~ 3 :: (Field1 s t a1 b1, Field2 a1 b1 a2 b2, Num b2) => s -> t
 
-{- is equivalent to -}
+{-
+is equivalent to
+-}
 
 -- >>>:t (_1 . _2) .~ 3
 -- (_1 . _2) .~ 3 :: (Field1 s t a1 b1, Field2 a1 b1 a2 b2, Num b2) => s -> t
@@ -891,7 +934,9 @@ We can use `&` to make a convenient-to-read chain
 multiline :: Integer
 multiline = 3
 
-{- Or even -}
+{-
+Or even
+-}
 
 ex11 :: ((Integer, Integer), (Integer, Integer))
 ex11 =
@@ -1030,13 +1075,9 @@ Optics operators - [src](https://github.com/Zelenya/chrome-annotation-extension-
 - `&` a reverse application operator
 - `#` review
 - `id` focus the `full` structure
--}
 
-{-
 ### 5.9 Exercises – Operators
--}
 
-{-
 1. Get to
 -}
 
@@ -1105,9 +1146,7 @@ ex14 =
 
 {-
 3. `&`
--}
 
-{-
 4. `(%~) :: Lens s t a b -> (a -> b) -> s -> t`
 -}
 
@@ -1171,7 +1210,6 @@ type Getting r s a = (a -> Const r a) -> s -> Const r s
 So, we can use a `Lens' s a` as a `Fold s a`
 
 - `^..` first applies the folds, and returns them in a list
-
 -}
 
 getPair2 :: Fold (a, b) b
@@ -1339,7 +1377,7 @@ crewMembers = folding collectCrewMembers
     dimap :: (a -> b) -> (c -> d) -> p b c -> p a d
   ```
 
-  - [Profunctors](https://github.com/ocharles/blog/blob/master/guest-posts/2013-12-22-24-days-of-hackage-profunctors.md)
+- [Profunctors](https://github.com/ocharles/blog/blob/master/guest-posts/2013-12-22-24-days-of-hackage-profunctors.md)
 
 Example
 -}
@@ -1365,7 +1403,6 @@ Composition
 
 {-
 #### Combining multiple folds on the same structure
-
 -}
 
 crewNames1 :: ShipCrew -> [Name]
@@ -1931,6 +1968,7 @@ Book:
 
 Real:
 -}
+
 -- >>>:t filtered
 -- filtered :: (Choice p, Applicative f) => (a -> Bool) -> Optic' p f a a
 
@@ -1942,6 +1980,7 @@ Real:
 {-
 Examples:
 -}
+
 -- >>> [1, 2, 3, 4] ^.. folded . filtered even
 -- [2,4]
 
@@ -2047,7 +2086,6 @@ Other helpers
 - `filteredBy :: Fold s a -> Fold s s` - filter by a condition represented as a fold
 - `only :: Eq a => a -> Prism' a ()` - return () iff input is equal to a reference value
 - `nearly :: a -> (a -> Bool) -> Prism' a ()` - check condition. As it returns a prism, we have to supply the first argument for re-construction
-
 -}
 
 -- >>> has (only "needle") "needle"
@@ -2087,9 +2125,7 @@ ex42 =
 
 {-
 #### Exercises – Filtering
--}
 
-{-
 - List all the cards whose name starts with 'S'
 -}
 
@@ -2104,6 +2140,7 @@ ex43 = deck ^.. folded . filteredBy (cardName . taking 1 folded . only 'S') . ca
 {-
 - What's the lowest attack power of all moves?
 -}
+
 ex44 :: Maybe Int
 ex44 = minimumOf (folded . moves . folded . movePower) deck
 
@@ -2221,7 +2258,6 @@ Some structures disallow changing the type.
 
 {-
 Can use some functions that we used for `Fold`s, e.g., `filtered`.
-
 -}
 
 -- Reverse only the long strings
@@ -2434,7 +2470,7 @@ ex53 =
 1. Which of the optics we’ve learned can act as a traversal?
     - lens and traversal
 
-1.  Which of the optics we’ve learned can act as a fold?
+1. Which of the optics we’ve learned can act as a fold?
     - lens, traversal, fold
 -}
 
@@ -2560,7 +2596,7 @@ Other functions:
 
 Actual definitions:
 
-```
+```hs
 traverseOf = id
 (%%~) = id
 ```
@@ -2595,6 +2631,7 @@ ex57 =
     & (_1 . traversed)
       %%~ (\c -> [toLower c, toUpper c])
 
+ex58 :: [[(Char, Bool)]]
 ex58 =
   [('a', True), ('b', False)]
     & (traversed . _1)
@@ -2704,14 +2741,13 @@ deposits' :: Traversal' [Transaction] Int
 deposits' = traversed . filtered (\case Deposit _ -> True; _ -> False) . amount
 
 {-
-Exercises - Custom traversals
+#### Exercises - Custom traversals
+
+1. custom traversal
 -}
 
 {- LIMA_INDENT 4 -}
 
-{-
-1. custom traversal
--}
 -- amountT :: Traversal' Transaction Int
 amountT :: Applicative f => (Int -> f Int) -> Transaction -> f Transaction
 amountT f = \case Deposit am -> Deposit <$> f am; Withdrawal am -> Withdrawal <$> f am
@@ -2719,13 +2755,12 @@ amountT f = \case Deposit am -> Deposit <$> f am; Withdrawal am -> Withdrawal <$
 {-
 2. custom `both`
 -}
+
 both' :: Traversal (a, a) (b, b) a b
 both' f (x, y) = liftA2 (,) (f x) (f y)
 
 {-
-3. delta
-
-Similar to change of coordinates via matrix pre- and post-multiplication
+3. delta - Similar to change of coordinates via matrix pre- and post-multiplication
 -}
 
 transactionDelta :: Traversal' Transaction Int
@@ -2745,8 +2780,6 @@ transactionDelta f = \case Deposit amt -> Deposit <$> f amt; Withdrawal amt -> W
 -- Deposit {_amount = 15}
 -- >>> Withdrawal 10 & transactionDelta +~ 5
 -- Withdrawal {_amount = 5}
-
--- left :: Traversal (Either a b) (Either a' b) a a'
 
 {- LIMA_DEDENT -}
 
@@ -2807,6 +2840,7 @@ alterations on those elements.
 -}
 
 {- LIMA_INDENT 4 -}
+
 -- >>>("hit the road, jack" :: String) & worded %~ take 3 & worded %~ drop 2
 -- "t e a c"
 
@@ -2848,6 +2882,8 @@ ex60 = traversed . filtered even
 - `lined` is unlawful
 - `traversed` is lawful
 -}
+
+{- LIMA_INDENT 2 -}
 
 -- >>>("hit\nthe\nroad,\njack" :: String) & lined %~ take 3 & lined %~ drop 2
 -- "t\ne\na\nc"
@@ -2896,6 +2932,7 @@ Book:
 
 {-
 Cool example:
+
 1. focus all characters in strings
 1. concatenate, split into words, sort words, concatenate back
 1. place on corresponding places
@@ -2920,6 +2957,7 @@ Placement matters
 Can use other focuses for calculating each
 -}
 
+ex61 :: [(Char, Double)]
 ex61 =
   [('a', 1), ('b', 2), ('c', 3)]
     & partsOf (traversed . _2)
@@ -2941,6 +2979,7 @@ unsafePartsOf :: Traversal s t a b -> Lens s t [a] [b]
 -- >>>[('a', 1), ('b', 2), ('c', 3)] & unsafePartsOf (traversed . _1) .~ [True, False]
 -- unsafePartsOf': not enough elements were supplied
 
+ex62 :: [((Char, Maybe Char), Integer)]
 ex62 =
   [('a', 1), ('b', 2), ('c', 3)]
     & unsafePartsOf (traversed . _1)
@@ -3045,6 +3084,7 @@ Can't add or remove focuses.
 Lists:
 -}
 
+humanoids :: [String]
 humanoids = ["Borg", "Cardassian", "Talaxian"]
 
 -- >>> -- Get the value at index 1:
@@ -3058,6 +3098,7 @@ humanoids = ["Borg", "Cardassian", "Talaxian"]
 Maps:
 -}
 
+benders :: M.Map String String
 benders = M.fromList [("Katara", "Water"), ("Toph", "Earth"), ("Zuko", "Fire")]
 
 -- Get the value at key "Zuko"
@@ -3103,6 +3144,7 @@ benders = M.fromList [("Katara", "Water"), ("Toph", "Earth"), ("Zuko", "Fire")]
 Cool example:
 -}
 
+ex64 :: [T.Text]
 ex64 = ("hello" :: T.Text) & ix 1 %%~ const ("aeiou" :: [Char])
 
 {-
@@ -3163,8 +3205,9 @@ so it instead returns a new value.
 #### Map-like structures
 
 Can be used with structures that support inserts by an arbitrary index.
-  - `Map k v`
-  - `Set k` (~ `Map k ()`)
+
+- `Map k v`
+- `Set k` (~ `Map k ()`)
 Lists don't support that. E.g., can't insert 10th element without having 9th.
 
 ```hs
@@ -3191,6 +3234,7 @@ sans k = at k .~ Nothing
 -- >>> sans "Katara" benders
 -- fromList [("Toph","Earth"),("Zuko","Fire")]
 
+ps :: [Int]
 ps = foldl (\acc x -> acc <> check acc x) [2] [3 .. 100]
  where
   check (a : as) x
@@ -3209,7 +3253,7 @@ primes = S.fromList (ps ^.. taking 5 traversed)
 -- fromList [2,3,5,7,11,17]
 
 {-
-#### Exercises – Indexable Structures
+#### Exercises – Indexable Structuresm
 
 1. fill in blanks
 -}
@@ -3217,6 +3261,7 @@ primes = S.fromList (ps ^.. taking 5 traversed)
 -- >>> ["Larry", "Curly", "Moe"] & ix 1 .~ "Wiggly"
 -- ["Larry","Wiggly","Moe"]
 
+heroesAndVillains :: M.Map String String
 heroesAndVillains = M.fromList [("Superman", "Lex"), ("Batman", "Joker")]
 
 -- >>> heroesAndVillains & at "Spiderman" .~ Just "Goblin"
@@ -3232,8 +3277,438 @@ heroesAndVillains = M.fromList [("Superman", "Lex"), ("Batman", "Joker")]
 2. input -> output
 -}
 
+input :: M.Map String Integer
 input = M.fromList [("candy bars", 13), ("gum", 7), ("soda", 34)]
+
+output :: M.Map String Integer
 output = M.fromList [("candy bars", 13), ("ice cream", 5), ("soda", 37)]
 
 -- >>> input & at "soda" %~ ((+ 3) <$>) & sans "gum" & at "ice cream" ?~ 5
 -- fromList [("candy bars",13),("ice cream",5),("soda",37)]
+
+{-
+## 10. Isos
+
+- isomorphism - a completely <b>reversible transformation</b> between two types or formats.
+- every iso MUST succeed for all inputs.
+
+![isos](./README/tableIsos.png)
+
+Example: converting `Text` to `String`:
+
+```hs
+T.pack . T.unpack = id
+T.unpack . T.pack = id
+```
+
+Construct an `Iso`:
+
+```hs
+iso :: (s -> a) -> (b -> t) -> Iso s t a b
+```
+-}
+
+packed :: Iso' String T.Text
+packed = iso to' from'
+ where
+  to' :: String -> T.Text
+  to' = T.pack
+  from' :: T.Text -> String
+  from' = T.unpack
+
+-- >>> ("Ay, caramba!" :: String) ^. packed
+-- "Ay, caramba!"
+
+-- Use isos as prisms
+-- >>> packed # ("Sufferin' Succotash" :: T.Text)
+-- "Sufferin' Succotash"
+
+{-
+### 10.3 Flipping isos with from
+
+```hs
+from :: Iso s t a b -> Iso b a t s
+from :: Iso' s a -> Iso' a s
+```
+-}
+
+-- >>> ("Good grief" :: T.Text) ^. from packed
+-- "Good grief"
+
+{-
+Reversing again.
+
+```hs
+unpacked :: Iso' T.Text String
+unpacked = from packed
+```
+
+### 10.4 Modification under isomorphism
+
+Example: focus on `Text` (to use functions existing for `Text`), then convert back to a `String`.
+-}
+
+-- >>> let str = "Idol on a pedestal" :: String
+-- >>> over packed (T.replace "Idol" "Sand") str
+-- "Sand on a pedestal"
+
+-- Combining with other optics
+-- >>> import Data.Char (toUpper)
+-- >>> let txt = "Lorem ipsum" :: T.Text
+-- >>> txt & from packed . traversed %~ toUpper
+-- "LOREM IPSUM"
+
+{-
+### 10.5 Varieties of isomorphisms
+
+Isos for the same type
+
+```hs
+reversed :: Iso' [a] [a]
+reversed = iso reverse reverse
+
+involuted :: (a -> a) -> Iso' a a
+involuted f = iso f f
+
+reversed :: Iso' [a] [a]
+reversed = involuted reverse
+```
+-}
+
+-- >>> "Blue suede shoes" & reversed . taking 1 worded . reversed .~ "gloves"
+-- "Blue suede gloves"
+
+{-
+Rearrange pairs
+
+```hs
+swapped :: Iso (s, s') (t, t') (a, a') (b, b')
+
+swapped :: (Bifunctor p, Swapped p) => Iso (p a b) (p c d) (p b a) (p d c)
+```
+-}
+
+-- >>> ("Fall","Pride") ^. swapped
+-- ("Pride","Fall")
+
+-- >>> Right "Field" ^. swapped
+-- Left "Field"
+
+{-
+Isos for functions
+
+```hs
+flipped :: Iso' (a -> b -> c) (b -> a -> c)
+```
+-}
+
+-- >>> let (++?) = (++) ^. flipped
+-- >>> "A" ++? "B"
+-- "BA"
+
+{-
+more
+
+```hs
+curried :: Iso' ((a, b) -> c) (a -> b -> c)
+uncurried :: Iso' (a -> b -> c) ((a, b) -> c)
+```
+-}
+
+-- >>> let addTuple = (+) ^. uncurried
+-- >>> addTuple (1, 2)
+-- 3
+
+{-
+Isos for numbers
+-}
+
+-- >>> 100 ^. adding 50
+-- 150
+
+{-
+#### Composing isos
+-}
+
+-- >>> import Numeric.Lens
+-- >>> 30 & dividing 10 . multiplying 2 +~ 1
+-- 35.0
+
+-- 30 -> 30/10 = 3 -> 3 * 2 = 6 -> 6 + 1 = 7 -> 7 / 2 = 3.5 -> 3.5 * 10 = 35
+
+{-
+#### Exercises – Intro to Isos
+
+1. Choose the best optic:
+  - Focus a Celsius temperature in Fahrenheit - Iso - reversible
+  - Focus the last element of a list - Traversal - the element may be missing
+  - View a JSON object as its corresponding Haskell Record - Prism - may fail to parse
+  - Rotate the elements of a three-tuple one to the right - Iso - rotation is reversible
+  - Focus on the ‘bits’ of an Int as Bools - Traversal or Prism - multiple focuses
+  - Focusing an IntSet from a Set Int - Iso - reversible
+
+1. Fill in the blank
+-}
+
+-- >>> ("Beauty", "Age") ^. swapped
+-- ("Age","Beauty")
+
+-- >>> 50 ^. adding 10
+-- 60
+
+-- >>> 50 ^. from (adding 10)
+-- 40
+
+-- >>> 0 & multiplying 4 +~ 12
+-- 3.0
+
+-- >>> 0 & adding 10 . multiplying 2 .~ _
+-- 2
+
+-- Note: transpose flips the rows and columns of a nested list:
+-- >>> import Data.List (transpose)
+-- >>> transpose [[1, 2, 3], [10, 20, 30]]
+-- [[1,10],[2,20],[3,30]]
+-- >>> [[1, 2, 3], [10, 20, 30]] & involuted transpose %~ drop 1
+-- [[2,3],[20,30]]
+
+-- Extra hard: use `switchCase` somehow to make this statement work:
+ex65 :: (Integer, String)
+ex65 = (32, "Hi") & _2 . involuted (map switchCase) .~ ("hELLO" :: String)
+ where
+  switchCase c = if isUpper c then toLower c else toUpper c
+
+-- >>> ex65
+-- (32,"Hello")
+
+{-
+3. Conversion
+-}
+
+celsiusToF :: Double -> Double
+celsiusToF c = (c * (9 / 5)) + 32
+
+fToCelsius :: Double -> Double
+fToCelsius f = (f - 32) * 5 / 9
+
+fahrenheit' :: Iso' Double Double
+fahrenheit' = iso fToCelsius celsiusToF
+
+-- >>> 0 & fahrenheit' .~ 100
+-- 212.0
+
+{-
+### 10.6 Projecting Isos
+
+We can lift Isos into other structures.
+
+```hs
+mapping :: (Functor f, Functor g) => Iso s t a b -> Iso (f s) (g t) (f a) (g b)
+```
+-}
+
+toYamlList :: [String] -> String
+toYamlList xs = "- " <> intercalate "\n- " xs
+
+shoppingList :: [T.Text]
+shoppingList = ["Milk", "Eggs", "Flour"] :: [T.Text]
+
+-- >>> shoppingList ^. mapping unpacked . to toYamlList
+-- "- Milk\n- Eggs\n- Flour"
+
+{-
+There's more:
+
+```hs
+contramapping :: Contravariant f => Iso s t a b -> Iso (f a) (f b) (f s) (f t)
+bimapping :: (Bifunctor f, Bifunctor g) => Iso s t a b -> Iso s' t' a' b' -> Iso (f s s') (g t t') (f a a') (g b b')
+dimapping :: (Profunctor p, Profunctor q) => Iso s t a b -> Iso s' t' a' b' -> Iso (p a s') (q b t') (p s a') (q t b')
+```
+-}
+
+textToYamlList :: [T.Text] -> T.Text
+textToYamlList = (toYamlList :: [String] -> String) ^. dimapping (mapping unpacked :: Iso' [T.Text] [String]) (packed :: Iso' String T.Text)
+
+-- much more readable
+textToYamlList' :: [T.Text] -> T.Text
+textToYamlList' = T.pack . toYamlList . fmap T.unpack
+
+{-
+#### Exercises – Projected Isos
+
+1. Fill in the blank
+-}
+
+{- LIMA_INDENT 4 -}
+
+-- >>> ("Beauty", "Age") ^. mapping reversed . swapped
+-- ("egA","Beauty")
+
+-- >>> [True, False, True] ^. mapping (involuted not)
+-- [False,True,False]
+
+-- >>> [True, False, True] & mapping (involuted not) %~ filter id
+-- [False]
+
+-- >>> (show ^. mapping reversed) 1234
+-- "4321"
+
+{-
+2. Using `enum :: Enum a => Iso' Int a` implement the `intNot`.
+-}
+
+intNot :: Int -> Int
+intNot = not ^. dimapping enum (from enum)
+
+-- >>> intNot 0
+-- 1
+
+-- >>> intNot 1
+-- 0
+
+-- >>> intNot 2
+-- Prelude.Enum.Bool.toEnum: bad argument
+
+intNot' :: Int -> Int
+intNot' = fromEnum . not . toEnum @Bool
+
+-- >>> intNot' 0
+-- 1
+
+-- >>> intNot' 1
+-- 0
+
+-- >>> intNot' 2
+-- Prelude.Enum.Bool.toEnum: bad argument
+
+{-
+### 10.7 Isos and newtypes
+
+#### Coercing with isos
+
+- Coercible is derived for newtypes by the compiler
+- Can coerce between newtypes
+
+```
+coerced :: (Coercible s a, Coercible t b) => Iso s t a b
+```
+-}
+
+newtype Email = Email {_email :: String} deriving (Show)
+
+-- >>> Email "hi\nu"
+-- Email {_email = "hi\nu"}
+
+-- >>> over coerced (reverse :: String -> String) (Email "joe@example.com") :: Email
+-- Email {_email = "moc.elpmaxe@eoj"}
+
+email :: Iso' Email String
+email = coerced
+
+ex66 :: String
+ex66 = Email "joe@example.com" ^. email . reversed
+
+{-
+#### Newtype wrapper isos
+
+- `makeLenses` derives isos
+
+```hs
+_Wrapped' :: Wrapped s => Iso' s (Unwrapped s)
+_Unwrapped' :: Wrapped s => Iso' (Unwrapped s) s
+```
+
+- map <b>only</b> between types and their newtype wrappers.
+- can be generated via `makeWrapped`
+-}
+
+makeWrapped ''Email
+
+ex67 :: Email
+ex67 = Email "joe@example.com" & _Wrapped' @Email %~ reverse
+
+-- >>> ex67
+-- Email {_email = "moc.elpmaxe@eoj"}
+
+{-
+### 10.8 Laws
+
+### Reversibility
+
+```hs
+myIso . from myIso == id
+from myIso . myIso == id
+```
+-}
+
+-- >>> view (from reversed . reversed) ("Testing one two three")
+-- "Testing one two three"
+
+{-
+#### Exercises – Iso Laws
+
+1. The following iso is unlawful; provide a counter example which shows that it breaks the law.
+-}
+
+mapList :: Ord k => Iso' (M.Map k v) [(k, v)]
+mapList = iso M.toList M.fromList
+
+kvInts :: [(Int, Int)]
+kvInts = [(2 :: Int, 1 :: Int), (1, 2)]
+
+ex68 :: [(Int, Int)]
+ex68 = kvInts ^. from mapList . mapList
+
+-- >>> ex68
+-- [(1,2),(2,1)]
+
+-- >>> ex68 == kvInts
+-- False
+
+{-
+2. Is there a lawful implementation of the following iso? If so, implement it, if not, why not?
+
+Yes, there is one.
+-}
+
+nonEmptyList :: Iso [a] [b] (Maybe (NonEmpty a)) (Maybe (NonEmpty b))
+nonEmptyList = iso nonEmpty (maybe [] Data.List.NonEmpty.toList)
+
+-- >>> [] ^. nonEmptyList . from nonEmptyList
+-- []
+
+-- >>> Nothing ^. from nonEmptyList . nonEmptyList
+-- Nothing
+
+-- >>> [1] ^. nonEmptyList . from nonEmptyList
+-- [1]
+
+-- >>> (Just (1 :| [])) ^. from nonEmptyList . nonEmptyList
+-- Just (1 :| [])
+
+{-
+3. Is there a lawful implementation of an iso which ‘sorts’ a list of elements? If so, implement it, if
+not, why not?
+
+```hs
+sorted :: Ord a => Iso' [a] [a]
+```
+
+There's no implementation for this iso because it's impossible to unsort a sorted list.
+
+4. What about the following iso which pairs each element with an Int which remembers its original
+position in the list. Is this a lawful iso? Why or why not? If not, try to find a counter-example.
+-}
+
+sorted :: (Ord a) => Iso' [a] [(Int, a)]
+sorted = iso to' from'
+ where
+  to' xs = L.sortOn snd $ zip [0 ..] xs
+  from' xs = snd <$> L.sortOn fst xs
+
+-- >>> [2, 1] ^. sorted . from sorted
+-- [2,1]
+
+-- >>> [(1, 1), (0, 2)] ^. from sorted . sorted
+-- [(1,1),(0,2)]
+

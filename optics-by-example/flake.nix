@@ -8,7 +8,8 @@
     flake-utils.follows = "flake-utils_/flake-utils";
     haskell-tools.url = "github:deemp/flakes?dir=language-tools/haskell";
     devshell.url = "github:deemp/flakes?dir=devshell";
-    lima.url = "github:deemp/flakes?dir=lima";
+    lima_.url = "github:deemp/flakes?dir=source-flake/lima";
+    lima.follows = "lima_/lima";
   };
   outputs = inputs: inputs.flake-utils.lib.eachDefaultSystem (system:
     let
@@ -38,7 +39,7 @@
       packageName = "nix-managed";
 
       # The libraries that the package needs during a build
-      packageLibraryDependencies = [ pkgs.lzma ];
+      packageSystemDepends = [ pkgs.lzma ];
 
       # The packages that provide the binaries that our package uses at runtime
       packageRuntimeDependencies = [ pkgs.hello ];
@@ -75,17 +76,17 @@
 
               # Dependencies of the our package library
               # New deps go before the existing deps and override them
-              librarySystemDepends = packageLibraryDependencies ++ (x.librarySystemDepends or [ ]);
+              librarySystemDepends = packageSystemDepends ++ (x.librarySystemDepends or [ ]);
 
               # Dependencies of our package executables
-              executableSystemDepends = packageLibraryDependencies ++ (x.executableSystemDepends or [ ]);
+              executableSystemDepends = packageSystemDepends ++ (x.executableSystemDepends or [ ]);
 
               # Here's how we can add a package built from sources
               # Later, we may use this package in `.cabal` in a test-suite
               # We should use `cabal v1-*` commands with it - https://github.com/NixOS/nixpkgs/issues/130556#issuecomment-1114239002
+              # Uncomment the text in parentheses to enable `lima`
               testHaskellDepends = [
-                # Uncomment the text in parentheses to enable `lima`
-                lima.packages.${system}.package
+                (super.callCabal2nix "lima" lima.outPath { })
               ] ++ (x.testHaskellDepends or [ ]);
             });
         };
@@ -116,6 +117,7 @@
         hpack
         cabal
         hls
+        ghc
       ];
 
       # --- Packages ---
@@ -136,6 +138,8 @@
           inherit (settingsNix) haskell todo-tree files editor gitlens
             git nix-ide workbench markdown-all-in-one markdown-language-features;
         };
+
+        inherit ghc;
       };
 
       # --- devShells ---
@@ -161,6 +165,7 @@
       };
     in
     {
+      inherit haskellPackages;
       inherit packages devShells;
     });
 
