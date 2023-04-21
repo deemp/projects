@@ -10,7 +10,6 @@
     flakes-tools.url = "github:deemp/flakes?dir=flakes-tools";
     drv-tools.url = "github:deemp/flakes?dir=drv-tools";
     workflows.url = "github:deemp/flakes?dir=workflows";
-    lima.url = "github:deemp/flakes?dir=lima";
   };
   outputs = inputs: inputs.flake-utils.lib.eachDefaultSystem (system:
     let
@@ -25,9 +24,6 @@
       inherit (inputs.flakes-tools.functions.${system}) mkFlakesTools;
       inherit (inputs.devshell.functions.${system}) mkCommands mkRunCommands mkShell;
       inherit (inputs.haskell-tools.functions.${system}) toolsGHC;
-      inherit (inputs.workflows.functions.${system}) writeWorkflow;
-      inherit (inputs.workflows.configs.${system}) nixCI;
-      inherit (inputs) lima;
 
       # --- Parameters ---
 
@@ -83,8 +79,6 @@
               # Later, we may use this package in `.cabal` in a test-suite
               # We should use `cabal v1-*` commands with it - https://github.com/NixOS/nixpkgs/issues/130556#issuecomment-1114239002
               testHaskellDepends = [
-                # Uncomment the text in parentheses to enable `lima`
-                # (super.callCabal2nix "lima" "${lima.outPath}/lima" { })
               ] ++ (x.testHaskellDepends or [ ]);
             });
         };

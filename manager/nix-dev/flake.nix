@@ -10,7 +10,8 @@
     devshell.url = "github:deemp/flakes?dir=devshell";
     flakes-tools.url = "github:deemp/flakes?dir=flakes-tools";
     workflows.url = "github:deemp/flakes?dir=workflows";
-    lima.url = "github:deemp/flakes?dir=lima";
+    lima_.url = "github:deemp/flakes?dir=source-flake/lima";
+    lima.follows = "lima_/lima";
   };
   outputs = inputs: inputs.flake-utils.lib.eachDefaultSystem (system:
     let
@@ -86,7 +87,7 @@
               # We should use `cabal v1-*` commands with it - https://github.com/NixOS/nixpkgs/issues/130556#issuecomment-1114239002
               # Uncomment the text in parentheses to try `lima`
               testHaskellDepends = [
-                # (super.callCabal2nix "lima" "${lima.outPath}/lima" { })
+                # (super.callCabal2nix "lima" lima.outPath { })
               ] ++ (x.testHaskellDepends or [ ]);
             });
         };

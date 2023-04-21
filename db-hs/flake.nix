@@ -10,7 +10,8 @@
     drv-tools.url = "github:deemp/flakes?dir=drv-tools";
     flakes-tools.url = "github:deemp/flakes?dir=flakes-tools";
     workflows.url = "github:deemp/flakes?dir=workflows";
-    lima.url = "github:deemp/flakes?dir=lima";
+    lima_.url = "github:deemp/flakes?dir=source-flake/lima";
+    lima.follows = "lima_/lima";
   };
   outputs = inputs: inputs.flake-utils.lib.eachDefaultSystem (system:
     let
@@ -85,7 +86,7 @@
               # Later, we may use this package in `.cabal` in a test-suite
               # We should use `cabal v1-*` commands with it - https://github.com/NixOS/nixpkgs/issues/130556#issuecomment-1114239002
               testHaskellDepends = [
-                (super.callCabal2nix "lima" "${lima.outPath}/lima" { })
+                # (super.callCabal2nix "lima" lima.outPath { })
               ] ++ (x.testHaskellDepends or [ ]);
             });
         };
