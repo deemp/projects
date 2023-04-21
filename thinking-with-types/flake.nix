@@ -10,7 +10,8 @@
     devshell.url = "github:deemp/flakes?dir=devshell";
     flakes-tools.url = "github:deemp/flakes?dir=flakes-tools";
     workflows.url = "github:deemp/flakes?dir=workflows";
-    lima.url = "github:deemp/flakes?dir=lima";
+    lima_.url = "github:deemp/flakes?dir=source-flake/lima";
+    lima.follows = "lima_/lima";
   };
   outputs = inputs: inputs.flake-utils.lib.eachDefaultSystem (system:
     let
@@ -82,7 +83,7 @@
               # then, we may use this package in .cabal in a test-suite
               # (uncomment to try)
               testHaskellDepends = [
-                (super.callCabal2nix "lima" "${lima.outPath}/lima" { })
+                (super.callCabal2nix "lima" lima.outPath { })
               ] ++ x.testHaskellDepends;
             });
         };

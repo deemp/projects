@@ -1,9 +1,14 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unused-imports #-}
 
 module Lib () where
 
+import Data.Data (Proxy)
 import GHC.Generics (Generic (..))
 
 {-
@@ -43,3 +48,29 @@ constructors.
 desired type.
 
 -}
+
+{-
+### 2.4 Type-Level functions
+
+- Type families must be saturated
+  - no currying
+
+-}
+
+{- INDENT 4 -}
+
+type family Map (x :: a -> b) (i :: [a]) :: [b] where
+  Map f '[] = '[]
+  Map f (x ': xs) = f x ': Map f xs
+
+type family Or (x :: Bool) (y :: Bool) :: Bool where
+  Or 'True y = 'True
+  Or 'False y = y
+
+-- >>>  :t undefined :: Proxy (Map (Or True) '[True, 'False, 'False])
+-- The type family `Or' should have 2 arguments, but has been given 1
+-- In an expression type signature:
+--   Proxy (Map (Or True) '[True, 'False, 'False])
+-- In the expression:
+--     undefined :: Proxy (Map (Or True) '[True, 'False, 'False])
+

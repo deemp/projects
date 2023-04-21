@@ -62,3 +62,5 @@ tests:
       - -with-rtsopts=-N
     dependencies:
       - nix-managed
+      - lima
+      - text
