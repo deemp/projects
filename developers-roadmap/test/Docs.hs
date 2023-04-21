@@ -1,14 +1,5 @@
-{-# LANGUAGE OverloadedStrings #-}
-
-module Main (main) where
-
-import Converter
-import Data.Text qualified as T
-import Turtle
+import Converter (Format (..), convertTo, def)
+import Data.Text.IO qualified as T
 
 main :: IO ()
-main = do
-  putStrLn "Converting README"
-  sh $ liftIO $ do
-    readme <- ((T.pack . hsToMd def . T.unpack) <$>) . readTextFile $ "README.hs"
-    writeTextFile "README.md" readme
+main = T.readFile "README.hs" >>= T.writeFile "README.md" . (Hs `convertTo` Md) def

@@ -530,6 +530,8 @@ instance Vectorizable S where
 
 - Wikibooks ([src](https://en.wikibooks.org/wiki/Haskell/GADT)):
   > With GADTs, a constructor for `Foo` a is not obliged to return `Foo a`; it can return any `Foo blah` that you can think of:
+
+- Can have named fields - [Delayed](https://hackage.haskell.org/package/servant-server-0.19.2/docs/src/Servant.Server.Internal.Delayed.html#Delayed)
 -}
 
 {- LIMA_INDENT 4 -}
@@ -740,6 +742,9 @@ ex2 = runQ [d|decl :: Int; decl = 1 + 2|]
 {-
 ### Generics
 - [Higher-Kinded Data](https://reasonablypolymorphic.com/blog/higher-kinded-data/)
+
+- `aeson` converts data to generic representation. 
+  Its functions for parsing use selector names, modify them via options, then convert to or parse JSON.
 -}
 
 {-

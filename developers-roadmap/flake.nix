@@ -63,7 +63,7 @@
               # here's how we can add a package built from sources
               # then, we may use this package in .cabal in a test-suite
               testHaskellDepends = [
-                inputs.lima.packages.${system}.default
+                (super.callCabal2nix "lima" inputs.lima.outPath { })
               ] ++ (x.testHaskellDepends or [ ]);
             });
         };

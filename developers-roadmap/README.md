@@ -1,5 +1,7 @@
 <!-- FOURMOLU_DISABLE -->
+
 <!-- LIMA_DISABLE
+
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE StandaloneKindSignatures #-}
 {-# LANGUAGE TypeOperators #-}
@@ -88,7 +90,7 @@ class Foldable t where
     -- (45,45)
     ```
 
-    <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
 - `foldl'` - fold a list from the left: `f (f (f x a1) a2) ...` and have accumulator in WHNF.
   - May need to force the accumulator
@@ -103,7 +105,7 @@ class Foldable t where
     -- False
     ```
 
-    <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
 - `fold :: (Foldable t, Monoid m) => t m -> m`
   - folds a container with elements that have a `Monoid` instance
@@ -115,7 +117,7 @@ class Foldable t where
     -- Just "ac"
     ```
 
-    <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
 - `foldMap :: (Foldable t, Monoid m) => (a -> m) -> t a -> m` - maps each element of a container to a `Monoid` and `fold`s the container
 
@@ -126,11 +128,12 @@ class Foldable t where
     -- Just "abc"
     ```
 
-    <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
 #### Alternative and MonadPlus
 
 - [Haskell wikibooks](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus):
+
 
   - `Alternative`
     - Definition
@@ -154,7 +157,7 @@ class Foldable t where
       -- Just "a"
       ```
 
-      <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
 #### Traversable
 
@@ -173,7 +176,7 @@ class Foldable t where
       sequence :: Monad m => t (m a) -> m (t a)
     ```
 
-    <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
 #### Contravariant
 
@@ -182,6 +185,7 @@ class Foldable t where
 #### Profunctor
 
 - [Profunctor](https://github.com/ocharles/blog/blob/master/guest-posts/2013-12-22-24-days-of-hackage-profunctors.md)
+
 
 
 ### Handle pattern
@@ -229,7 +233,7 @@ From Haskell in Depth (Chapter 7)
       exAsync = withAsync (threadDelay 3_000_000 >> print "ping") (\a -> wait a >> print "pong")
       ```
 
-      <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
 - `retry` restarts a transaction and blocks the thread until one of the variables that were read changes its value
 
@@ -280,7 +284,7 @@ Test types:
         }
       ```
 
-      <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
     - Passed automatically by the compiler
 - Why using constraints on a type variable within a data declaration isn't a good idea?
@@ -410,7 +414,7 @@ Instance definitions define the type family over some part of the domain.
       happend = undefined
       ```
 
-      <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
   - **Closed type families**
     - The clauses of a closed type family are ordered and matched **from top to bottom**
@@ -425,7 +429,7 @@ Instance definitions define the type family over some part of the domain.
           And _ _ = False
         ```
 
-        <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
   - **Open type families**
     - Such families can be extended anywhere
@@ -444,7 +448,7 @@ Instance definitions define the type family over some part of the domain.
         type instance And' False False = False
         ```
 
-        <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
       - Compatible:
         - Can make right sides equal and unify left sides via rewriting
@@ -462,7 +466,7 @@ Instance definitions define the type family over some part of the domain.
           type instance G Char Bool = Char -> Bool
           ```
 
-          <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
   - **Associated types**
     - Almost the same as open type families
@@ -482,7 +486,7 @@ Instance definitions define the type family over some part of the domain.
         elements' :: a -> [Elem2 a]
       ```
 
-      <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
     - Example from [string-interpolate](https://williamyaoh.com/posts/2019-05-27-string-interpolation-and-overlapping-instances.html#cb12)
 
@@ -497,7 +501,7 @@ Instance definitions define the type family over some part of the domain.
         -- >>> s @True
         ```
 
-        <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
   - **Data families**
     - [HaskellWiki](https://wiki.haskell.org/GHC/Type_families#Detailed_definition_of_data_families)
@@ -511,7 +515,7 @@ Instance definitions define the type family over some part of the domain.
       newtype instance Vector Int = VInts [Int]
       ```
 
-      <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
     - Can associate with a class
 
@@ -529,12 +533,14 @@ Instance definitions define the type family over some part of the domain.
           vlength = length . unS . unVector_
         ```
 
-        <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
 ### GADTs
 
 - Wikibooks ([src](https://en.wikibooks.org/wiki/Haskell/GADT)):
   > With GADTs, a constructor for `Foo` a is not obliged to return `Foo a`; it can return any `Foo blah` that you can think of:
+
+- Can have named fields - [Delayed](https://hackage.haskell.org/package/servant-server-0.19.2/docs/src/Servant.Server.Internal.Delayed.html#Delayed)
 
     <!-- LIMA_INDENT 4 -->
 
@@ -543,7 +549,7 @@ Instance definitions define the type family over some part of the domain.
       MkTrueGadtFoo :: a -> TrueGadtFoo Int
     ```
 
-    <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
   - Still, need to use a relevant data constructor
 
@@ -570,7 +576,7 @@ Instance definitions define the type family over some part of the domain.
     hex = 'a' ::: 1 ::: "hello" ::: HNil_
     ```
 
-    <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
 ### Kinds
 
@@ -597,12 +603,12 @@ Instance definitions define the type family over some part of the domain.
       catchError :: m a -> (e -> m a) -> m a
     ```
 
-    <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
 - Problem ([src](https://www.fpcomplete.com/haskell/tutorial/fundeps/#exercises)):
   > we want a MonadReader typeclass where there is only a single instance per m, and we know the env parameter that will be available from each m.
   - Approach 1:
-    - `MultiParamTypeClasses`) let us specify explicitly what the `env` is
+    - `MultiParamTypeClasses` let us specify explicitly what the `env` is
     - `FunctionalDependencies` allow us to constrain ourselves to a single instance.
 
       ```hs
@@ -647,7 +653,7 @@ Instance definitions define the type family over some part of the domain.
             ask = PersonReader id
           ```
 
-          <!-- LIMA_DEDENT -->
+<!-- LIMA_DEDENT -->
 
 ### Laziness
 
@@ -745,6 +751,10 @@ ex2 = runQ [d|decl :: Int; decl = 1 + 2|]
 
 ### Generics
 - [Higher-Kinded Data](https://reasonablypolymorphic.com/blog/higher-kinded-data/)
+
+- `aeson` converts data to generic representation. 
+  Its functions for parsing use selector names, modify them via options, then convert to or parse JSON.
+
 
 ## Misc
 
