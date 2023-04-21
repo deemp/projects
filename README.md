@@ -29,7 +29,3 @@ Some of my projects with `Nix` flakes
 ### Scala
 
 - [scala](./scala) - notes on the Stepik Scala courses
-
-### Abandoned
-
-- [webchat](./webchat) - an attempt to write a webchat with a Haskell backend and PureScript client
