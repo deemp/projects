@@ -181,7 +181,7 @@ class (Functor t, Foldable t) => Traversable t where
 #### Profunctor
 
 - [Profunctor](https://github.com/ocharles/blog/blob/master/guest-posts/2013-12-22-24-days-of-hackage-profunctors.md)
-
+- [Understanding profunctors](https://typeclasses.com/profunctors)
 -}
 
 {-
@@ -546,7 +546,7 @@ data TrueGadtFoo a where
 
     ```hs
     data Foo where
-      MkFoo :: Bar Int-- This will not typecheck
+      MkFoo :: Bar Int -- This will not typecheck
     ```
 
 - Is it considered a good practice to put constraints in consructors inside GADT declaration?
@@ -743,11 +743,32 @@ ex2 = runQ [d|decl :: Int; decl = 1 + 2|]
 ### Generics
 - [Higher-Kinded Data](https://reasonablypolymorphic.com/blog/higher-kinded-data/)
 
-- `aeson` converts data to generic representation. 
+- `aeson` converts data to generic representation.
   Its functions for parsing use selector names, modify them via options, then convert to or parse JSON.
--}
 
-{-
+### QualifiedDo
+
+- [Qualified do: rebind your do-notation the right way](https://www.tweag.io/blog/2020-07-13-qualified-do-announcement/)
+  - example
+
+    ```hs
+    {-# LANGUAGE QualifiedDo #-}
+
+    module Main where
+
+    import Data.Function((&))
+
+    (>>=) = (&)
+
+    foo :: Int
+    foo = Main.do
+      z <- (3, 4)
+      (x, s) <- z
+      x
+
+    main = print foo
+    ```
+
 ## Misc
 
 - Parsing with Haskell

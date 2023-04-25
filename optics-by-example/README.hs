@@ -3286,6 +3286,8 @@ output = M.fromList [("candy bars", 13), ("ice cream", 5), ("soda", 37)]
 -- >>> input & at "soda" %~ ((+ 3) <$>) & sans "gum" & at "ice cream" ?~ 5
 -- fromList [("candy bars",13),("ice cream",5),("soda",37)]
 
+-- TODO find 8.5 + and prisms and 
+
 {-
 ## 10. Isos
 
@@ -3712,3 +3714,219 @@ sorted = iso to' from'
 -- >>> [(1, 1), (0, 2)] ^. from sorted . sorted
 -- [(1,1),(0,2)]
 
+{-
+## 11. Indexed Optics
+
+### 11.1 What are indexed optics?
+
+Let <b>accumulate information</b> about the <b>current focus</b>.
+
+```hs
+itraversed :: TraversableWithIndex i t => IndexedTraversal i (t a) (t b) a b
+```
+
+There are instances of `TraversableWithIndex` for most data structures. Like `Ixed` and `At`.
+
+```hs
+itoListOf :: IndexedGetting i (Endo [(i, a)]) s a -> s -> [(i, a)]
+(^@..) :: s -> IndexedGetting i (Endo [(i, a)]) s a -> [(i, a)]
+```
+-}
+
+-- >>> itoListOf itraversed ["Summer", "Fall", "Winter", "Spring"]
+-- [(0,"Summer"),(1,"Fall"),(2,"Winter"),(3,"Spring")]
+
+{-
+Indices are added by `actions`.
+`Indexed action` accepts an `indexed optic`
+
+![](README/iActions.png)
+
+There are actions for: `Lens`, `Traversal`, `Fold`, `Getter`, `Setter`.
+
+No actions for: `Prisms`, `Isos`.
+
+Usually used for Folds or Traversals.
+-}
+
+-- The index type of maps is the key,
+-- so we can get a list of all elements and their key:
+-- >>> let agenda = M.fromList [("Monday", "Shopping"), ("Tuesday", "Swimming")]
+-- >>> agenda ^@.. itraversed
+-- [("Monday","Shopping"),("Tuesday","Swimming")]
+
+-- The index type of trees is a list of int's
+-- which indicates their location in the tree
+-- (See the section on indexed data structures)
+-- >>> import Data.Tree
+-- >>> let t = Node "top" [Node "left" [], Node "right" []]
+-- >>> t ^@.. itraversed
+-- [([],"top"),([0],"left"),([1],"right")]
+
+{-
+### 11.2 Index Composition
+
+Index of a path will be the index of the <b>last<b> indexed optic in the path.
+-}
+
+agenda :: M.Map String [String]
+agenda = M.fromList [("Monday", ["Shopping", "Yoga"]), ("Saturday", ["Brunch", "Food coma"])]
+
+-- >>> agenda ^@.. itraversed . itraversed
+-- [(0,"Shopping"),(1,"Yoga"),(0,"Brunch"),(1,"Food coma")]
+
+{-
+- `(<.)`: Use the index of the optic to the left
+- `(.>)`: Use the index of the optic to the right (This is how . already behaves)
+- `(<.>)`: Combine the indices of both sides as a tuple
+
+Use map key as an index
+-}
+
+-- >>> agenda ^@.. itraversed <. itraversed
+-- [("Monday","Shopping"),("Monday","Yoga"),("Saturday","Brunch"),("Saturday","Food coma")]
+
+-- >>> agenda ^@.. itraversed <.> itraversed
+-- [(("Monday",0),"Shopping"),(("Monday",1),"Yoga"),(("Saturday",0),"Brunch"),(("Saturday",1),"Food coma")]
+
+{-
+#### Custom index composition
+
+`icompose` Composition of Indexed functions with a user supplied function for combining indices.
+
+```hs
+icompose :: Indexable p c
+         => (i -> j -> p)
+         -> (Indexed i s t -> r)
+         -> (Indexed j a b -> s -> t)
+         -> c a b
+         -> r
+```
+-}
+
+showDayAndNumber :: String -> Int -> String
+showDayAndNumber a b = a <> ": " <> show b
+
+-- >>> agenda ^@.. icompose showDayAndNumber itraversed itraversed
+-- [("Monday: 0","Shopping"),("Monday: 1","Yoga"),("Saturday: 0","Brunch"),("Saturday: 1","Food coma")]
+
+{-
+custom operator
+
+```hs
+(<symbols>) :: (Indexed <indexTypeA> s t -> r)
+            -> (Indexed <indexTypeB> a b -> s -> t)
+            -> (Indexed <combinedType> a b -> r)
+(<symbols>) = icompose <combinationFunction>
+```
+-}
+(.++) :: (Indexed String s t -> r) -> (Indexed String a b -> s -> t) -> Indexed String a b -> r
+(.++) = icompose (\a b -> a ++ ", " ++ b)
+
+populationMap :: M.Map String (M.Map String Int)
+populationMap =
+  M.fromList
+    [ ("Canada", M.fromList [("Ottawa", 994837), ("Toronto", 2930000)])
+    , ("Germany", M.fromList [("Berlin", 3748000), ("Munich", 1456000)])
+    ]
+
+-- >>> populationMap ^@.. itraversed .++ itraversed
+-- [("Canada, Ottawa",994837),("Canada, Toronto",2930000),("Germany, Berlin",3748000),("Germany, Munich",1456000)]
+
+{-
+#### Exercises
+-}
+
+-- >>> M.fromList [("streamResponse", False), ("useSSL", True)] ^@.. itraversed
+-- [("streamResponse",False),("useSSL",True)]
+
+-- >>> (M.fromList [('a', 1), ('b', 2)], M.fromList [('c', 3), ('d', 4)]) ^@.. both . itraversed
+-- [('a',1),('b',2),('c',3),('d',4)]
+
+ex69 :: [(Char, Bool)]
+ex69 = M.fromList [('a', (True, 1)), ('b', (False, 2))] ^@.. itraversed <. _1
+
+-- >>> ex69
+-- [('a',True),('b',False)]
+
+-- >>> [M.fromList [("Tulips", 5), ("Roses", 3)] , M.fromList [("Goldfish", 11), ("Frogs", 8)]] ^@.. itraversed <.> itraversed
+-- [((0,"Roses"),3),((0,"Tulips"),5),((1,"Frogs"),8),((1,"Goldfish"),11)]
+
+ex70 :: [Int]
+ex70 = [10 :: Int, 20, 30] & itraversed %@~ (+)
+
+-- >>> ex70
+-- [10,21,32]
+
+ex71 :: IO [String]
+ex71 = itraverseOf itraversed (\i s -> pure (replicate i ' ' <> s)) ["one", "two", "three"]
+
+-- >>> ex71
+-- ["one"," two","  three"]
+
+-- >>> itraverseOf itraversed (\n s -> pure (show n <> ": " <> s)) ["Go shopping", "Eat lunch", "Take a nap"]
+-- ["0: Go shopping","1: Eat lunch","2: Take a nap"]
+
+{-
+### 11.3 Filtering by index
+
+```hs
+indices :: (Indexable i p, Applicative f) => (i -> Bool) -> Optical' p (Indexed i) f a a
+```
+-}
+
+-- Get list elements with an 'even' list-index:
+-- >>> ['a'..'z'] ^.. itraversed . indices even
+-- "acegikmoqsuwy"
+
+ratings :: M.Map String Integer
+ratings =
+  M.fromList
+    [ ("Dark Knight", 94)
+    , ("Dark Knight Rises", 87)
+    , ("Death of Superman", 92)
+    ]
+
+-- >>> ratings ^.. itraversed . indices (has (prefixed "Dark"))
+-- [94,87]
+
+{-
+Target a single index
+
+```hs
+index :: (Indexable i p, Eq i, Applicative f) => i -> Optical' p (Indexed i) f a a
+```
+-}
+
+-- >>> ratings ^? itraversed . index "Death of Superman"
+-- Just 92
+
+{-
+#### Exercises
+-}
+
+exercises :: M.Map String (M.Map String Int)
+exercises =
+  M.fromList
+    [ ("Monday", M.fromList [("pushups", 10), ("crunches", 20)])
+    , ("Wednesday", M.fromList [("pushups", 15), ("handstands", 3)])
+    , ("Friday", M.fromList [("crunches", 25), ("handstands", 5)])
+    ]
+
+ex72 :: Int
+ex72 = sumOf (traversed . itraversed . indices (has (only "crunches"))) exercises
+
+-- >>> ex72
+-- 45
+
+ex73 :: Int
+ex73 = sumOf (itraversed . indices (has (only "Wednesday")) . traversed) exercises
+
+-- >>> ex73
+-- 18
+
+ex74 :: [Int]
+ex74 = exercises ^.. traversed . ix "pushups"
+
+-- >>> ex74
+-- [10,15]
