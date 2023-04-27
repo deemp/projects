@@ -30,7 +30,7 @@
           # This is to let `VSCodium` run on its own, outside of a devshell
           codium = mkCodium {
             extensions = {
-              inherit (extensions) nix haskell misc github markdown prolog;
+              inherit (extensions) nix misc github markdown prolog;
             };
             runtimeDependencies = tools;
           };
