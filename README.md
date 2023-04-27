@@ -14,8 +14,8 @@ Some of my projects with `Nix` flakes
 
 - [optics-by-example](./optics-by-example/) - notes and code for the [Optics by Example](https://leanpub.com/optics-by-example) book
 - [simplex-cheat](./simplex-cheat) - an extremely simplified version of [simplex-chat](https://github.com/simplex-chat/simplex-chat) with bots talking to each other via a `servant` server
-- [db-hs](./db-hs) - a demo Haskell app that connects to a database
-- [developers-roadmap](./drv-tools) - (Unfinished) notes and exercises for the [backend developers roadmap](https://github.com/fullstack-development/developers-roadmap) course
+- [ts-serializable-test](./ts-serializable-test/) - a generator of test cases for the [ts-serializable](https://github.com/LabEG/Serializable) library.
+    > Small library for deserialization and serialization for javascript and typescript
 - [sockets-and-pipes](./sockets-and-pipes) - (Unfinished) notes and code for the [Sockets and Pipes](https://leanpub.com/sockets-and-pipes) book
 
 #### Unfinished
