@@ -29,3 +29,7 @@ Some of my projects with `Nix` flakes
 ### Scala
 
 - [scala](./scala) - notes on the Stepik Scala courses
+
+### V language
+
+- [vforces](./vforces/) - Solutions to `Codeforces` problems in [V](https://vlang.io/).

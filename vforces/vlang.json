@@ -1,0 +1,5 @@
+{
+    "preRun": [],
+    "run": ["v", "run", "$CODE"],
+    "ext": "v"
+}
