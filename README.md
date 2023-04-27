@@ -18,9 +18,9 @@ Some of my projects with `Nix` flakes
     > Small library for deserialization and serialization for javascript and typescript
 - [sockets-and-pipes](./sockets-and-pipes) - (Unfinished) notes and code for the [Sockets and Pipes](https://leanpub.com/sockets-and-pipes) book
 
-#### Unfinished
+### Prolog
 
-- [manager](./manager) - a `Haskell` CLI app for managing `stack` projects with multiple `Main.hs` modules
+- [maze](./maze) - find a shortest path between to cells of a grid while avoiding particular cells.
 
 ### Blockchain
 
