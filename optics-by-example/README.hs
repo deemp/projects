@@ -61,6 +61,23 @@ This template uses `GHC 9.2`. You can switch to `GHC 9.0`:
 - [operators](https://github.com/ekmett/lens/wiki/Operators)
 - [optics derivation](https://github.com/ekmett/lens/wiki/Derivation#traversals)
 
+## Extra
+
+- [Plated](https://hackage.haskell.org/package/lens-5.2.2/docs/Control-Lens-Combinators.html#t:Plated) - for recursive data structures
+- [Optics are monoids](https://www.haskellforall.com/2021/09/optics-are-monoids.html) - just `cosmos`!
+- [Putting Lenses to Work](https://www.youtube.com/watch?v=QZy4Yml3LTY)
+- [Tree numbering](https://gist.github.com/lgastako/8da651c012c4e341e3ca12f22f08833c) - `unsafePartsOf`
+
+-}
+
+data D = D {_a :: Int, _b :: Int}
+makeLenses ''D
+
+ex :: D
+ex = D 3 4 & adjoin a b +~ 1
+
+{-
+
 ## Book
 -}
 
@@ -82,13 +99,14 @@ This template uses `GHC 9.2`. You can switch to `GHC 9.0`:
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE DeriveFoldable #-}
 
 {- LIMA_DISABLE -}
 
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
-{-# LANGUAGE TupleSections #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 
 {- LIMA_ENABLE -}
 
@@ -99,18 +117,22 @@ module Main (main) where
 import Control.Applicative (Applicative (..))
 import Control.Lens
 import Control.Lens (_1)
-import Control.Lens.Unsound (lensProduct)
+import Control.Lens.Unsound (adjoin, lensProduct)
+import Control.Monad.Reader (ReaderT (runReaderT))
 import Control.Monad.State
+import Control.Monad.Writer (Writer, WriterT, execWriter, tell)
+import Data.Bitraversable (Bitraversable)
 import Data.ByteString qualified as BS
-import Data.Char (isUpper, toLower, toUpper)
+import Data.Char (chr, isUpper, ord, toLower, toUpper)
 import Data.Either.Validation
 import Data.Foldable (Foldable (..))
+import Data.Foldable qualified as Foldable
 import Data.List
 import Data.List qualified as L
 import Data.List.NonEmpty (NonEmpty ((:|)), nonEmpty, toList)
 import Data.Map (fromList)
 import Data.Map qualified as M
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, listToMaybe)
 import Data.Monoid (Sum (..))
 import Data.Ord (comparing)
 import Data.Set qualified as S (Set (..), fromList)
@@ -3286,7 +3308,7 @@ output = M.fromList [("candy bars", 13), ("ice cream", 5), ("soda", 37)]
 -- >>> input & at "soda" %~ ((+ 3) <$>) & sans "gum" & at "ice cream" ?~ 5
 -- fromList [("candy bars",13),("ice cream",5),("soda",37)]
 
--- TODO find 8.5 + and prisms and 
+-- TODO find 8.5 + and prisms and
 
 {-
 ## 10. Isos
@@ -3903,7 +3925,11 @@ index :: (Indexable i p, Eq i, Applicative f) => i -> Optical' p (Indexed i) f a
 
 {-
 #### Exercises
+
+1. Exercises schedule
 -}
+
+{- LIMA_INDENT 4 -}
 
 exercises :: M.Map String (M.Map String Int)
 exercises =
@@ -3913,20 +3939,355 @@ exercises =
     , ("Friday", M.fromList [("crunches", 25), ("handstands", 5)])
     ]
 
+-- >>> exercises
+-- fromList [("Friday",fromList [("crunches",25),("handstands",5)]),("Monday",fromList [("crunches",20),("pushups",10)]),("Wednesday",fromList [("handstands",3),("pushups",15)])]
+
+{-
+  - Compute the total number of “crunches” you should do this week.
+-}
 ex72 :: Int
 ex72 = sumOf (traversed . itraversed . indices (has (only "crunches"))) exercises
 
 -- >>> ex72
 -- 45
 
+{-
+  - Compute the number of reps you need to do across all exercise types on Wednesday.
+-}
 ex73 :: Int
 ex73 = sumOf (itraversed . indices (has (only "Wednesday")) . traversed) exercises
 
 -- >>> ex73
 -- 18
 
+{-
+  - List out the number of pushups you need to do each day, you can use ix to help this time if you wish.
+-}
 ex74 :: [Int]
-ex74 = exercises ^.. traversed . ix "pushups"
+ex74 = exercises ^.. traversed . at "pushups" . non 0
 
 -- >>> ex74
--- [10,15]
+-- [0,10,15]
+
+{-
+2. Board
+-}
+
+board :: [String]
+board =
+  [ "XOO"
+  , ".XO"
+  , "X.."
+  ]
+
+{-
+  - Generate a list of positions alongside their (row, column) coordinates.
+-}
+
+ex75 :: [((Int, Int), Char)]
+ex75 = board ^@.. itraversed <.> itraversed
+
+-- >>> ex75
+-- [((0,0),'X'),((0,1),'O'),((0,2),'O'),((1,0),'.'),((1,1),'X'),((1,2),'O'),((2,0),'X'),((2,1),'.'),((2,2),'.')]
+
+{-
+  - Set the empty square at (1, 0) to an 'X'. HINT: When using the custom composition operators you’ll often need to introduce parenthesis to get the right precedence.
+-}
+
+ex76 :: [String]
+ex76 = board & ix 1 . ix 0 .~ 'X'
+
+-- >>> ex76
+-- ["XOO","XXO","X.."]
+
+{-
+  - Get the 2nd *column* as a list (e.g. "OX."). Try to do it using index instead of indices!
+-}
+
+ex77 :: [Char]
+ex77 = board ^.. itraversed . itraversed . index 1
+
+-- >>> ex77
+-- "OX."
+
+{-
+  - Get the 3rd row as a list (e.g. "X.."). Try to do it using index instead of indices! HINT: The precedence for this one can be tricky too.
+-}
+
+ex78 :: [String]
+ex78 = board ^.. itraversed . index 2
+
+-- >>> ex78
+-- ["X.."]
+
+{-
+### 11.4 Custom indexed optics
+
+Tic-Tac-Toe
+-}
+
+data Board a = Board a a a a a a a a a deriving (Show, Foldable)
+
+data Position = I | II | III deriving (Show, Eq, Ord)
+
+testBoard :: Board Char
+testBoard = Board 'X' 'O' 'X' '.' 'X' 'O' '.' 'O' 'X'
+
+{-
+Want to access positions in grid. Need to index.
+
+```hs
+ifolding :: (Foldable f, Indexable i p, Contravariant g, Applicative g) => (s -> f (i, a)) -> Over p g s t a b
+```
+-}
+
+slotsFold :: IndexedFold (Position, Position) (Board a) a
+slotsFold =
+  ifolding $ \board_ ->
+    -- Use a list comprehension to get the list of all coordinate pairs
+    -- in the correct order, then zip them with all the slots in our board
+    zip
+      [(x, y) | y <- [I, II, III], x <- [I, II, III]]
+      (Foldable.toList board_)
+
+-- >>> testBoard ^@.. slotsFold
+-- [((I,I),'X'),((II,I),'O'),((III,I),'X'),((I,II),'.'),((II,II),'X'),((III,II),'O'),((I,III),'.'),((II,III),'O'),((III,III),'X')]
+
+-- Filter indices where the Y coord is 'II'
+-- >>> testBoard ^@.. slotsFold . indices ((== II) . snd)
+-- [((I,II),'.'),((II,II),'X'),((III,II),'O')]
+
+{-
+#### Custom IndexedTraversals
+-}
+
+-- define a polymorphic indexed traversal with a tuple of positions as the index:
+slotsTraversal :: IndexedTraversal (Position, Position) (Board a) (Board b) a b
+slotsTraversal p (Board a1 b1 c1 a2 b2 c2 a3 b3 c3) =
+  Board
+    <$> indexed p (I, I) a1
+    <*> indexed p (II, I) b1
+    <*> indexed p (III, I) c1
+    <*> indexed p (I, II) a2
+    <*> indexed p (II, II) b2
+    <*> indexed p (III, II) c2
+    <*> indexed p (I, III) a3
+    <*> indexed p (II, III) b3
+    <*> indexed p (III, III) c3
+
+-- >>> testBoard ^@.. slotsTraversal
+-- [((I,I),'X'),((II,I),'O'),((III,I),'X'),((I,II),'.'),((II,II),'X'),((III,II),'O'),((I,III),'.'),((II,III),'O'),((III,III),'X')]
+
+-- >>> testBoard & slotsTraversal . indices ((== II) . snd) .~ '?'
+-- Board 'X' 'O' 'X' '?' '?' '?' '.' 'O' 'X'
+
+printBoard :: Board Char -> String
+printBoard = execWriter . itraverseOf slotsTraversal printSlot
+ where
+  printSlot (III, _) c = tell ([c] <> "\n") >> pure [c]
+  printSlot (_, _) c = tell [c] >> pure [c]
+
+-- >>> printBoard testBoard
+-- "XOX\n.XO\n.OX\n"
+
+{-
+```hs
+type IndexedTraversal i s t a b = forall p f. (Indexable i p, Applicative f) => p a (f b) -> s -> f t
+```
+
+`p` is a `Profunctor`.
+
+`indexed p` reduces it to a function
+
+```hs
+indexed :: Indexable i p => p a b -> i -> a -> b
+```
+
+There's also `ilens`:
+
+```hs
+ilens :: (s -> (i, a)) -> (s -> b -> t) -> IndexedLens i s t a b
+```
+
+#### Index helpers
+
+Add numeric index alongside elements of an optic.
+
+```hs
+indexing :: Traversal s t a b -> IndexedTraversal Int s t a b
+```
+-}
+
+-- >>> ("hello" :: T.Text) ^@.. indexing each
+-- [(0,'h'),(1,'e'),(2,'l'),(3,'l'),(4,'o')]
+
+{-
+Re-map or edit the indexes of an optic
+
+```hs
+reindexed :: Indexable j p => (i -> j) -> (Indexed i a b -> r) -> p a b -> r
+```
+-}
+
+-- >>> ['a'..'c'] ^@.. itraversed
+-- [(0,'a'),(1,'b'),(2,'c')]
+
+-- >>> ['a'..'c'] ^@.. reindexed (*10) itraversed
+-- [(0,'a'),(10,'b'),(20,'c')]
+
+{-
+Set the index of the path to the current value.
+This is to bring the upper context to lower path sections.
+Useful for JSON.
+
+```hs
+selfIndex :: Indexable a p => p a fb -> a -> fb
+```
+-}
+
+-- >>> [("Betty", 37), ("Veronica", 12)] ^.. itraversed . selfIndex <. _2
+-- [(("Betty",37),37),(("Veronica",12),12)]
+
+{-
+#### Exercises – Custom Indexed Optics
+
+1. Write an indexed Traversal
+-}
+
+{- LIMA_INDENT 2 -}
+
+-- pair :: IndexedFold Bool (a, a) a
+pair :: IndexedTraversal Bool (a, a) (b, b) a b
+pair p (x, y) = (,) <$> indexed p False x <*> indexed p True y
+
+-- >>> ('a', 'b') ^@.. pair
+-- [(False,'a'),(True,'b')]
+
+{-
+2. Use reindexed to provide an indexed list traversal which starts at `1` instead of `0`.
+-}
+
+oneIndexed :: IndexedTraversal Int [a] [b] a b
+oneIndexed = reindexed (+ 1) itraversed
+
+-- >>> ['a'..'d'] ^@.. oneIndexed
+-- [(1,'a'),(2,'b'),(3,'c'),(4,'d')]
+
+{-
+  - Use `reindexed` to write a traversal indexed by the distance to the end of the list.
+-}
+
+{- LIMA_INDENT 4 -}
+invertedIndex :: IndexedTraversal Int [a] [b] a b
+invertedIndex p x = reindexed ((length x - 1) -) itraversed p x
+
+-- >>> ['a'..'d'] ^@.. invertedIndex
+-- [(3,'a'),(2,'b'),(1,'c'),(0,'d')]
+
+{-
+3. Build the following combinators using only compositions of other optics.
+-}
+
+chars :: IndexedTraversal Int T.Text T.Text Char Char
+chars p x = T.pack <$> itraversed p (T.unpack x)
+
+-- >>> ("banana" :: T.Text) ^@.. chars
+-- [(0,'b'),(1,'a'),(2,'n'),(3,'a'),(4,'n'),(5,'a')]
+
+-- charCoords :: IndexedTraversal (Int, Int) String String Char Char
+-- charCoords p x = itraversed p (itraversed p (lines x))
+
+chc :: [((Int, Int), Char)]
+chc = "line\nby\nline" ^@.. indexing lined <.> itraversed
+
+-- >>> chc
+-- [((0,0),'l'),((0,1),'i'),((0,2),'n'),((0,3),'e'),((1,0),'b'),((1,1),'y'),((2,0),'l'),((2,1),'i'),((2,2),'n'),((2,3),'e')]
+
+{-
+### 11.5 Index-preserving optics
+
+Some optics forget the index. Can make existing optics index-preserving.
+
+```hs
+cloneIndexPreservingLens :: Lens s t a b -> IndexPreservingLens s t a b
+cloneIndexPreservingTraversal :: Traversal s t a b -> IndexPreservingTraversal s t a b
+cloneIndexPreservingSetter :: Setter s t a b -> IndexPreservingSetter s t a b
+```
+-}
+
+-- Now the index 'passes-through' `_1'` to the end.
+-- >>> let _1' = cloneIndexPreservingLens _1
+-- >>> [('a', True), ('b', False), ('c', True)] ^@.. itraversed . _1'
+-- [(0,'a'),(1,'b'),(2,'c')]
+
+{-
+Or, make lens index-preserving initially.
+
+```hs
+iplens :: (s -> a) -> (s -> b -> t) -> IndexPreservingLens s t a b
+```
+-}
+
+{-
+### 13. Optics and Monads
+
+#### 13.1 Reader Monad and View
+
+```hs
+view :: MonadReader s m => Getting a s a -> m a
+```
+
+`s -> a` is a valid `MonadReader s m => m a` where `m ~ (->) s`
+
+```hs
+instance Monad ((->) r) where
+  return = const
+  f >>= k = \r -> k (f r) r
+```
+-}
+
+type UserName = String
+type Password = String
+data Env = Env
+  { _currentUser :: UserName
+  , _users :: M.Map UserName Password
+  }
+  deriving (Show)
+makeLenses ''Env
+
+getUserPassword :: ReaderT Env IO (Maybe String)
+getUserPassword = do
+  userName_ <- view currentUser
+  maybePassword <- preview (users . ix userName_)
+  liftIO $ pure maybePassword
+
+-- >>> flip runReaderT (Env "Hey" (M.fromList [("Hey", "password")])) getUserPassword
+-- Just "password"
+
+-- st :: String
+st2 :: [Char]
+st2 = ("optics by fun" :: String) & itraversed %@~ \i c -> chr (ord c + i)
+
+-- >>> st2
+-- "oqvlgx&i\129)p\128z"
+
+st :: String
+st = "oqvlgx&i\129)p\128z" & itraversed %@~ \i c -> chr (ord c - i)
+
+-- >>> st
+-- "optics by fun"
+
+{-
+### 13.2 State Monad Combinators
+
+- till calculator for recording the sale of a couple beers
+-}
+
+data Till = Till
+  { _total :: Double
+  , _sales :: [Double]
+  , _taxRate :: Double
+  }
+  deriving (Show)
+
+makeLenses ''Till
