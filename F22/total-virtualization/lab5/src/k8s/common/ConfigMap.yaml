@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-config
+  labels:
+    app: common
+data:
+  DB_COLUMN_RECEIVED: received_at
+  DB_COLUMN_SENT: sent_at
+  DB_HOST: postgres-service
+  DB_PORT_CONTAINER: "5432"
+  DB_PORT: "5432"
+  MQ_HOST: rabbitmq-service
+  MQ_MANAGEMENT_PORT_CONTAINER: "15672"
+  MQ_MANAGEMENT_PORT: "15672"
+  MQ_PORT_CONTAINER: "5672"
+  MQ_PORT: "5672"
+  MQ_QUEUE: hello
+  PGADMIN_DEFAULT_EMAIL: root@root.com
+  PGADMIN_DEFAULT_PASSWORD: root
+  PGADMIN_PORT_CONTAINER: "80"
+  PGADMIN_PORT: "5050"
+  POSTGRES_DB: pg_db
+  POSTGRES_PASSWORD: my_admin
+  POSTGRES_TABLE_1: table_1
+  POSTGRES_TABLE_2: table_2
+  POSTGRES_USER: my_admin

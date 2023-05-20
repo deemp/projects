@@ -1,0 +1,17 @@
+# Persistent volume for Postgres
+# https://phoenixnap.com/kb/postgresql-kubernetes
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv-volume
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/postgres-data"

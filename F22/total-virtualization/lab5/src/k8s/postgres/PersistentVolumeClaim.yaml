@@ -1,0 +1,15 @@
+# Persistent volume claim for Postgres
+# https://phoenixnap.com/kb/postgresql-kubernetes
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-pv-claim
+  labels:
+    app: postgres
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

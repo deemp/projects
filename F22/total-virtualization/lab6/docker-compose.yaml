@@ -1,0 +1,22 @@
+version: "3.2"
+services:
+  balancer_loader:
+    container_name: balancer_loader
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - N_REQUESTS=${N_REQUESTS_LOAD_BALANCER}
+      - ADDRESS=${ADDRESS_LOAD_BALANCER}
+  server_loader:
+    container_name: server_loader
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - N_REQUESTS=${N_REQUESTS_SERVER}
+      - ADDRESS=${ADDRESS_SERVER_1}

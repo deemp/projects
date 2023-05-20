@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer-deployment
+  labels:
+    app: consumer
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+        - name: consumer
+          image: deemp/consumer:latest
+          ports:
+            - containerPort: 8085
+          env:
+            - name: MQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: MQ_HOST
+                  name: common-config
+            - name: MQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: MQ_PORT
+                  name: common-config
+            - name: MQ_QUEUE
+              valueFrom:
+                configMapKeyRef:
+                  key: MQ_QUEUE
+                  name: common-config
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_HOST
+                  name: common-config
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_PORT
+                  name: common-config
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_DB
+                  name: common-config
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: common-config
+            - name: DB_COLUMN_RECEIVED
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_COLUMN_RECEIVED
+                  name: common-config
+            - name: DB_COLUMN_SENT
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_COLUMN_SENT
+                  name: common-config
+            - name: POSTGRES_TABLE_1
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_TABLE_1
+                  name: common-config
+            - name: POSTGRES_TABLE_2
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_TABLE_2
+                  name: common-config
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_USER
+                  name: common-config

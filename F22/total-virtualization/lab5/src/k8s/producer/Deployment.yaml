@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer-deployment
+  labels:
+    app: producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: producer
+  template:
+    metadata:
+      labels:
+        app: producer
+    spec:
+      containers:
+        - name: producer
+          image: deemp/producer:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: MQ_HOST
+                  name: common-config
+            - name: MQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: MQ_PORT
+                  name: common-config
+            - name: MQ_QUEUE
+              valueFrom:
+                configMapKeyRef:
+                  key: MQ_QUEUE
+                  name: common-config

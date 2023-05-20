@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "lab5"
+version = "0.0.1"
+description = ""
+authors = ["Danila Danko <deemp@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.28.1"
+types-requests = "^2.28.11.5"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^0.991"
+pylint = "^2.15.6"
+black = "^22.10.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.'MESSAGES CONTROL']
+disable="""
+    missing-function-docstring,
+    missing-module-docstring
+"""
