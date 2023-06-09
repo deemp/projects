@@ -1,53 +1,51 @@
-default-extensions:
-  - AllowAmbiguousTypes
-  - BlockArguments
-  - DataKinds
-  - FlexibleContexts
-  - FlexibleInstances
-  - ImportQualifiedPost
-  - InstanceSigs
-  - MultiParamTypeClasses
-  - NoOverloadedStrings
-  - QuasiQuotes
-  - RankNTypes
-  - TypeApplications
-  - TypeFamilies
+name: nix-managed
+license: BSD3
+version: 0.0.1
 
 dependencies:
-  - base >= 4.7 && < 5
   - aeson
   - async
+  - base >= 4.7 && < 5
   - binary <= 0.8.9.1
   - breakpoint
-  - bytestring
   - bytestring
   - containers
   - deepseq
   - effectful
   - exceptions
+  - first-class-families
   - fused-effects
   - fused-effects-exceptions
+  - generic-lens
   - http-client
   - http-client-tls
   - http-types
+  - lens
   - lifted-base
   - managed
+  - matrix
   - monad-control
+  - monad-logger
   - mtl
   - random
-  - rio
+  - string-interpolate
+  - unliftio
+  - template-haskell
   - time
   - transformers
-  - template-haskell
+  - transformers-base
   - unordered-containers
 
 executables:
-  Breakpoint:
-    main: app/Breakpoint.hs
-  RandomNumbers:
-    main: app/RandomNumbers.hs
   README:
     main: README.hs
+
+ghc-options:
+  - -Weverything
+  - -Wno-implicit-prelude
+  - -Wno-missing-safe-haskell-mode
+  - -Wno-unsafe
+  - -Wno-missing-imports
 
 library:
   source-dirs:
@@ -62,9 +60,3 @@ tests:
       - text
       - lima
       - data-default
-
-license: BSD3
-
-name: nix-managed
-
-version: 0.1.0.0

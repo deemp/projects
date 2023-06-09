@@ -27,7 +27,7 @@
       inherit (inputs.devshell.functions.${system}) mkCommands mkShell;
       inherit (inputs.haskell-tools.functions.${system}) toolsGHC;
 
-      ghcVersion_ = "925";
+      ghcVersion_ = "928";
 
       # and the name of the package
       myPackageName = "nix-managed";
@@ -88,6 +88,7 @@
         hpack
         implicit-hie
         cabal
+        pkgs.haskell.packages.ghc945.fourmolu
         hls
       ];
 

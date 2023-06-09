@@ -1,12 +1,13 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE TupleSections #-}
+{-# HLINT ignore "Use gets" #-}
+{-# HLINT ignore "Use asks" #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-{-# HLINT ignore "Use gets" #-}
-{-# HLINT ignore "Use asks" #-}
-
-module Try.MonadBaseControl where
+module Try.Monads.MonadBaseControl where
 
 import Control.Monad.Base (MonadBase)
 import Control.Monad.Reader (MonadReader (ask), ReaderT (runReaderT))
@@ -23,17 +24,17 @@ https://lexi-lambda.github.io/blog/2019/09/07/demystifying-monadbasecontrol/
 - Package up the action’s output state with its result and run it.
 - Restore the action’s output state into the enclosing transformer.
 - Return the action’s result.
-
 -}
 
 class MonadBase b m => MonadBaseControl b m | m -> b where
   type InputState m
   type OutputState m
   captureInputState :: m (InputState m)
+
   -- run monad with an input state and return a result and the output state in another monad
   -- we have access to the result of the first monad
   closeOverInputState :: m a -> InputState m -> b (a, OutputState m)
-  restoreOutputState :: OutputState m -> m () 
+  restoreOutputState :: OutputState m -> m ()
 
 instance MonadBaseControl IO IO where
   type InputState IO = ()
@@ -66,8 +67,3 @@ instance (MonadBaseControl b m, Monoid w) => MonadBaseControl b (WriterT w m) wh
     ((v, s'), ss') <- closeOverInputState (runWriterT m) ss
     pure (v, (s', ss'))
   restoreOutputState (s, ss) = lift (restoreOutputState ss) *> tell s
-
--- class MonadBase b m => MonadBaseControl b m | m -> b where
---   type OutputState m
---   captureAndCloseOverInputState :: m a -> m (b (a, OutputState m))
---   restoreOutputState :: OutputState m -> m ()

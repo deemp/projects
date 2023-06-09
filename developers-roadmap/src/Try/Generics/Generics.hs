@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE ImpredicativeTypes #-}
 
-module Try.Generics () where
+module Try.Generics.Generics () where
 
 import Data.Kind (Type)
 import GHC.Generics (Generic, Rep)
@@ -50,8 +50,6 @@ data Empty2 deriving (Generic)
 -- Rep Empty2 :: * -> *
 -- = M1 D ('MetaData "Empty2" "TryGenerics" "main" 'False) V1
 
--- TODO what's x in from :: a -> Rep a x
-
 -- >>>:kind! Rep Bool
 -- Rep Bool :: * -> *
 -- = M1
@@ -66,69 +64,68 @@ data Empty2 deriving (Generic)
 
 data ManyFields a b c d e f g h i = A1 a b c d e f g h i deriving (Generic)
 
-{-
->>>:kind! forall a b c d e f g h i. Rep (ManyF a b c d e f g h i)
-forall a b c d e f g h i. Rep (ManyF a b c d e f g h i) :: * -> *
-= M1
-    D
-    ('MetaData "ManyF" "TryGenerics" "main" 'False)
-    (M1
-       C
-       ('MetaCons "A1" 'PrefixI 'False)
-       (((M1
-            S
-            ('MetaSel
-               'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
-            (K1 R a)
-          :*: M1
-                S
-                ('MetaSel
-                   'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
-                (K1 R b))
-         :*: (M1
-                S
-                ('MetaSel
-                   'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
-                (K1 R c)
-              :*: M1
-                    S
-                    ('MetaSel
-                       'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
-                    (K1 R d)))
-        :*: ((M1
-                S
-                ('MetaSel
-                   'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
-                (K1 R e)
-              :*: M1
-                    S
-                    ('MetaSel
-                       'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
-                    (K1 R f))
-             :*: (M1
-                    S
-                    ('MetaSel
-                       'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
-                    (K1 R g)
-                  :*: (M1
-                         S
-                         ('MetaSel
-                            'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
-                         (K1 R h)
-                       :*: M1
-                             S
-                             ('MetaSel
-                                'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
-                             (K1 R i))))))
--}
+-- >>>:kind! forall a b c d e f g h i. Rep (ManyFields a b c d e f g h i)
+-- forall a b c d e f g h i. Rep (ManyFields a b c d e f g h i) :: *
+--                                                                 -> *
+-- = M1
+--     D
+--     ('MetaData "ManyFields" "Try.Generics" "main" 'False)
+--     (M1
+--        C
+--        ('MetaCons "A1" 'PrefixI 'False)
+--        (((M1
+--             S
+--             ('MetaSel
+--                'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
+--             (K1 R a)
+--           :*: M1
+--                 S
+--                 ('MetaSel
+--                    'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
+--                 (K1 R b))
+--          :*: (M1
+--                 S
+--                 ('MetaSel
+--                    'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
+--                 (K1 R c)
+--               :*: M1
+--                     S
+--                     ('MetaSel
+--                        'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
+--                     (K1 R d)))
+--         :*: ((M1
+--                 S
+--                 ('MetaSel
+--                    'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
+--                 (K1 R e)
+--               :*: M1
+--                     S
+--                     ('MetaSel
+--                        'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
+--                     (K1 R f))
+--              :*: (M1
+--                     S
+--                     ('MetaSel
+--                        'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
+--                     (K1 R g)
+--                   :*: (M1
+--                          S
+--                          ('MetaSel
+--                             'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
+--                          (K1 R h)
+--                        :*: M1
+--                              S
+--                              ('MetaSel
+--                                 'Nothing 'NoSourceUnpackedness 'NoSourceStrictness 'DecidedLazy)
+--                              (K1 R i))))))
 
 data ManyConstructors = B1 | C1 | D1 | E1 | F1 | G1 | H1 | I1 | J deriving (Generic)
 
--- >>>:kind! Rep ManyC
--- Rep ManyC :: * -> *
+-- >>>:kind! Rep ManyConstructors
+-- Rep ManyConstructors :: * -> *
 -- = M1
 --     D
---     ('MetaData "ManyC" "TryGenerics" "main" 'False)
+--     ('MetaData "ManyConstructors" "Try.Generics" "main" 'False)
 --     (((M1 C ('MetaCons "B1" 'PrefixI 'False) U1
 --        :+: M1 C ('MetaCons "C1" 'PrefixI 'False) U1)
 --       :+: (M1 C ('MetaCons "D1" 'PrefixI 'False) U1
@@ -144,9 +141,3 @@ data ManyConstructors = B1 | C1 | D1 | E1 | F1 | G1 | H1 | I1 | J deriving (Gene
 
 https://hackage.haskell.org/package/base-4.18.0.0/docs/GHC-Generics.html#g:10
 -}
-
-class Encode' (f :: Type -> Type) where
-  encode' :: f p -> [Bool]
-
--- encode :: Generic a => a -> [Bool]
-

@@ -1,4 +1,4 @@
-module Junior1 (main) where
+module Try.Functions.General (main) where
 
 import Data.Function ((&))
 
@@ -120,9 +120,7 @@ f8 :: (Eq t, Num t) => t -> t
 f8 0 = 0
 f8 n = n + f8 (n - 1)
 
-
 -- https://stackoverflow.com/a/13052612
 f9 :: (Eq t, Num t) => t -> t -> t
 f9 0 acc = acc
 f9 n acc = f9 (n - 1) $! (acc + n)
-

@@ -7,6 +7,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
@@ -17,7 +18,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
-module FusedEffects.UndoIO (
+module Try.FusedEffects.UndoIO (
   main1,
   main,
 ) where
@@ -29,7 +30,7 @@ import Control.Carrier.Fail.Either qualified as Fail
 import Control.Carrier.Lift (sendM)
 import Control.Carrier.State.Strict (StateC (..), runState)
 import Control.Effect.Exception (Lift, bracket, try)
-import Control.Exception.Lifted qualified as CL (bracket, try, catch)
+import Control.Exception.Lifted qualified as CL (bracket, catch, try)
 import Control.Monad (MonadPlus, replicateM_)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.Catch qualified as CE
@@ -188,7 +189,6 @@ main4 = do
 ### Trying lifted-base
 -}
 
-
 someActions3 :: forall m sig. (MonadBaseControl IO m, Has (Lift IO) sig m, Has (Throw FileError) sig m, Has (WriterStack [IO ()]) sig m) => m ()
 someActions3 = flip CL.catch (\(_ :: FileError) -> tell @[IO ()] [putStr "Not hello, "]) do
   tell @[IO ()] [putStr "world!\n"]
@@ -205,7 +205,6 @@ someActions3 = flip CL.catch (\(_ :: FileError) -> tell @[IO ()] [putStr "Not he
 -- main5 = do
 --   s <- (fst <$>) $ runWriterStack @[IO ()] . runError @FileError $ someActions3
 --   sequenceA_ s
-
 
 increment :: Int -> Int
 increment x = x + 1

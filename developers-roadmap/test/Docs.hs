@@ -1,4 +1,6 @@
-import Converter (Format (..), convertTo, def)
+{-# LANGUAGE ImportQualifiedPost #-}
+
+import Converter (Format (Hs, Md), convertTo, def)
 import Data.Text.IO qualified as T
 
 main :: IO ()

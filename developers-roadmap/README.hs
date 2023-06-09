@@ -11,6 +11,7 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE InstanceSigs #-}
 {- FOURMOLU_ENABLE -}
 
 module Main (main) where
@@ -88,7 +89,6 @@ class Foldable t where
 -- >>> foldl (\(!a1, !a2) x -> (a1 + x, a2 + x)) (0, 0) [1..9]
 -- (45,45)
 
-{- LIMA_DEDENT -}
 
 {-
 - `foldl'` - fold a list from the left: `f (f (f x a1) a2) ...` and have accumulator in WHNF.
@@ -103,7 +103,6 @@ class Foldable t where
 -- >>> foldr (&&) False (repeat False)
 -- False
 
-{- LIMA_DEDENT -}
 
 {-
 - `fold :: (Foldable t, Monoid m) => t m -> m`
@@ -113,7 +112,6 @@ class Foldable t where
 {- LIMA_INDENT 4 -}
 -- >>> fold [Just "a", Nothing, Just "c"]
 -- Just "ac"
-{- LIMA_DEDENT -}
 
 {-
 - `foldMap :: (Foldable t, Monoid m) => (a -> m) -> t a -> m` - maps each element of a container to a `Monoid` and `fold`s the container
@@ -122,7 +120,6 @@ class Foldable t where
 {- LIMA_INDENT 4 -}
 -- >>> foldMap Just ["a", "b", "c"]
 -- Just "abc"
-{- LIMA_DEDENT -}
 
 {-
 #### Alternative and MonadPlus
@@ -152,8 +149,6 @@ class Foldable t where
 -- >>> foldl' (<|>) empty [Just "a", Nothing, Just "c", Nothing, Just "e"]
 -- Just "a"
 
-{- LIMA_DEDENT -}
-
 {-
 #### Traversable
 
@@ -170,8 +165,6 @@ class (Functor t, Foldable t) => Traversable t where
   -- They are merely specialised versions of the other two.
   mapM :: Monad m => (a -> m b) -> t a -> m (t b)
   sequence :: Monad m => t (m a) -> m (t a)
-
-{- LIMA_DEDENT -}
 
 {-
 #### Contravariant
@@ -199,6 +192,8 @@ class (Functor t, Foldable t) => Traversable t where
     - `asynchronous` - generated from outside a thread. Allow `cleanup`, but `no recovery`
     - `impure` - generated in a pure code, thrown when a thunk gets evaluated.
       - Example: `error`
+- [Exceptions and concurrency] - [YT](https://www.youtube.com/watch?v=UKAGN8v2t2k)
+  - use [safe-exceptions]
 
 From Haskell in Depth (Chapter 7)
 
@@ -228,8 +223,6 @@ From Haskell in Depth (Chapter 7)
 
 exAsync = withAsync (threadDelay 3_000_000 >> print "ping") (\a -> wait a >> print "pong")
 
-{- LIMA_DEDENT -}
-
 {-
 - `retry` restarts a transaction and blocks the thread until one of the variables that were read changes its value
 
@@ -238,14 +231,19 @@ exAsync = withAsync (threadDelay 3_000_000 >> print "ping") (\a -> wait a >> pri
 ##### Non-STM
 
 - [Pessimistic and optimistic locking](https://stackoverflow.com/questions/129329/optimistic-vs-pessimistic-locking)
+- [Базовая работа с MVar](https://ruhaskell.org/posts/theory/2015/02/13/mvars.html)
 
 #### Testing
+
+### Property-based testing
+- [Hedgehog, quickcheck](https://www.fpcomplete.com/blog/quickcheck-hedgehog-validity/)
+  - examples: [lima](https://hackage.haskell.org/package/lima)
 
 -*HiD, Chapter  8**
 Test types:
 
 - `unit` tests -
-- `property` tests -
+- `property-based` tests - checking property on a number of inputs
 - `golden` tests - check against a reference file contents (`tasty-golden`)
 
 ## Junior 3
@@ -261,14 +259,15 @@ Test types:
 - The part before the `=>` is the context, while the part after the `=>` is the head of the instance declaration. - [src](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/instances.html?highlight=overlapping%20instances#instance-declarations-and-resolution)
 
     ```hs
-    instance (assertion1, ..., assertionn) => class type1 ... typem where ...
+    instance (assertion1, ..., assertion) => class type1 ... typem where ...
     ```
 
 - How are type classes implemented in Haskell?
-  - What is a dictionary?
-    - A data type with class functions as fields
-  - How is it defined and passed into functions? - [src](https://arxiv.org/pdf/1907.00844.pdf#subsection.2.1)
-    - embed `Superclass` dictionary into `Subclass` dictionary
+  - [All You Wanted to Know About Type Classes](https://www.youtube.com/watch?v=8o51sA12VfI)
+    - What is a dictionary?
+      - A data type with class functions as fields
+    - How is it defined and passed into functions? - [src](https://arxiv.org/pdf/1907.00844.pdf#subsection.2.1)
+      - embed `Superclass` dictionary into `Subclass` dictionary
 
 -}
 
@@ -279,8 +278,6 @@ data Sub1D a = Sub1D
   { super1 :: BaseD a
   , sub1 :: a -> Bool
   }
-
-{- LIMA_DEDENT -}
 
 {-
     - Passed automatically by the compiler
@@ -410,8 +407,6 @@ type family Append xs ys where -- header
 happend :: HList xs -> HList ys -> HList (Append xs ys)
 happend = undefined
 
-{- LIMA_DEDENT -}
-
 {-
   - **Closed type families**
     - The clauses of a closed type family are ordered and matched **from top to bottom**
@@ -423,8 +418,6 @@ type And :: Bool -> Bool -> Bool
 type family And a b where
   And True True = True
   And _ _ = False
-
-{- LIMA_DEDENT -}
 
 {-
   - **Open type families**
@@ -443,8 +436,6 @@ type instance And' True False = False
 type instance And' False True = False
 type instance And' False False = False
 
-{- LIMA_DEDENT -}
-
 {-
       - Compatible:
         - Can make right sides equal and unify left sides via rewriting
@@ -459,8 +450,6 @@ type instance G Char b = Char -> b
 -- ==>
 
 type instance G Char Bool = Char -> Bool
-
-{- LIMA_DEDENT -}
 
 {-
   - **Associated types**
@@ -480,8 +469,6 @@ class Container2 a where
   type Elem2 x = Int
   elements' :: a -> [Elem2 a]
 
-{- LIMA_DEDENT -}
-
 {-
     - Example from [string-interpolate](https://williamyaoh.com/posts/2019-05-27-string-interpolation-and-overlapping-instances.html#cb12)
 
@@ -494,8 +481,6 @@ type family Not x = r | r -> x where
 
 -- >>> s @True
 
-{- LIMA_DEDENT -}
-
 {-
   - **Data families**
     - [HaskellWiki](https://wiki.haskell.org/GHC/Type_families#Detailed_definition_of_data_families)
@@ -506,8 +491,6 @@ type family Not x = r | r -> x where
 data family Vector a
 newtype instance Vector () = VUnit Int
 newtype instance Vector Int = VInts [Int]
-
-{- LIMA_DEDENT -}
 
 {-
     - Can associate with a class
@@ -523,8 +506,6 @@ instance Vectorizable S where
   vlength :: Vector_ S -> Int
   vlength = length . unS . unVector_
 
-{- LIMA_DEDENT -}
-
 {-
 ### GADTs
 
@@ -538,8 +519,6 @@ instance Vectorizable S where
 
 data TrueGadtFoo a where
   MkTrueGadtFoo :: a -> TrueGadtFoo Int
-
-{- LIMA_DEDENT -}
 
 {-
   - Still, need to use a relevant data constructor
@@ -566,14 +545,12 @@ infixr 6 :::
 hex :: HList_ '[Char, Integer, String]
 hex = 'a' ::: 1 ::: "hello" ::: HNil_
 
-{- LIMA_DEDENT -}
-
 {-
 ### Kinds
 
 - `DataKinds` - [src](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/type_data.html#type-level-data-declarations)
   - What is the data type promotion?
-    - promote terms to type level like `'[1,2,3]` - [src]
+    - promote terms to type level like `'[1,2,3]`
 - Are types with promoted kinds inhabited?
   - **inhabited types** (types that have at least 1 value) are of kind **Type**
 - `ConstraintKinds` - `Constraint`s as first-class citizens
@@ -581,6 +558,9 @@ hex = 'a' ::: 1 ::: "hello" ::: HNil_
   ```hs
   type Stringy a = (Read a, Show a)
   ```
+- `Symbol` - a compile-time string
+  - [UnconsSymbol](https://hackage.haskell.org/package/base-4.18.0.0/docs/GHC-TypeLits.html#t:UnconsSymbol)
+  - [typed-interpolation](https://github.com/dmjio/typed-interpolation) - a good parsing example.
 
 ### Functional dependencies
 
@@ -593,8 +573,6 @@ hex = 'a' ::: 1 ::: "hello" ::: HNil_
 class Monad m => MonadError e m | m -> e where
   throwError :: e -> m a
   catchError :: m a -> (e -> m a) -> m a
-
-{- LIMA_DEDENT -}
 
 {-
 - Problem ([src](https://www.fpcomplete.com/haskell/tutorial/fundeps/#exercises)):
@@ -629,6 +607,7 @@ class Monad m => MonadError e m | m -> e where
 -}
 
 {- LIMA_INDENT 10 -}
+
 class MonadReader m where
   -- use an associated type
   type Env m
@@ -643,23 +622,25 @@ instance MonadReader PersonReader where
   ask :: PersonReader (Env PersonReader)
   ask = PersonReader id
 
-{- LIMA_DEDENT -}
-
 {-
 ### Laziness
 
 - `Bang patterns`
+-}
 
-  ```hs
-  {-# LANGUAGE BangPatterns #-}
+{- LIMA_INDENT 2 -}
 
-  add :: Int -> Int -> Int
-  add !x !y = x + y
+{-# LANGUAGE BangPatterns #-}
 
-  -- equivalent to
-  add x y = x `seq` y `seq` x + y
-  ```
+-- add :: Int -> Int -> Int
+-- add !x !y = x + y
 
+-- -- equivalent to
+-- add' :: Int -> Int -> Int
+-- add' x y = x `seq` y `seq` x + y
+
+
+{-
 - `$!` - strict application
 - `Thunk` is an unevaluated expression - [src](https://stackoverflow.com/a/13984345)
   - `free variables` in an unevaluated expr
@@ -684,11 +665,21 @@ instance MonadReader PersonReader where
   - To get `a` in `NF`, we need to `!a`
 - [Thunks, Sharing, Laziness](https://youtu.be/I4lnCG18TaY) via `ghc-viz` (available in `nixpkgs`)
 
+- [safe-exceptions](https://www.fpcomplete.com/haskell/tutorial/exceptions/)
+  - force impure exceptions using `tryAnyDeep` and `NFData`.
+
 ### Fix combinator
 -}
 
 ex13 :: [Int] -> Int
-ex13 = fix (\t c -> \case (a0 : a1 : as) -> t (c + fromEnum (signum a0 /= signum a1)) (a1 : as); _ -> c) 0
+ex13 =
+  fix
+    ( \t c ->
+        \case
+          (a0 : a1 : as) -> t (c + fromEnum (signum a0 /= signum a1)) (a1 : as)
+          _ -> c
+    )
+    0
 
 -- >>>ex13 [-3,0,2,0,5]
 -- 4
@@ -718,20 +709,34 @@ ex13 = fix (\t c -> \case (a0 : a1 : as) -> t (c + fromEnum (signum a0 /= signum
 - [List comprehension](https://wiki.haskell.org/List_comprehension)
   - Skip elements
     - On a flag
-
-        ```hs
-        ["--deepClone" | _deepClone]
-        ```
-
-    - On a pattern fail
-
-        ```hs
-        catMaybes :: [Maybe a] -> [a]
-        catMaybes ls = [x | Just x <- ls]
-        ```
-
-### Template Haskell
 -}
+
+{- LIMA_INDENT 8 -}
+
+_deepClone = True
+
+s1 :: [String]
+s1 = ["--deepClone" | _deepClone]
+
+{-
+    - On a pattern fail
+-}
+
+{- LIMA_INDENT 8 -}
+
+catMaybes :: [Maybe a] -> [a]
+catMaybes ls = [x | Just x <- ls]
+
+{-
+### Template Haskell
+
+- [capture haddocks](https://github.com/codedownio/aeson-typescript/blob/671347e3739b63bf04d5412330dc9a4748c7832e/src/Data/Aeson/TypeScript/Util.hs#L224)
+  - [getDoc](https://hackage.haskell.org/package/template-haskell-2.19.0.0/docs/Language-Haskell-TH-Syntax.html#v:getDoc)
+
+- print the structure of an expression
+-}
+
+{- LIMA_INDENT 2 -}
 
 ex2 :: (Quasi a) => a [Dec]
 ex2 = runQ [d|decl :: Int; decl = 1 + 2|]
@@ -740,11 +745,19 @@ ex2 = runQ [d|decl :: Int; decl = 1 + 2|]
 -- [SigD decl_0 (ConT GHC.Types.Int),ValD (VarP decl_0) (NormalB (InfixE (Just (LitE (IntegerL 1))) (VarE GHC.Num.+) (Just (LitE (IntegerL 2))))) []]
 
 {-
-### Generics
-- [Higher-Kinded Data](https://reasonablypolymorphic.com/blog/higher-kinded-data/)
+### Higher-Kinded Data
 
+- Defaulting fields in a record (via HKD) - [GH](https://gist.github.com/chrisdone/7dddadd089e6a5d2e3e9445c4692d2c2)
+- [Higher-Kinded Data](https://reasonablypolymorphic.com/blog/higher-kinded-data/)
+  - [Free Lenses for Higher-Kinded Data](https://reasonablypolymorphic.com/blog/free-lenses/index.html)
+  - [HKD: Less Terrible than You Might Expect](https://reasonablypolymorphic.com/blog/hkd-not-terrible/index.html)
+  - and [others](https://reasonablypolymorphic.com/)
+
+### Generics
+
+- [Higher-Kinded Data](https://reasonablypolymorphic.com/blog/higher-kinded-data/)
 - `aeson` converts data to generic representation.
-  Its functions for parsing use selector names, modify them via options, then convert to or parse JSON.
+  - Its functions for parsing use selector names, modify them via options, then convert to or parse JSON.
 
 ### QualifiedDo
 
@@ -769,12 +782,45 @@ ex2 = runQ [d|decl :: Int; decl = 1 + 2|]
     main = print foo
     ```
 
+### Effects
+
+#### Effectful
+
+- [effectful](https://hackage.haskell.org/package/effectful)
+  - [Talk](https://www.youtube.com/watch?v=BUoYKBLOOrE) at Lambda
+  - Сервер с servant, esqueleto, effectful - [YT](https://youtube.com/playlist?list=PLDtVwbUDS3Wky1MaMPqFp0eaOGd_gzvZo)
+  - News site back-end - [GH](https://github.com/breaking-news-org/back-end)
+  - Effects may be pure - `runPureEff`
+
+### String interpolation
+- [string-interpolate](https://hackage.haskell.org/package/string-interpolate)
+- [nyan-interpolation](https://hackage.haskell.org/package/nyan-interpolation)
+- [PyF](https://hackage.haskell.org/package/PyF)
+- [typed-interpolation](https://github.com/dmjio/typed-interpolation)
+
+### Optics
+- [Optics are monoids](https://www.haskellforall.com/2021/09/optics-are-monoids.html)
+
+### Monad transformer stack
+
+- Determine the type - [SO](https://stackoverflow.com/a/13724465)
+
+## UnliftIO
+
+- [Demystifying MonadBaseControl](https://lexi-lambda.github.io/blog/2019/09/07/demystifying-monadbasecontrol/)
+  - Capture the action’s input state and close over it.
+  - Package up the action’s output state with its result and run it.
+  - Restore the action’s output state into the enclosing transformer.
+  - Return the action’s result.
+
 ## Misc
 
+- [Радости и горести побед над C: делаем конфетку из прототипа wc на хаскеле](https://habr.com/ru/articles/496370/)
+  - [hwc](https://github.com/0xd34df00d/hwc/tree/master)
 - Parsing with Haskell
   - [Part 1](https://serokell.io/blog/lexing-with-alex)
 - Haskell CI with caching - [src](https://github.com/aaronallen8455/breakpoint/blob/main/.github/workflows/ci.yml)
 - `string-interpolate` - [src](https://hackage.haskell.org/package/string-interpolate)
   - UTF-8 string interpolation
-- [View Patterns](https://gitlab.haskell.org/ghc/ghc/-/wikis/view-patterns)
+- [ViewPatterns](https://gitlab.haskell.org/ghc/ghc/-/wikis/view-patterns)
 -}

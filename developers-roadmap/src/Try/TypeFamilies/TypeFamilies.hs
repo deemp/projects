@@ -1,25 +1,20 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneKindSignatures #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Junior3 where
+module Try.TypeFamilies.TypeFamilies where
 
-import Data.Data (Proxy (..), Typeable)
-import Data.Functor
-import Data.Functor.Identity (Identity (Identity))
+import Data.Data (Proxy (Proxy), Typeable, typeRep)
+import Data.Functor.Identity (Identity (..))
 import Data.Kind (Type)
-import Data.Typeable (typeRep)
-import GHC.Base (Symbol)
 
 -- Type families
 
@@ -58,8 +53,8 @@ type family Append xs ys where -- header
 
 type MaybeIf :: Bool -> Type -> Type
 type family MaybeIf b t where
-  MaybeIf True t = Maybe t
-  MaybeIf False t = Identity t
+  MaybeIf 'True t = Maybe t
+  MaybeIf 'False t = Identity t
 
 data PlayerInfo b = MkPlayerInfo
   { name :: MaybeIf b String
@@ -180,81 +175,3 @@ instance Vectorizable S where
 -- Data family
 data family SomeFamily a
 newtype instance SomeFamily Int = SomeF Int
-
--- Fundeps exercise - https://www.fpcomplete.com/haskell/tutorial/fundeps/#exercises
-
-newtype PersonReader a = PersonReader {runPersonReader :: Person -> a}
-  deriving (Functor, Applicative, Monad)
-
-class Monad m => MonadReader env m | m -> env where
-  ask :: m env
-
-data Person = Person
-  { nameP :: String
-  , ageP :: Int
-  }
-  deriving (Show)
-
-askAge :: MonadReader Person m => m Int
-askAge = ask <&> ageP
-
-askName :: MonadReader Person m => m String
-askName = ask <&> nameP
-
-greeting :: forall m. (Monad m, MonadReader Person m) => m String
-greeting = do
-  name <- askName
-  age <- askAge
-  pure $ name ++ " is " ++ show age ++ " years old"
-
-instance MonadReader Person PersonReader where
-  ask :: PersonReader Person
-  ask = PersonReader id
-
-greetingId :: String
-greetingId = runPersonReader (greeting @PersonReader) Person{nameP = "ah", ageP = 3}
-
--- >>>greetingId
--- "ah is 3 years old"
-
--- GADTs
--- we have to define these types
-data Empty
-data NonEmpty
-
-data SafeList a b where
-  Nil :: SafeList a Empty
-  Cons :: a -> SafeList a b -> SafeList a NonEmpty
-
-safeHead :: SafeList a NonEmpty -> a
-safeHead (Cons a _) = a
-
-safeTail :: SafeList a b -> a
-safeTail (Cons a Nil) = a
-safeTail (Cons _ b) = safeTail b
-
-st1 :: Integer
-st1 = safeTail $ Cons 3 (Cons 4 Nil)
-
--- >>>st1
--- 4
-
-data P = MkP -- 1
-data Prom = P -- 2
-
--- sprom :: 'P -> 'P
--- sprom x = x
-
--- https://www.parsonsmatt.org/2017/04/26/basic_type_level_programming_in_haskell.html#heterogeneous-lists
-
-data HList xs where
-  HNil :: HList '[]
-  (:::) :: a -> HList as -> HList (a ': as)
-
-infixr 6 :::
-
-hex :: HList '[Char, Integer, String]
-hex = 'a' ::: 1 ::: "hello" ::: HNil
-
--- >>>:t
--- 'a' ::: 1 ::: "hello" ::: HNil :: Num a => HList '[Char, a, String]

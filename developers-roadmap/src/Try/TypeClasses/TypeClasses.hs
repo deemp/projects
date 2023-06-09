@@ -1,4 +1,9 @@
-module Try.TypeClasses where
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeFamilies #-}
+
+module Try.TypeClasses.TypeClasses where
 
 import Control.Monad (guard)
 

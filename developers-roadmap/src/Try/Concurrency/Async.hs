@@ -1,4 +1,4 @@
-module Try.Async where
+module Try.Concurrency.Async where
 
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (wait, withAsync)

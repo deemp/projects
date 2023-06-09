@@ -1,12 +1,22 @@
-{-# HLINT ignore "Use <$>" #-}
+{-# LANGUAGE BlockArguments #-}
+{-# HLINT ignore "Use newtype instead of data" #-}
+{- LIMA_ENABLE -}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE TupleSections #-}
+{- LIMA_DISABLE -}
+{-# HLINT ignore "Use <$>" #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-{-# HLINT ignore "Use newtype instead of data" #-}
+{- LIMA_DISABLE -}
+module Try.Monads.Monads where
 
-module Try.Monads where
+{- LIMA_ENABLE -}
+
+{-
+## State
+-}
 
 newtype State s a = State {runState :: s -> (a, s)}
 
@@ -52,6 +62,10 @@ expr1 = flip runState 3 do
 -- >>>expr1
 -- ((),5)
 
+{-
+## Cont
+-}
+
 newtype Cont r a = Cont {runCont :: (a -> r) -> r} deriving (Functor)
 
 instance Applicative (Cont r) where
@@ -65,6 +79,10 @@ instance Monad (Cont r) where
   return = pure
   (>>=) :: Cont r a -> (a -> Cont r b) -> Cont r b
   (Cont f) >>= x = Cont $ \b -> f $ \a -> runCont (x a) $ \t -> b t
+
+{-
+## ContT
+-}
 
 data ContT r m a = ContT {runContT :: (a -> m r) -> m r} deriving (Functor)
 

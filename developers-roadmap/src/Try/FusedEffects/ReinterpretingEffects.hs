@@ -27,7 +27,7 @@ GeneralizedNewtypeDeriving, KindSignatures, OverloadedStrings, MultiParamTypeCla
 RankNTypes, TypeApplications, TypeOperators, UndecidableInstances #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
-module FusedEffects.ReinterpretingEffects( main, main1, main2) where
+module Try.FusedEffects.ReinterpretingEffects( main, main1, main2) where
 -- from base
 import Control.Applicative
 import Data.Foldable (traverse_)

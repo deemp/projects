@@ -1,10 +1,11 @@
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TupleSections #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
-module Main (main) where
+module Try.IO.RandomNumbers (main) where
 
 import Control.Monad.Fix (fix)
 import Data.Binary (decode, encode)
@@ -91,13 +92,11 @@ countNumbersReadFile = do
 
 main :: IO ()
 main = do
-  -- writeNumbers
   countNumbersChunks
 
--- countNumbersReadFile
-
--- -------
--- trying serialization
+{-
+Trying serialization
+-}
 
 nums :: [Int]
 nums = [1, 3, 4, 4, 5, 2, 5]

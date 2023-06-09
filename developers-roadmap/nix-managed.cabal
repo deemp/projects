@@ -5,40 +5,43 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           nix-managed
-version:        0.1.0.0
+version:        0.0.1
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 
 library
   exposed-modules:
-      Async
-      Exceptions
-      FusedEffects.ReinterpretingEffects
-      FusedEffects.UndoIO
-      Junior1
-      Junior3
-      Monads
-      TryEffectful.Dynamic
-      TypeClasses
+      Try.Aeson.HKD
+      Try.Concurrency.Async
+      Try.Concurrency.Exceptions
+      Try.Concurrency.ParallelAndConcurrentHaskell
+      Try.Debug.Breakpoint
+      Try.Effectful.Dynamic
+      Try.Functions.Composition
+      Try.Functions.Folds
+      Try.Functions.General
+      Try.FusedEffects.ReinterpretingEffects
+      Try.FusedEffects.UndoIO
+      Try.GADT.GADT
+      Try.Generics.Generics
+      Try.ImplicitParams.ImplicitParams
+      Try.IO.RandomNumbers
+      Try.Lens.MissingKey
+      Try.Lens.Node
+      Try.Misc.Determinant
+      Try.Monads.FunctionalDependencies
+      Try.Monads.MonadBaseControl
+      Try.Monads.Monads
+      Try.TemplateHaskell.Declare
+      Try.TemplateHaskell.Use
+      Try.TypeClasses.TypeClasses
+      Try.TypeFamilies.TypeFamilies
   other-modules:
       Paths_nix_managed
   hs-source-dirs:
       src
-  default-extensions:
-      AllowAmbiguousTypes
-      BlockArguments
-      DataKinds
-      FlexibleContexts
-      FlexibleInstances
-      ImportQualifiedPost
-      InstanceSigs
-      MultiParamTypeClasses
-      NoOverloadedStrings
-      QuasiQuotes
-      RankNTypes
-      TypeApplications
-      TypeFamilies
+  ghc-options: -Weverything -Wno-implicit-prelude -Wno-missing-safe-haskell-mode -Wno-unsafe -Wno-missing-imports
   build-depends:
       aeson
     , async
@@ -50,66 +53,27 @@ library
     , deepseq
     , effectful
     , exceptions
+    , first-class-families
     , fused-effects
     , fused-effects-exceptions
+    , generic-lens
     , http-client
     , http-client-tls
     , http-types
+    , lens
     , lifted-base
     , managed
+    , matrix
     , monad-control
+    , monad-logger
     , mtl
     , random
-    , rio
+    , string-interpolate
     , template-haskell
     , time
     , transformers
-    , unordered-containers
-  default-language: Haskell2010
-
-executable Breakpoint
-  main-is: app/Breakpoint.hs
-  other-modules:
-      Paths_nix_managed
-  default-extensions:
-      AllowAmbiguousTypes
-      BlockArguments
-      DataKinds
-      FlexibleContexts
-      FlexibleInstances
-      ImportQualifiedPost
-      InstanceSigs
-      MultiParamTypeClasses
-      NoOverloadedStrings
-      QuasiQuotes
-      RankNTypes
-      TypeApplications
-      TypeFamilies
-  build-depends:
-      aeson
-    , async
-    , base >=4.7 && <5
-    , binary <=0.8.9.1
-    , breakpoint
-    , bytestring
-    , containers
-    , deepseq
-    , effectful
-    , exceptions
-    , fused-effects
-    , fused-effects-exceptions
-    , http-client
-    , http-client-tls
-    , http-types
-    , lifted-base
-    , managed
-    , monad-control
-    , mtl
-    , random
-    , rio
-    , template-haskell
-    , time
-    , transformers
+    , transformers-base
+    , unliftio
     , unordered-containers
   default-language: Haskell2010
 
@@ -117,20 +81,7 @@ executable README
   main-is: README.hs
   other-modules:
       Paths_nix_managed
-  default-extensions:
-      AllowAmbiguousTypes
-      BlockArguments
-      DataKinds
-      FlexibleContexts
-      FlexibleInstances
-      ImportQualifiedPost
-      InstanceSigs
-      MultiParamTypeClasses
-      NoOverloadedStrings
-      QuasiQuotes
-      RankNTypes
-      TypeApplications
-      TypeFamilies
+  ghc-options: -Weverything -Wno-implicit-prelude -Wno-missing-safe-haskell-mode -Wno-unsafe -Wno-missing-imports
   build-depends:
       aeson
     , async
@@ -142,66 +93,27 @@ executable README
     , deepseq
     , effectful
     , exceptions
+    , first-class-families
     , fused-effects
     , fused-effects-exceptions
+    , generic-lens
     , http-client
     , http-client-tls
     , http-types
+    , lens
     , lifted-base
     , managed
+    , matrix
     , monad-control
+    , monad-logger
     , mtl
     , random
-    , rio
+    , string-interpolate
     , template-haskell
     , time
     , transformers
-    , unordered-containers
-  default-language: Haskell2010
-
-executable RandomNumbers
-  main-is: app/RandomNumbers.hs
-  other-modules:
-      Paths_nix_managed
-  default-extensions:
-      AllowAmbiguousTypes
-      BlockArguments
-      DataKinds
-      FlexibleContexts
-      FlexibleInstances
-      ImportQualifiedPost
-      InstanceSigs
-      MultiParamTypeClasses
-      NoOverloadedStrings
-      QuasiQuotes
-      RankNTypes
-      TypeApplications
-      TypeFamilies
-  build-depends:
-      aeson
-    , async
-    , base >=4.7 && <5
-    , binary <=0.8.9.1
-    , breakpoint
-    , bytestring
-    , containers
-    , deepseq
-    , effectful
-    , exceptions
-    , fused-effects
-    , fused-effects-exceptions
-    , http-client
-    , http-client-tls
-    , http-types
-    , lifted-base
-    , managed
-    , monad-control
-    , mtl
-    , random
-    , rio
-    , template-haskell
-    , time
-    , transformers
+    , transformers-base
+    , unliftio
     , unordered-containers
   default-language: Haskell2010
 
@@ -210,20 +122,7 @@ test-suite docs
   main-is: test/Docs.hs
   other-modules:
       Paths_nix_managed
-  default-extensions:
-      AllowAmbiguousTypes
-      BlockArguments
-      DataKinds
-      FlexibleContexts
-      FlexibleInstances
-      ImportQualifiedPost
-      InstanceSigs
-      MultiParamTypeClasses
-      NoOverloadedStrings
-      QuasiQuotes
-      RankNTypes
-      TypeApplications
-      TypeFamilies
+  ghc-options: -Weverything -Wno-implicit-prelude -Wno-missing-safe-haskell-mode -Wno-unsafe -Wno-missing-imports
   build-depends:
       aeson
     , async
@@ -236,23 +135,29 @@ test-suite docs
     , deepseq
     , effectful
     , exceptions
+    , first-class-families
     , fused-effects
     , fused-effects-exceptions
+    , generic-lens
     , http-client
     , http-client-tls
     , http-types
+    , lens
     , lifted-base
     , lima
     , managed
+    , matrix
     , monad-control
+    , monad-logger
     , mtl
     , random
-    , rio
     , string-interpolate
     , template-haskell
     , text
     , time
     , transformers
+    , transformers-base
     , turtle
+    , unliftio
     , unordered-containers
   default-language: Haskell2010
