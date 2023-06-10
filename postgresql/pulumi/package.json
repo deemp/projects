@@ -1,0 +1,12 @@
+{
+    "name": "pulumi-ts",
+    "main": "index.ts",
+    "devDependencies": {
+        "@types/node": "^16"
+    },
+    "dependencies": {
+        "@pulumi/kubernetes": "^3.25.0",
+        "@pulumi/pulumi": "^3.0.0",
+        "yaml": "^2.2.2"
+    }
+}

@@ -1,0 +1,23 @@
+config:
+  dev:try-postgresql:
+    name: try-postgresql
+    configMap:
+      data:
+        POSTGRES_DB: postgresdb
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: admin_password
+    persistentVolume:
+      hostPath: /mnt/try-postgresql/data/
+    container:
+      image: postgres:15.1-alpine
+      replicaCount: 1
+      tag: latest
+      volumeMounts:
+        name: postgredb
+        mountPath: /var/lib/postgresql/data
+    dataBase:
+      port: 5432
+    service:
+      type: NodePort
+      port: 8080
+      nodePort: 30030
