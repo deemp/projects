@@ -32,6 +32,16 @@
     nix run .#runDB
     ```
 
+1. Check the database
+
+    ```console
+    # connect to the database
+    psql "postgresql://admin:psltest@$(minikube ip):30432/postgresdb"
+
+    # check records
+    select * from users;
+    ```
+
 1. Run app in a terminal.
 
     ```console

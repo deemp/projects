@@ -1,6 +1,12 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: db-hs
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: db-hs
   name: postgres-config
   labels:
     app: postgres
@@ -12,6 +18,7 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: db-hs
   name: postgres # Sets Deployment name
 spec:
   replicas: 1
@@ -51,6 +58,7 @@ spec:
 kind: PersistentVolume
 apiVersion: v1
 metadata:
+  namespace: db-hs
   name: postgres-pv-volume # Sets PV's name
   labels:
     type: local # Sets PV's type to local
@@ -67,6 +75,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
+  namespace: db-hs
   name: postgres-pv-claim # Sets name of PVC
   labels:
     app: postgres
@@ -81,6 +90,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: db-hs
   name: postgres # Sets service name
   labels:
     app: postgres # Labels and Selectors
@@ -90,6 +100,6 @@ spec:
     - port: 5432 # Sets port to run the service
       name: db-service-port
       targetPort: db-port
-      nodePort: 30002
+      nodePort: 30432
   selector:
     app: postgres

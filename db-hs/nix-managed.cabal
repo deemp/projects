@@ -26,23 +26,52 @@ source-repository head
 library
   exposed-modules:
       Lib
+      Recursive
   other-modules:
       Paths_nix_managed
   hs-source-dirs:
       src
+  default-extensions:
+      DerivingStrategies
+      GeneralizedNewtypeDeriving
+      StandaloneDeriving
+      TemplateHaskell
+      QuasiQuotes
+      AllowAmbiguousTypes
+      BlockArguments
+      DataKinds
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      ImportQualifiedPost
+      InstanceSigs
+      MultiParamTypeClasses
+      OverloadedRecordDot
+      OverloadedStrings
+      QuasiQuotes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TemplateHaskell
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      UndecidableInstances
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       aeson
-    , async
     , base >=4.7 && <5
     , esqueleto
-    , fused-effects
     , monad-logger
     , mtl
     , persistent
     , persistent-postgresql
     , persistent-template
     , pretty-simple
+    , resourcet
     , string-interpolate
     , text
     , transformers
@@ -56,13 +85,40 @@ executable nix-managed
       Paths_nix_managed
   hs-source-dirs:
       app
+  default-extensions:
+      DerivingStrategies
+      GeneralizedNewtypeDeriving
+      StandaloneDeriving
+      TemplateHaskell
+      QuasiQuotes
+      AllowAmbiguousTypes
+      BlockArguments
+      DataKinds
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      ImportQualifiedPost
+      InstanceSigs
+      MultiParamTypeClasses
+      OverloadedRecordDot
+      OverloadedStrings
+      QuasiQuotes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TemplateHaskell
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      UndecidableInstances
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
-    , async
     , base >=4.7 && <5
     , esqueleto
-    , fused-effects
     , monad-logger
     , mtl
     , nix-managed
@@ -70,6 +126,7 @@ executable nix-managed
     , persistent-postgresql
     , persistent-template
     , pretty-simple
+    , resourcet
     , string-interpolate
     , text
     , transformers
@@ -84,13 +141,40 @@ test-suite nix-managed-test
       Paths_nix_managed
   hs-source-dirs:
       test
+  default-extensions:
+      DerivingStrategies
+      GeneralizedNewtypeDeriving
+      StandaloneDeriving
+      TemplateHaskell
+      QuasiQuotes
+      AllowAmbiguousTypes
+      BlockArguments
+      DataKinds
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      ImportQualifiedPost
+      InstanceSigs
+      MultiParamTypeClasses
+      OverloadedRecordDot
+      OverloadedStrings
+      QuasiQuotes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TemplateHaskell
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      UndecidableInstances
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
-    , async
     , base >=4.7 && <5
     , esqueleto
-    , fused-effects
     , monad-logger
     , mtl
     , nix-managed
@@ -98,6 +182,7 @@ test-suite nix-managed-test
     , persistent-postgresql
     , persistent-template
     , pretty-simple
+    , resourcet
     , string-interpolate
     , text
     , transformers

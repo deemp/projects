@@ -19,6 +19,36 @@ extra-source-files:
 # common to point users to the README.md file.
 description:         Please see the README on GitHub at <https://github.com/value/nix-managed#readme>
 
+default-extensions:
+- DerivingStrategies
+- GeneralizedNewtypeDeriving
+- StandaloneDeriving
+- TemplateHaskell
+- QuasiQuotes
+- AllowAmbiguousTypes
+- BlockArguments
+- DataKinds
+- DeriveGeneric
+- DerivingStrategies
+- FlexibleContexts
+- FlexibleInstances
+- GADTs
+- GeneralizedNewtypeDeriving
+- ImportQualifiedPost
+- InstanceSigs
+- MultiParamTypeClasses
+- OverloadedRecordDot
+- OverloadedStrings
+- QuasiQuotes
+- RecordWildCards
+- ScopedTypeVariables
+- StandaloneDeriving
+- TemplateHaskell
+- TupleSections
+- TypeApplications
+- TypeFamilies
+- UndecidableInstances
+
 dependencies:
 - base >= 4.7 && < 5
 - esqueleto
@@ -30,13 +60,12 @@ dependencies:
 - persistent-postgresql
 - persistent-template
 - monad-logger
-- fused-effects
-- async
 - with-utf8
 - pretty-simple
 - string-interpolate
 - aeson
 - yaml
+- resourcet
 
 ghc-options:
 - -Wall
