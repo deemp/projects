@@ -76,3 +76,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 ## References
 
 - [genType](https://rescript-lang.org/docs/gentype/latest/introduction) - convert to/from `.tsx`
+- [Build a TODO list](https://www.youtube.com/watch?v=8t6tbhJqEjo)
