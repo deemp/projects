@@ -61,6 +61,8 @@
             "manager"
             "manager/nix-dev"
             "optics-by-example"
+            "ts-serializable-test"
+            "vforces"
             "."
           ]) updateLocks pushToCachix;
 
