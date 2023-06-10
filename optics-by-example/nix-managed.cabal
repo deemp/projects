@@ -28,7 +28,7 @@ executable nix-managed
   other-modules:
       Paths_nix_managed
   default-extensions:
-      ImportQualifiedPostc
+      ImportQualifiedPost
       OverloadedRecordDot
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
@@ -37,6 +37,7 @@ executable nix-managed
     , bytestring
     , containers
     , either
+    , generic-lens
     , lens
     , lens-aeson
     , mtl
@@ -50,7 +51,7 @@ test-suite docs
   other-modules:
       Paths_nix_managed
   default-extensions:
-      ImportQualifiedPostc
+      ImportQualifiedPost
       OverloadedRecordDot
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:

@@ -65,20 +65,16 @@ This template uses `GHC 9.2`. You can switch to `GHC 9.0`:
 
 - [Plated](https://hackage.haskell.org/package/lens-5.2.2/docs/Control-Lens-Combinators.html#t:Plated) - for recursive data structures
 - [Optics are monoids](https://www.haskellforall.com/2021/09/optics-are-monoids.html) - just `cosmos`!
+  - `adjoin` - a union of disjoint traversals
 - [Putting Lenses to Work](https://www.youtube.com/watch?v=QZy4Yml3LTY)
 - [Tree numbering](https://gist.github.com/lgastako/8da651c012c4e341e3ca12f22f08833c) - `unsafePartsOf`
 
--}
-
-data D = D {_a :: Int, _b :: Int}
-makeLenses ''D
-
-ex :: D
-ex = D 3 4 & adjoin a b +~ 1
-
-{-
-
 ## Book
+
+The [generic-lens](https://hackage.haskell.org/package/generic-lens) package uses `OverloadedLabels` to generate lenses and prisms for instances of `Generic`.
+This package allows to avoid `TemplateHaskell` and have more flexible order of expressions in a module.
+The disadvantage is runtime costs connected with the usage of generics.
+
 -}
 
 {- FOURMOLU_DISABLE -}
@@ -116,7 +112,6 @@ module Main (main) where
 
 import Control.Applicative (Applicative (..))
 import Control.Lens
-import Control.Lens (_1)
 import Control.Lens.Unsound (adjoin, lensProduct)
 import Control.Monad.Reader (ReaderT (runReaderT))
 import Control.Monad.State
@@ -127,6 +122,7 @@ import Data.Char (chr, isUpper, ord, toLower, toUpper)
 import Data.Either.Validation
 import Data.Foldable (Foldable (..))
 import Data.Foldable qualified as Foldable
+import Data.Generics.Labels ()
 import Data.List
 import Data.List qualified as L
 import Data.List.NonEmpty (NonEmpty ((:|)), nonEmpty, toList)
@@ -4253,6 +4249,7 @@ data Env = Env
   , _users :: M.Map UserName Password
   }
   deriving (Show)
+
 makeLenses ''Env
 
 getUserPassword :: ReaderT Env IO (Maybe String)
@@ -4291,3 +4288,14 @@ data Till = Till
   deriving (Show)
 
 makeLenses ''Till
+
+{-
+```hs
+(.=) :: MonadState s m => Lens s s a b -> b -> m ()
+```
+-}
+
+saleCalculation :: StateT Till IO ()
+saleCalculation = do
+  total .= 0
+

@@ -33,16 +33,10 @@
       # --- Parameters ---
 
       # The desired GHC version
-      ghcVersion = "925";
+      ghcVersion = "928";
 
       # The name of a package
       packageName = "nix-managed";
-
-      # The libraries that the package needs during a build
-      packageSystemDepends = [ pkgs.lzma ];
-
-      # The packages that provide the binaries that our package uses at runtime
-      packageRuntimeDependencies = [ pkgs.hello ];
 
       # --- Override ---
 
@@ -54,41 +48,11 @@
       # Overriding the packages may trigger multiple rebuilds,
       # so we override as few packages as possible.
 
-      inherit (pkgs.haskell.lib)
-        # doJailbreak - remove package bounds from build-depends of a package
-        doJailbreak
-        # dontCheck - skip tests
-        dontCheck
-        # override deps of a package
-        overrideCabal
-        ;
-
       # Here's our override
       # Haskell overrides are described here: https://nixos.org/manual/nixpkgs/unstable/#haskell
       override = {
         overrides = self: super: {
-          lzma = dontCheck (doJailbreak super.lzma);
-          "${packageName}" = overrideCabal
-            (super.callCabal2nix packageName ./. { })
-            (x: {
-              # See what can be overriden - https://github.com/NixOS/nixpkgs/blob/0ba44a03f620806a2558a699dba143e6cf9858db/pkgs/development/haskell-modules/generic-builder.nix#L13
-              # And the explanation of the deps - https://nixos.org/manual/nixpkgs/unstable/#haskell-derivation-deps
-
-              # Dependencies of the our package library
-              # New deps go before the existing deps and override them
-              librarySystemDepends = packageSystemDepends ++ (x.librarySystemDepends or [ ]);
-
-              # Dependencies of our package executables
-              executableSystemDepends = packageSystemDepends ++ (x.executableSystemDepends or [ ]);
-
-              # Here's how we can add a package built from sources
-              # Later, we may use this package in `.cabal` in a test-suite
-              # We should use `cabal v1-*` commands with it - https://github.com/NixOS/nixpkgs/issues/130556#issuecomment-1114239002
-              # Uncomment the text in parentheses to enable `lima`
-              testHaskellDepends = [
-                (super.callCabal2nix "lima" lima.outPath { })
-              ] ++ (x.testHaskellDepends or [ ]);
-            });
+          "${packageName}" = super.callCabal2nix packageName ./. { };
         };
       };
 
@@ -98,13 +62,12 @@
       inherit (toolsGHC {
         version = ghcVersion;
         inherit override;
-        runtimeDependencies = packageRuntimeDependencies;
         # If we work on multiple packages, we need to supply all of them.
         # Suppose we develop packages A and B, where B is in deps of A.
         # GHC will be given dependencies of both A and B.
         # However, we don't want B to be in the list of deps of GHC
         # because build of GHC may fail due to errors in B.
-        packages = (ps: [ ps.${packageName} ]);
+        packages = ps: [ ps.${packageName} ];
       })
         hls cabal implicit-hie justStaticExecutable
         ghcid callCabal2nix haskellPackages hpack ghc;
@@ -116,8 +79,8 @@
         ghcid
         hpack
         cabal
-        hls
         ghc
+        hls
       ];
 
       # --- Packages ---
