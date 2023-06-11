@@ -1,80 +1,23 @@
 {-
-# Optics by example
-
-Notes on [Optics by example](https://leanpub.com/optics-by-example).
-
-## Dev tools
-
-### Prerequisites
-
-See these for additional info:
-
-- [codium-generic](https://github.com/deemp/flakes/tree/main/templates/codium/generic#readme) - info just about `VSCodium` and extensions.
-- [codium-haskell](https://github.com/deemp/flakes/tree/main/templates/codium/haskell#readme) - an advanced version of this flake.
-- [flake.nix](./flake.nix) - extensively commented code.
-- [Haskell](https://github.com/deemp/flakes/blob/main/README/Haskell.md)
-- [Troubleshooting](https://github.com/deemp/flakes/blob/main/README/Troubleshooting.md)
-- [Prerequisites](https://github.com/deemp/flakes#prerequisites)
-
-### Quick start
-
-1. Install Nix - see [how](https://github.com/deemp/flakes/blob/main/README/InstallNix.md).
-
-1. In a new terminal, run `VSCodium` from a devshell:
-
-```console
-nix flake new my-project -t github:deemp/flakes#codium-haskell-simple
-cd my-project
-git init && git add
-nix develop
-cabal run
-```
-
-1. Write `settings.json` and start `VSCodium`:
-
-```console
-nix run .#writeSettings
-nix run .#codium .
-```
-
-#### Tools
-
-#### GHC
-
-This template uses `GHC 9.2`. You can switch to `GHC 9.0`:
-
-- In `flake.nix`, change `"92"` to `"90"`
-
-### Configs
-
-- [package.yaml](./package.yaml) - used by `hpack` to generate a `.cabal`
-- [.markdownlint.jsonc](./.markdownlint.jsonc) - for `markdownlint` from the extension `davidanson.vscode-markdownlint`
-- [.ghcid](./.ghcid) - for [ghcid](https://github.com/ndmitchell/ghcid)
-- [.envrc](./.envrc) - for [direnv](https://github.com/direnv/direnv)
-- [fourmolu.yaml](./fourmolu.yaml) - for [fourmolu](https://github.com/fourmolu/fourmolu#configuration)
-- [.github/workflows/ci.yaml] - a generated `GitHub Actions` workflow. See [workflows](https://github.com/deemp/flakes/tree/main/workflows). Generate a workflow via `nix run .#writeWorkflows`.
-- `hie.yaml` - not present, but can be generated via [implicit-hie](https://github.com/Avi-D-coder/implicit-hie) (available on devshell) to verify the `Haskell Language Server` setup.
-
 ## Additional resources
 
+- [Glassery](http://oleg.fi/gists/posts/2017-04-18-glassery.html#lens)
 - [lens ipynb](https://github.com/Elvecent/notebooks/blob/master/lens-aeson/Main.ipynb)
 - [operators](https://github.com/ekmett/lens/wiki/Operators)
 - [optics derivation](https://github.com/ekmett/lens/wiki/Derivation#traversals)
-
-## Extra
-
 - [Plated](https://hackage.haskell.org/package/lens-5.2.2/docs/Control-Lens-Combinators.html#t:Plated) - for recursive data structures
 - [Optics are monoids](https://www.haskellforall.com/2021/09/optics-are-monoids.html) - just `cosmos`!
   - `adjoin` - a union of disjoint traversals
 - [Putting Lenses to Work](https://www.youtube.com/watch?v=QZy4Yml3LTY)
 - [Tree numbering](https://gist.github.com/lgastako/8da651c012c4e341e3ca12f22f08833c) - `unsafePartsOf`
+- package [generic-lens](https://hackage.haskell.org/package/generic-lens)
+  - Uses `OverloadedLabels` to generate lenses and prisms for instances of `Generic`.
+  - Allows to avoid `TemplateHaskell` and have more flexible order of expressions in a module.
+  - The disadvantage is runtime costs connected with the usage of generics.
 
-## Book
+## Optics by example
 
-The [generic-lens](https://hackage.haskell.org/package/generic-lens) package uses `OverloadedLabels` to generate lenses and prisms for instances of `Generic`.
-This package allows to avoid `TemplateHaskell` and have more flexible order of expressions in a module.
-The disadvantage is runtime costs connected with the usage of generics.
-
+Notes on [Optics by example](https://leanpub.com/optics-by-example).
 -}
 
 {- FOURMOLU_DISABLE -}
@@ -99,12 +42,13 @@ The disadvantage is runtime costs connected with the usage of generics.
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE DeriveFoldable #-}
 
-{- LIMA_DISABLE -}
+{- D -}
 
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
+{-# OPTIONS_GHC -Wno-unused-imports #-}
 
-{- LIMA_ENABLE -}
+{- E -}
 
 {- FOURMOLU_ENABLE -}
 
@@ -114,16 +58,16 @@ import Control.Applicative (Applicative (..))
 import Control.Lens
 import Control.Lens.Unsound (adjoin, lensProduct)
 import Control.Monad.Reader (ReaderT (runReaderT))
-import Control.Monad.State
+import Control.Monad.State ( MonadIO(liftIO), StateT, modify, runState, MonadState(get) )
 import Control.Monad.Writer (Writer, WriterT, execWriter, tell)
 import Data.Bitraversable (Bitraversable)
 import Data.ByteString qualified as BS
 import Data.Char (chr, isUpper, ord, toLower, toUpper)
-import Data.Either.Validation
+import Data.Either.Validation ( Validation(..) )
 import Data.Foldable (Foldable (..))
 import Data.Foldable qualified as Foldable
 import Data.Generics.Labels ()
-import Data.List
+import Data.List ( intercalate )
 import Data.List qualified as L
 import Data.List.NonEmpty (NonEmpty ((:|)), nonEmpty, toList)
 import Data.Map (fromList)
@@ -131,7 +75,7 @@ import Data.Map qualified as M
 import Data.Maybe (fromMaybe, listToMaybe)
 import Data.Monoid (Sum (..))
 import Data.Ord (comparing)
-import Data.Set qualified as S (Set (..), fromList)
+import Data.Set qualified as S (Set, fromList)
 import Data.Text qualified as T
 import Data.Text.Lens (unpacked)
 import Data.Tree (Tree (..))
@@ -214,22 +158,22 @@ Find: action, path, structure, focus
 {-
 #### Exercises - Lens Actions
 
-2. solution:
+1. solution:
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 ex1 :: Lens' (Char, Int) Char
 ex1 = undefined
 
 {-
-3. Lens actions:
+1. Lens actions:
 
     - get
     - set
     - modify
 
-4. focus on `c`
+1. focus on `c`
 -}
 
 -- >>>view _3 ('a','b','c')
@@ -241,7 +185,7 @@ ex1 = undefined
 -- >>>s
 -- (False,20)
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ### 3.3 Lenses and records
@@ -264,7 +208,7 @@ purplePearl = Ship{_name = "Purple Pearl", _numCrew = 38}
 1. apply lens
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 -- >>>view name_ purplePearl
 -- "Purple Pearl"
@@ -277,15 +221,15 @@ makeLenses ''Ship
 -- >>>:t name
 -- name :: Lens' Ship String
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 #### Exercises - Records Part Two
 
-2. Rewrite
+1. Rewrite
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 data Spuzz
 data Chumble
@@ -295,19 +239,19 @@ gazork = undefined
 gazork_ :: Lens' Spuzz Chumble
 gazork_ = undefined
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ## 3.4 Limitations
 
- **Lens** - An optic which always accesses **exactly one focus**.
+ __Lens__ - An optic which always accesses __exactly one focus__.
 
 ### Exercises
 
 1. Can make both a getter and a setter
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 get1 :: (a, b, c) -> b
 get1 (_, b, _) = b
@@ -316,7 +260,7 @@ set1 :: (a, b, c) -> b -> (a, b, c)
 set1 (a, _, c) b_ = (a, b_, c)
 
 {-
-2. Can't get from `Nothing`, so, can't have `inMaybe :: Lens' (Maybe a) a` not fail sometimes
+1. Can't get from `Nothing`, so, can't have `inMaybe :: Lens' (Maybe a) a` not fail sometimes
 -}
 
 get2 :: Maybe a -> a
@@ -324,17 +268,17 @@ get2 (Just a) = a
 get2 _ = undefined
 
 {-
-3. Similar situation with `left :: Lens' (Either a b) a`
+1. Similar situation with `left :: Lens' (Either a b) a`
 
-4. No, a list may have < 2 elements
+1. No, a list may have < 2 elements
 
-5. Yes, you always can set and get a value, and there'll be only one value focused
+1. Yes, you always can set and get a value, and there'll be only one value focused
 -}
 
 conditional :: Lens' (Bool, a, a) a
 conditional = undefined
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ## 3.5 Lens Laws
@@ -354,7 +298,7 @@ When using unlawful lenses in a library, should write a note.
 
 `lensProduct` combines two lenses to get a new one
 
-- these lenses should be **disjoint**. Otherwise, how to set?
+- these lenses should be __disjoint__. Otherwise, how to set?
 -}
 
 newtype Ex1 = Ex1 {_unEx1 :: String} deriving (Show, Eq)
@@ -390,7 +334,7 @@ We don't get back what we set:
 1. break `get-set`
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 break2 :: Lens' Ex1 String
 break2 = lens (const "1") (\_ _ -> Ex1 "2")
@@ -408,7 +352,7 @@ ex7 = set break2 ex6 ex3
 -- Ex1 {_unEx1 = "2"}
 
 {-
-2. `get-set`, `set-set` work, `set-get` fails
+1. `get-set`, `set-set` work, `set-get` fails
 -}
 
 data Err
@@ -439,7 +383,7 @@ msgTest =
 -- True
 
 {-
-3. fail `get-set`, pass other
+1. fail `get-set`, pass other
 -}
 
 msg1 :: Lens' Err String
@@ -462,7 +406,7 @@ msg1Test =
 -- True
 
 {-
-4. like `msg1`
+1. like `msg1`
 -}
 
 data Sink = A Int | B String deriving (Show, Eq)
@@ -488,7 +432,7 @@ sinkTest =
 -- True
 
 {-
-5. break all rules
+1. break all rules
 -}
 
 newtype Break = Break String deriving (Show, Eq)
@@ -512,7 +456,7 @@ breakAllTest =
 -- True
 
 {-
-6. builder
+1. builder
 -}
 
 data Builder = Builder
@@ -544,7 +488,7 @@ builderTest =
 -- >>>builderTest
 -- True
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ### 3.6 Virtual Fields
@@ -605,7 +549,7 @@ celsius_ = lens getter setter
 1. substitute lens
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 data User = User
   { _firstName :: String
@@ -623,7 +567,7 @@ username = lens getter setter
   setter user_ s = set userEmail s user_
 
 {-
-2. unlawful `fullName` lens
+1. unlawful `fullName` lens
 -}
 
 fullName :: Lens' User String
@@ -643,7 +587,7 @@ user = User "John" "Cena" "invisible@example.com"
 -- >>>set fullName "Doctor of Thuganomics" user
 -- User {_firstName = "Doctor", _lastName = "of Thuganomics", _email = "invisible@example.com"}
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ### 3.7  Data correction and maintaining invariants
@@ -656,7 +600,7 @@ E.g., saturate a number to a value between a pair of given values.
 1. and 2.
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 data ProducePrices = ProducePrices
   { _limePrice :: Float
@@ -694,12 +638,12 @@ prices = ProducePrices 1.50 1.48
 -- >>>  set limePrice (-1.00) prices
 -- ProducePrices {_limePrice = 0.0, _lemonPrice = 0.5}
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ## 4 Polymorphic Optics
 
-```hs
+```hssss
 type Lens s t a b = forall f. Functor f => (a -> f b) -> s -> f t
 ```
 
@@ -708,7 +652,7 @@ type Lens s t a b = forall f. Functor f => (a -> f b) -> s -> f t
 - `a`: focus before action
 - `b`: focus after action
 
-<b> We need polymorphic lenses whenever an action might want to change the type of the focus. </b>
+__We need polymorphic lenses whenever an action might want to change the type of the focus.__
 -}
 
 ex8 :: ([Char], Int)
@@ -740,12 +684,12 @@ item = lens getter setter
   setter (_, b) c = (c, b)
 
 {-
-#### Exercises – Polymorphic Lenses
+#### Exercises - Polymorphic Lenses
 
 1. `Vorpal`
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 data Vorpal a
 
@@ -753,7 +697,7 @@ vorpal :: Lens (Vorpal a) (Vorpal b) a b
 vorpal = undefined
 
 {-
-2. Polymorphic unlawful
+1. Polymorphic unlawful
 -}
 
 data Preferences a = Preferences {_best :: a, _worst :: a} deriving (Show)
@@ -765,7 +709,7 @@ best = lens getter setter
   setter (Preferences _ _) c = Preferences{_best = c, _worst = c}
 
 {-
-3. Result
+1. Result
 -}
 
 data Result e = Result {_lineNumber :: Int, _result :: Either e String}
@@ -774,7 +718,7 @@ result :: Lens (Result a) (Result b) a b
 result = undefined
 
 {-
-4. Multiple
+1. Multiple
 -}
 
 data Multi a b
@@ -783,7 +727,7 @@ multi :: Lens (Multi a b) (Multi c d) (a, b) (c, d)
 multi = undefined
 
 {-
-5. Predicate
+1. Predicate
 -}
 
 newtype Predicate a = Predicate (a -> Bool)
@@ -794,7 +738,7 @@ predicate = lens getter setter
   getter (Predicate x) = x
   setter (Predicate _) = Predicate
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 #### How do Lens Types Compose?
@@ -841,18 +785,18 @@ personStreet :: StreetAddress
 personStreet = view personStreetLens (undefined :: Person)
 
 {-
-#### Exercises – Lens Composition
+#### Exercises - Lens Composition
 
 1. Pairs
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 -- >>> view (_2 . _1 . _2) ("Ginerva", (("Galileo", "Waldo"), "Malfoy"))
 -- "Waldo"
 
 {-
-2. Domino
+1. Domino
 -}
 
 data Five
@@ -871,7 +815,7 @@ mysteryDomino :: Lens' Eight Two
 mysteryDomino = undefined
 
 {-
-3. Rewrite
+1. Rewrite
 -}
 
 data Armadillo
@@ -886,7 +830,7 @@ h :: Lens Platypus BabySloth Armadillo Hedgehog
 h = undefined
 
 {-
-4. Compose
+1. Compose
 -}
 
 data Gazork
@@ -922,12 +866,12 @@ banderyakoobog = undefined
 ex10 :: (Foob -> [Mog]) -> Snark -> [JubJub]
 ex10 = snajubjumwock @[] . boowockugwup . gruggazinkoom . zinkattumblezz . spuzorktrowmble . gazorlglesnatchka . banderyakoobog
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ## 5. Operators
 
-<b>Fixity</b> - operator precedence
+__Fixity__ - operator precedence
 -}
 
 -- >>>:t _1 . _2 .~ 3
@@ -972,10 +916,10 @@ Optics operators - [src](https://github.com/Zelenya/chrome-annotation-extension-
 - `|>` `snoc`
 - `^..` `toListOf`
 - `^?` `preview`/`head`
-- `^?!` **UNSAFE** `preview`/`head`
+- `^?!` __UNSAFE__ `preview`/`head`
 - `^@..` `itoListOf`
-- `^@?` **SAFE** `head` (with index)
-- `^@?!` **UNSAFE** `head` (with index)
+- `^@?` __SAFE__ `head` (with index)
+- `^@?!` __UNSAFE__ `head` (with index)
 - `^.` `view`
 - `^@.` `iview`
 - `<.` a function composition (`Indexed` with non-indexed)
@@ -993,7 +937,7 @@ Optics operators - [src](https://github.com/Zelenya/chrome-annotation-extension-
 - `<//~` divide lens target; return result
 - `<^~` raise lens target; return result
 - `<^^~` raise lens target; return result
-- `<**~` raise lens target; return result
+- `<__~` raise lens target; return result
 - `<||~` logically-or lens target; return result
 - `<&&~` logically-and lens target; return result
 - `<<%~` `modify` lens target, return old value
@@ -1005,7 +949,7 @@ Optics operators - [src](https://github.com/Zelenya/chrome-annotation-extension-
 - `<<//~` divide lens target; return old value
 - `<<^~` raise lens target; return old value
 - `<<^^~` raise lens target; return old value
-- `<<**~` raise lens target; return old value
+- `<<__~` raise lens target; return old value
 - `<||~` logically-or lens target; return old value
 - `<&&~` logically-and lens target; return old value
 - `<<<>~` `modify` lens target with (`<>`); return old value
@@ -1016,7 +960,7 @@ Optics operators - [src](https://github.com/Zelenya/chrome-annotation-extension-
 - `<//=` divide the target in state; return result
 - `<^=` raise lens target in state; return result
 - `<^^=` raise lens target in state; return result
-- `<**=` raise lens target in state; return result
+- `<__=` raise lens target in state; return result
 - `<||=` logically-or lens target in state; return result
 - `<&&=` logically-and lens target in state; return result
 - `<<%=` `modify` lens target in state; return old value
@@ -1028,7 +972,7 @@ Optics operators - [src](https://github.com/Zelenya/chrome-annotation-extension-
 - `<<//=` divide the target in state; return old value
 - `<<^=` raise lens target in state; return old value
 - `<<^^=` raise lens target in state; return old value
-- `<<**=` raise lens target in state; return old value
+- `<<__=` raise lens target in state; return old value
 - `<<||=` logically-or lens target in state; return old value
 - `<<&&=` logically-and lens target in state; return old value
 - `<<<>=` `modify` target with (`<>`) in state; return old value
@@ -1065,7 +1009,7 @@ Optics operators - [src](https://github.com/Zelenya/chrome-annotation-extension-
 - `^~` raise target(s)
 - `^~` raise target(s)
 - `^^~` raise target(s)
-- `**~` raise target(s)
+- `__~` raise target(s)
 - `||~` logically-or target(s)
 - `&&~` logically-and target(s)
 - `.=` assign in state
@@ -1078,7 +1022,7 @@ Optics operators - [src](https://github.com/Zelenya/chrome-annotation-extension-
 - `^=` raise target(s) in state
 - `^=` raise target(s) in state
 - `^^=` raise target(s) in state
-- `**=` raise target(s) in state
+- `__=` raise target(s) in state
 - `||=` logically-or target(s) in state
 - `&&=` logically-and target(s) in state
 - `<~` run monadic action, `set` target(s) in state
@@ -1094,12 +1038,12 @@ Optics operators - [src](https://github.com/Zelenya/chrome-annotation-extension-
 - `#` review
 - `id` focus the `full` structure
 
-### 5.9 Exercises – Operators
+### 5.9 Exercises - Operators
 
 1. Get to
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 data Gate = Gate {_open :: Bool, _oilTemp :: Float} deriving (Show)
 makeLenses ''Gate
@@ -1135,7 +1079,7 @@ goalC = duloc & gate . oilTemp //~ 2 & name1 <>~ ": Home" & name1 <<%~ (<> "of t
 -- ("Duloc: Home",Kingdom {_name1 = "Duloc: Homeof the talking Donkeys", _army = Army {_archers = 22, _knights = 14}, _gate = Gate {_open = True, _oilTemp = 5.0}})
 
 {-
-2. Enter code
+1. Enter code
 -}
 
 ex12 :: (Bool, [Char])
@@ -1163,12 +1107,12 @@ ex14 =
 -- ((False,"DUDLEY - THE WORST"),20.0)
 
 {-
-3. `&`
+1. `&`
 
-4. `(%~) :: Lens s t a b -> (a -> b) -> s -> t`
+1. `(%~) :: Lens s t a b -> (a -> b) -> s -> t`
 -}
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ## 6. Folds
@@ -1186,8 +1130,8 @@ ex14 =
 {-
 ### 6.1 Introduction to Folds
 
-- Folds can focus **MANY** things, Lenses must focus **ONE** thing
-- Folds can only **get** zero or more things, Lenses must always be able to **get** and **set**
+- Folds can focus __MANY__ things, Lenses must focus __ONE__ thing
+- Folds can only __get__ zero or more things, Lenses must always be able to __get__ and __set__
 - Folds aren't polymorphic
 
 #### Focusing all elements of a container
@@ -1259,7 +1203,7 @@ ex18 :: [GHC.Word.Word8]
 ex18 = ("Do or do not" :: BS.ByteString) ^.. each
 
 {-
-#### Exercises – Simple Folds
+#### Exercises - Simple Folds
 
 1. beasts
 -}
@@ -1436,12 +1380,12 @@ crewNames3 = folding (\s -> [captain, firstMate, conscripts . folded] ^.. folded
 -- ["Grumpy Roger","Long-John Bronze","One-eyed Jack","Filthy Frank"]
 
 {-
-#### Exercises – Custom Folds
+#### Exercises - Custom Folds
 
 1. blanks
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 ex23 :: [Char]
 ex23 = ["Yer" :: String, "a", "wizard", "Harry"] ^.. folded . folded
@@ -1462,7 +1406,7 @@ ex23 = ["Yer" :: String, "a", "wizard", "Harry"] ^.. folded . folded
 -- "cbafed"
 
 {-
-2. fold paths
+1. fold paths
 -}
 
 -- >>> [1..5] ^.. folded . folding (\x -> [x * 100])
@@ -1514,7 +1458,7 @@ ex28 = [(1, "one"), (2, "two")] ^.. folded . folding (\(x, y) -> [Left x, Right 
 -- "selppastocirpa"
 
 {-
-3. outside of the box
+1. outside of the box
 -}
 
 ex29 :: [Char]
@@ -1526,19 +1470,19 @@ ex29 = [(12, 45, 66), (91, 123, 87)] ^.. folded . folding (\(_, x, _) -> reverse
 -- >>> [(1, "a"), (2, "b"), (3, "c"), (4, "d")] ^.. folded . folding (\(x,y) -> if odd x then [] else [y])
 -- ["b","d"]
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ### 6.3 Fold Actions
 
 Fold queries
 
-- Which focuses match this **predicate**?
-- What's the **largest** element in my structure
-- What's the result of running this **side-effect** on every focus?
-- What's the **sum** of these numeric focuses?
-- Does this fold focus **any** elements?
-- Does this **specific value** exist in my structure?
+- Which focuses match this __predicate__?
+- What's the __largest__ element in my structure
+- What's the result of running this __side-effect__ on every focus?
+- What's the __sum__ of these numeric focuses?
+- Does this fold focus __any__ elements?
+- Does this __specific value__ exist in my structure?
 
 #### Writing queries with folds
 
@@ -1743,12 +1687,12 @@ ex32 =
 -- fromList [("Alyson Hannigan",2),("Anthony Head",1),("Cobie Smulders",1),("David Boreanaz",1),("Jason Segel",1),("Josh Radnor",1),("Neil Patrick Harris",1),("Nicholas Brendon",1),("Sarah Michelle Gellar",1)]
 
 {-
-#### Exercises – Fold Actions
+#### Exercises - Fold Actions
 
 1. pick action
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 -- >>> has folded []
 -- False
@@ -1772,7 +1716,7 @@ ex32 =
 -- Just 22
 
 {-
-2. devise folds
+1. devise folds
 -}
 
 ex33 :: Maybe String
@@ -1794,7 +1738,7 @@ ex34 = maximumByOf folded (\x y -> compare (x ^. _1) (y ^. _1)) [(2 :: Int, "I'l
 -- 3
 
 {-
-3. bonus
+1. bonus
 -}
 
 isVowel :: Char -> Bool
@@ -1810,12 +1754,12 @@ ex35 =
 -- >>> ex35
 -- Just "there"
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ### 6.4 Higher Order Folds
 
-There're optics combinators that **alter other optics**. They accept an optic and return a new one.
+There're optics combinators that __alter other optics__. They accept an optic and return a new one.
 
 (with simplified types)
 
@@ -1904,12 +1848,12 @@ Examples:
 -- [90,91,92,93,94,95,96,97,98,99,100]
 
 {-
-#### Exercises – Higher Order Folds
+#### Exercises - Higher Order Folds
 
 1. blanks
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 -- >>> ("Here's looking at you, kid" :: String) ^.. dropping 7 folded
 -- "looking at you, kid"
@@ -1943,7 +1887,7 @@ ex36 = sumOf (taking 2 each) (10, 50, 100)
 -- "1829420"
 
 {-
-2. use higher-order folds
+1. use higher-order folds
 -}
 
 temperatureSample :: [Int]
@@ -1970,7 +1914,7 @@ trimmingWhile c f = backwards (droppingWhile c (backwards (droppingWhile c f)))
 -- >>> temperatureSample ^.. trimmingWhile (< 0) folded
 -- [4,3,8,6,-2,3]
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ### 6.5 Filtering folds
@@ -2050,7 +1994,7 @@ deck =
 - How many moves have an attack power above 30?
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 ex38 :: Int
 ex38 =
@@ -2139,15 +2083,15 @@ ex42 =
 -- >>> ex42
 -- Just "Sparkeon"
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
-#### Exercises – Filtering
+#### Exercises - Filtering
 
 - List all the cards whose name starts with 'S'
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 ex43 :: [String]
 ex43 = deck ^.. folded . filteredBy (cardName . taking 1 folded . only 'S') . cardName
@@ -2210,7 +2154,7 @@ ex48 = sumOf (folded . filtered (\x -> x ^. aura /= Leafy) . moves . folded . mo
 -- >>>ex48
 -- 303
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ### 7. Traversals
@@ -2219,10 +2163,10 @@ Have multiple focuses. Can transform them.
 
 #### 7.1. Introduction to Traversals
 
-Can get or set many focuses **in-place**.
+Can get or set many focuses __in-place__.
 
-- **rows** - optics that we **have**
-- **columns** - how want to **use** that optics
+- __rows__ - optics that we __have__
+- __columns__ - how want to __use__ that optics
 
 ![alt](README/tableTraversals.png)
 
@@ -2342,7 +2286,7 @@ If you compose a `Traversal` and a `Fold`, you get a `Fold`.
 -- [3,4]
 
 {-
-Compared to **folded**, **traversed** operates on **less** containers with **more** operations.
+Compared to __folded__, __traversed__ operates on __less__ containers with __more__ operations.
 -}
 
 powerLevels :: M.Map String Integer
@@ -2466,13 +2410,13 @@ ex53 =
 -- (("Rich Ritchie",100000),("Archie",32),("Rich Reggie",4350))
 
 {-
-#### Exercises – Simple Traversals
+#### Exercises - Simple Traversals
 
 1. What type of optic do you get when you compose a traversal with a fold?
     - fold
 -}
 
-{- LIMA_INDENT 6 -}
+{- i 6 -}
 
 -- >>> [[3 :: Int, 4]] ^.. traversed . folded
 -- [3,4]
@@ -2485,14 +2429,14 @@ ex53 =
 -- In the second argument of `(&)', namely `traversed . folded .~ 2'
 
 {-
-1. Which of the optics we’ve learned can act as a traversal?
+1. Which of the optics we've learned can act as a traversal?
     - lens and traversal
 
-1. Which of the optics we’ve learned can act as a fold?
+1. Which of the optics we've learned can act as a fold?
     - lens, traversal, fold
 -}
 
-{- LIMA_DEDENT -}
+{- d -}
 
 -- >>>("Jurassic", "Park") & both .~ "N/A"
 -- ("N/A","N/A")
@@ -2700,7 +2644,7 @@ traverse :: (Traversable g, Applicative f) => (a -> f b) -> (g a -> f (g b))
 myTraversal :: myTraversal :: (Applicative f) => (a -> f b) -> (s -> f t)
 ```
 
-<b>Most optics are really just traverse wearing different pants.</b>
+__Most optics are really just traverse wearing different pants.__
 
 #### Our first custom traversal
 
@@ -2742,7 +2686,7 @@ aliceAccount = BankAccount [Deposit 100, Withdrawal 20, Withdrawal 10]
 {-
 #### Case study: Transaction Traversal
 
-Need a traversal which focuses on only the dollar amounts of **deposits** within a given account.
+Need a traversal which focuses on only the dollar amounts of __deposits__ within a given account.
 -}
 
 -- deposits :: Traversal' [Transaction] Int
@@ -2764,21 +2708,21 @@ deposits' = traversed . filtered (\case Deposit _ -> True; _ -> False) . amount
 1. custom traversal
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 -- amountT :: Traversal' Transaction Int
 amountT :: Applicative f => (Int -> f Int) -> Transaction -> f Transaction
 amountT f = \case Deposit am -> Deposit <$> f am; Withdrawal am -> Withdrawal <$> f am
 
 {-
-2. custom `both`
+1. custom `both`
 -}
 
 both' :: Traversal (a, a) (b, b) a b
 both' f (x, y) = liftA2 (,) (f x) (f y)
 
 {-
-3. delta - Similar to change of coordinates via matrix pre- and post-multiplication
+1. delta - Similar to change of coordinates via matrix pre- and post-multiplication
 -}
 
 transactionDelta :: Traversal' Transaction Int
@@ -2799,7 +2743,7 @@ transactionDelta f = \case Deposit amt -> Deposit <$> f amt; Withdrawal amt -> W
 -- >>> Withdrawal 10 & transactionDelta +~ 5
 -- Withdrawal {_amount = 5}
 
-{- LIMA_DEDENT -}
+{- d -}
 
 left' :: Traversal (Either a b) (Either a' b) a a'
 left' f = \case Left e -> Left <$> f e; Right x -> pure $ Right x
@@ -2829,8 +2773,8 @@ badTupleSnd handler (n, a) = (n + 1,) <$> handler a
 {-
 #### Law Two: Consistent Focuses
 
-Running a traversal twice in a row with **different** handlers should be equivalent
-to running it **once** with the composition of those handlers.
+Running a traversal twice in a row with __different__ handlers should be equivalent
+to running it __once__ with the composition of those handlers.
 
   ```hs
   x & myTraversal %~ f
@@ -2852,12 +2796,12 @@ alterations on those elements.
 -- 30
 
 {-
-#### Exercises – Traversal Laws
+#### Exercises - Traversal Laws
 
 1. `worded` violates the Law Two
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 -- >>>("hit the road, jack" :: String) & worded %~ take 3 & worded %~ drop 2
 -- "t e a c"
@@ -2866,7 +2810,7 @@ alterations on those elements.
 -- "t e ad, ck"
 
 {-
-2. Break the Law One
+1. Break the Law One
 -}
 
 myTraversal :: Traversal Int Int Int Int
@@ -2879,7 +2823,7 @@ myTraversal f _ = f 1
 -- Identity 6
 
 {-
-3. Break the Law Two
+1. Break the Law Two
 -}
 
 ex60 :: Traversal' [Int] Int
@@ -2892,7 +2836,7 @@ ex60 = traversed . filtered even
 -- [1,5,3]
 
 {-
-4. Check lawful
+1. Check lawful
 
 - `taking` is lawful
 - `beside` is lawful
@@ -2901,7 +2845,7 @@ ex60 = traversed . filtered even
 - `traversed` is lawful
 -}
 
-{- LIMA_INDENT 2 -}
+{- i 2 -}
 
 -- >>>("hit\nthe\nroad,\njack" :: String) & lined %~ take 3 & lined %~ drop 2
 -- "t\ne\na\nc"
@@ -2919,7 +2863,7 @@ update function can insert newlines
 -- >>>("hit\nthe\nroad,\njack" :: String) & lined %~ (take 2 . \(x:y:xs) -> (x:y:'\n':xs))
 -- "hi\nth\nro\nja"
 
-{- LIMA_DEDENT -}
+{- d -}
 
 {-
 ### 7.7 Advanced manipulation
@@ -3059,14 +3003,14 @@ ex63 = ([1, 2], M.fromList [('a', 3), ('b', 4)]) ^. partsOf (beside traversed tr
 {-
 ## 8. Indexable Structures
 
-### 8.1 What’s an “indexable” structure?
+### 8.1 What's an "indexable" structure?
 
-<b>Indexable</b> structures store values at <b>named locations</b> which can be identified by some <b>index</b>.
-That is, an <b>index</b> represents a <b>specific location</b> within a data structure where a value <b>might</b> be stored.
+__Indexable__ structures store values at __named locations__ which can be identified by some __index__.
+That is, an __index__ represents a __specific location__ within a data structure where a value __might__ be stored.
 
 Data structures have different interfaces (lists, dicts)
 
-### 8.2 Accessing and updating values with ‘Ixed’
+### 8.2 Accessing and updating values with 'Ixed'
 
 #### The Ixed Class
 
@@ -3218,7 +3162,7 @@ so it instead returns a new value.
 -- "You found the secret!"
 
 {-
-### 8.3 Inserting & Deleting with ‘At’
+### 8.3 Inserting & Deleting with 'At'
 
 #### Map-like structures
 
@@ -3271,7 +3215,7 @@ primes = S.fromList (ps ^.. taking 5 traversed)
 -- fromList [2,3,5,7,11,17]
 
 {-
-#### Exercises – Indexable Structuresm
+#### Exercises - Indexable Structuresm
 
 1. fill in blanks
 -}
@@ -3292,7 +3236,7 @@ heroesAndVillains = M.fromList [("Superman", "Lex"), ("Batman", "Joker")]
 -- fromList "aeouy"
 
 {-
-2. input -> output
+1. input -> output
 -}
 
 input :: M.Map String Integer
@@ -3309,7 +3253,7 @@ output = M.fromList [("candy bars", 13), ("ice cream", 5), ("soda", 37)]
 {-
 ## 10. Isos
 
-- isomorphism - a completely <b>reversible transformation</b> between two types or formats.
+- isomorphism - a completely __reversible transformation__ between two types or formats.
 - every iso MUST succeed for all inputs.
 
 ![isos](./README/tableIsos.png)
@@ -3457,15 +3401,15 @@ Isos for numbers
 -- 30 -> 30/10 = 3 -> 3 * 2 = 6 -> 6 + 1 = 7 -> 7 / 2 = 3.5 -> 3.5 * 10 = 35
 
 {-
-#### Exercises – Intro to Isos
+#### Exercises - Intro to Isos
 
 1. Choose the best optic:
-  - Focus a Celsius temperature in Fahrenheit - Iso - reversible
-  - Focus the last element of a list - Traversal - the element may be missing
-  - View a JSON object as its corresponding Haskell Record - Prism - may fail to parse
-  - Rotate the elements of a three-tuple one to the right - Iso - rotation is reversible
-  - Focus on the ‘bits’ of an Int as Bools - Traversal or Prism - multiple focuses
-  - Focusing an IntSet from a Set Int - Iso - reversible
+    - Focus a Celsius temperature in Fahrenheit - Iso - reversible
+    - Focus the last element of a list - Traversal - the element may be missing
+    - View a JSON object as its corresponding Haskell Record - Prism - may fail to parse
+    - Rotate the elements of a three-tuple one to the right - Iso - rotation is reversible
+    - Focus on the 'bits' of an Int as Bools - Traversal or Prism - multiple focuses
+    - Focusing an IntSet from a Set Int - Iso - reversible
 
 1. Fill in the blank
 -}
@@ -3502,7 +3446,7 @@ ex65 = (32, "Hi") & _2 . involuted (map switchCase) .~ ("hELLO" :: String)
 -- (32,"Hello")
 
 {-
-3. Conversion
+1. Conversion
 -}
 
 celsiusToF :: Double -> Double
@@ -3516,6 +3460,8 @@ fahrenheit' = iso fToCelsius celsiusToF
 
 -- >>> 0 & fahrenheit' .~ 100
 -- 212.0
+
+{- d -}
 
 {-
 ### 10.6 Projecting Isos
@@ -3554,12 +3500,12 @@ textToYamlList' :: [T.Text] -> T.Text
 textToYamlList' = T.pack . toYamlList . fmap T.unpack
 
 {-
-#### Exercises – Projected Isos
+#### Exercises - Projected Isos
 
 1. Fill in the blank
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 4 -}
 
 -- >>> ("Beauty", "Age") ^. mapping reversed . swapped
 -- ("egA","Beauty")
@@ -3574,7 +3520,7 @@ textToYamlList' = T.pack . toYamlList . fmap T.unpack
 -- "4321"
 
 {-
-2. Using `enum :: Enum a => Iso' Int a` implement the `intNot`.
+1. Using `enum :: Enum a => Iso' Int a` implement the `intNot`.
 -}
 
 intNot :: Int -> Int
@@ -3601,6 +3547,8 @@ intNot' = fromEnum . not . toEnum @Bool
 -- >>> intNot' 2
 -- Prelude.Enum.Bool.toEnum: bad argument
 
+{- d -}
+
 {-
 ### 10.7 Isos and newtypes
 
@@ -3609,7 +3557,7 @@ intNot' = fromEnum . not . toEnum @Bool
 - Coercible is derived for newtypes by the compiler
 - Can coerce between newtypes
 
-```
+```hs
 coerced :: (Coercible s a, Coercible t b) => Iso s t a b
 ```
 -}
@@ -3638,7 +3586,7 @@ _Wrapped' :: Wrapped s => Iso' s (Unwrapped s)
 _Unwrapped' :: Wrapped s => Iso' (Unwrapped s) s
 ```
 
-- map <b>only</b> between types and their newtype wrappers.
+- map __only__ between types and their newtype wrappers.
 - can be generated via `makeWrapped`
 -}
 
@@ -3649,6 +3597,8 @@ ex67 = Email "joe@example.com" & _Wrapped' @Email %~ reverse
 
 -- >>> ex67
 -- Email {_email = "moc.elpmaxe@eoj"}
+
+{- d -}
 
 {-
 ### 10.8 Laws
@@ -3665,10 +3615,12 @@ from myIso . myIso == id
 -- "Testing one two three"
 
 {-
-#### Exercises – Iso Laws
+#### Exercises - Iso Laws
 
 1. The following iso is unlawful; provide a counter example which shows that it breaks the law.
 -}
+
+{- i 4 -}
 
 mapList :: Ord k => Iso' (M.Map k v) [(k, v)]
 mapList = iso M.toList M.fromList
@@ -3686,9 +3638,9 @@ ex68 = kvInts ^. from mapList . mapList
 -- False
 
 {-
-2. Is there a lawful implementation of the following iso? If so, implement it, if not, why not?
+1. Is there a lawful implementation of the following iso? If so, implement it, if not, why not?
 
-Yes, there is one.
+    - Yes, there is one.
 -}
 
 nonEmptyList :: Iso [a] [b] (Maybe (NonEmpty a)) (Maybe (NonEmpty b))
@@ -3707,16 +3659,16 @@ nonEmptyList = iso nonEmpty (maybe [] Data.List.NonEmpty.toList)
 -- Just (1 :| [])
 
 {-
-3. Is there a lawful implementation of an iso which ‘sorts’ a list of elements? If so, implement it, if
+1. Is there a lawful implementation of an iso which 'sorts' a list of elements? If so, implement it, if
 not, why not?
 
-```hs
-sorted :: Ord a => Iso' [a] [a]
-```
+    ```hs
+    sorted :: Ord a => Iso' [a] [a]
+    ```
 
-There's no implementation for this iso because it's impossible to unsort a sorted list.
+    - There's no implementation for this iso because it loses the info about the initial element order.
 
-4. What about the following iso which pairs each element with an Int which remembers its original
+1. What about the following iso which pairs each element with an Int which remembers its original
 position in the list. Is this a lawful iso? Why or why not? If not, try to find a counter-example.
 -}
 
@@ -3732,12 +3684,14 @@ sorted = iso to' from'
 -- >>> [(1, 1), (0, 2)] ^. from sorted . sorted
 -- [(1,1),(0,2)]
 
+{- d -}
+
 {-
 ## 11. Indexed Optics
 
 ### 11.1 What are indexed optics?
 
-Let <b>accumulate information</b> about the <b>current focus</b>.
+Let __accumulate information__ about the __current focus__.
 
 ```hs
 itraversed :: TraversableWithIndex i t => IndexedTraversal i (t a) (t b) a b
@@ -3758,7 +3712,7 @@ itoListOf :: IndexedGetting i (Endo [(i, a)]) s a -> s -> [(i, a)]
 Indices are added by `actions`.
 `Indexed action` accepts an `indexed optic`
 
-![](README/iActions.png)
+![actions](README/iActions.png)
 
 There are actions for: `Lens`, `Traversal`, `Fold`, `Getter`, `Setter`.
 
@@ -3784,7 +3738,7 @@ Usually used for Folds or Traversals.
 {-
 ### 11.2 Index Composition
 
-Index of a path will be the index of the <b>last<b> indexed optic in the path.
+Index of a path will be the index of the __last__ indexed optic in the path.
 -}
 
 agenda :: M.Map String [String]
@@ -3923,9 +3877,11 @@ index :: (Indexable i p, Eq i, Applicative f) => i -> Optical' p (Indexed i) f a
 #### Exercises
 
 1. Exercises schedule
+
+    - data
 -}
 
-{- LIMA_INDENT 4 -}
+{- i 8 -}
 
 exercises :: M.Map String (M.Map String Int)
 exercises =
@@ -3939,8 +3895,9 @@ exercises =
 -- fromList [("Friday",fromList [("crunches",25),("handstands",5)]),("Monday",fromList [("crunches",20),("pushups",10)]),("Wednesday",fromList [("handstands",3),("pushups",15)])]
 
 {-
-  - Compute the total number of “crunches” you should do this week.
+    - Compute the total number of "crunches" you should do this week.
 -}
+
 ex72 :: Int
 ex72 = sumOf (traversed . itraversed . indices (has (only "crunches"))) exercises
 
@@ -3948,7 +3905,7 @@ ex72 = sumOf (traversed . itraversed . indices (has (only "crunches"))) exercise
 -- 45
 
 {-
-  - Compute the number of reps you need to do across all exercise types on Wednesday.
+    - Compute the number of reps you need to do across all exercise types on Wednesday.
 -}
 ex73 :: Int
 ex73 = sumOf (itraversed . indices (has (only "Wednesday")) . traversed) exercises
@@ -3957,7 +3914,7 @@ ex73 = sumOf (itraversed . indices (has (only "Wednesday")) . traversed) exercis
 -- 18
 
 {-
-  - List out the number of pushups you need to do each day, you can use ix to help this time if you wish.
+    - List out the number of pushups you need to do each day, you can use ix to help this time if you wish.
 -}
 ex74 :: [Int]
 ex74 = exercises ^.. traversed . at "pushups" . non 0
@@ -3966,8 +3923,12 @@ ex74 = exercises ^.. traversed . at "pushups" . non 0
 -- [0,10,15]
 
 {-
-2. Board
+1. Board
+
+    - data
 -}
+
+{- i 8 -}
 
 board :: [String]
 board =
@@ -3977,7 +3938,7 @@ board =
   ]
 
 {-
-  - Generate a list of positions alongside their (row, column) coordinates.
+    - Generate a list of positions alongside their (row, column) coordinates.
 -}
 
 ex75 :: [((Int, Int), Char)]
@@ -3987,7 +3948,7 @@ ex75 = board ^@.. itraversed <.> itraversed
 -- [((0,0),'X'),((0,1),'O'),((0,2),'O'),((1,0),'.'),((1,1),'X'),((1,2),'O'),((2,0),'X'),((2,1),'.'),((2,2),'.')]
 
 {-
-  - Set the empty square at (1, 0) to an 'X'. HINT: When using the custom composition operators you’ll often need to introduce parenthesis to get the right precedence.
+    - Set the empty square at (1, 0) to an 'X'. HINT: When using the custom composition operators you'll often need to introduce parenthesis to get the right precedence.
 -}
 
 ex76 :: [String]
@@ -3997,7 +3958,7 @@ ex76 = board & ix 1 . ix 0 .~ 'X'
 -- ["XOO","XXO","X.."]
 
 {-
-  - Get the 2nd *column* as a list (e.g. "OX."). Try to do it using index instead of indices!
+    - Get the 2nd *column* as a list (e.g. "OX."). Try to do it using index instead of indices!
 -}
 
 ex77 :: [Char]
@@ -4007,7 +3968,7 @@ ex77 = board ^.. itraversed . itraversed . index 1
 -- "OX."
 
 {-
-  - Get the 3rd row as a list (e.g. "X.."). Try to do it using index instead of indices! HINT: The precedence for this one can be tricky too.
+    - Get the 3rd row as a list (e.g. "X.."). Try to do it using index instead of indices! HINT: The precedence for this one can be tricky too.
 -}
 
 ex78 :: [String]
@@ -4015,6 +3976,8 @@ ex78 = board ^.. itraversed . index 2
 
 -- >>> ex78
 -- ["X.."]
+
+{- d -}
 
 {-
 ### 11.4 Custom indexed optics
@@ -4145,12 +4108,12 @@ selfIndex :: Indexable a p => p a fb -> a -> fb
 -- [(("Betty",37),37),(("Veronica",12),12)]
 
 {-
-#### Exercises – Custom Indexed Optics
+#### Exercises - Custom Indexed Optics
 
 1. Write an indexed Traversal
 -}
 
-{- LIMA_INDENT 2 -}
+{- i 2 -}
 
 -- pair :: IndexedFold Bool (a, a) a
 pair :: IndexedTraversal Bool (a, a) (b, b) a b
@@ -4160,7 +4123,13 @@ pair p (x, y) = (,) <$> indexed p False x <*> indexed p True y
 -- [(False,'a'),(True,'b')]
 
 {-
-2. Use reindexed to provide an indexed list traversal which starts at `1` instead of `0`.
+1. Use `reindexed` to provide an indexed list traversal which starts at `1` instead of `0`.
+-}
+
+{- i 6 -}
+
+{-
+    - `oneIndexed`
 -}
 
 oneIndexed :: IndexedTraversal Int [a] [b] a b
@@ -4170,10 +4139,9 @@ oneIndexed = reindexed (+ 1) itraversed
 -- [(1,'a'),(2,'b'),(3,'c'),(4,'d')]
 
 {-
-  - Use `reindexed` to write a traversal indexed by the distance to the end of the list.
+    - Use `reindexed` to write a traversal indexed by the distance to the end of the list.
 -}
 
-{- LIMA_INDENT 4 -}
 invertedIndex :: IndexedTraversal Int [a] [b] a b
 invertedIndex p x = reindexed ((length x - 1) -) itraversed p x
 
@@ -4181,8 +4149,10 @@ invertedIndex p x = reindexed ((length x - 1) -) itraversed p x
 -- [(3,'a'),(2,'b'),(1,'c'),(0,'d')]
 
 {-
-3. Build the following combinators using only compositions of other optics.
+1. Build the following combinators using only compositions of other optics.
 -}
+
+{- i 4 -}
 
 chars :: IndexedTraversal Int T.Text T.Text Char Char
 chars p x = T.pack <$> itraversed p (T.unpack x)
@@ -4198,6 +4168,8 @@ chc = "line\nby\nline" ^@.. indexing lined <.> itraversed
 
 -- >>> chc
 -- [((0,0),'l'),((0,1),'i'),((0,2),'n'),((0,3),'e'),((1,0),'b'),((1,1),'y'),((2,0),'l'),((2,1),'i'),((2,2),'n'),((2,3),'e')]
+
+{- d -}
 
 {-
 ### 11.5 Index-preserving optics
@@ -4222,9 +4194,7 @@ Or, make lens index-preserving initially.
 ```hs
 iplens :: (s -> a) -> (s -> b -> t) -> IndexPreservingLens s t a b
 ```
--}
 
-{-
 ### 13. Optics and Monads
 
 #### 13.1 Reader Monad and View
@@ -4298,4 +4268,3 @@ makeLenses ''Till
 saleCalculation :: StateT Till IO ()
 saleCalculation = do
   total .= 0
-

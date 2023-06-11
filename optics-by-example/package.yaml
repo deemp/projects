@@ -58,7 +58,8 @@ executables:
 
 tests:
   docs:
-    main: test/Docs.hs
+    main: test/Main.hs
     dependencies:
       - text
       - lima
+      - string-interpolate

@@ -8,8 +8,6 @@
     flake-utils.follows = "flake-utils_/flake-utils";
     haskell-tools.url = "github:deemp/flakes?dir=language-tools/haskell";
     devshell.url = "github:deemp/flakes?dir=devshell";
-    lima_.url = "github:deemp/flakes?dir=source-flake/lima";
-    lima.follows = "lima_/lima";
   };
   outputs = inputs: inputs.flake-utils.lib.eachDefaultSystem (system:
     let
@@ -28,7 +26,6 @@
       inherit (inputs.haskell-tools.functions.${system}) toolsGHC;
       inherit (inputs.workflows.functions.${system}) writeWorkflow;
       inherit (inputs.workflows.configs.${system}) nixCI;
-      inherit (inputs) lima;
 
       # --- Parameters ---
 
