@@ -4,7 +4,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-module Try.Concurrency.Exceptions where
+module Try.Exceptions.Exceptions where
 
 import Control.Monad.Logger.CallStack
 import Data.String.Interpolate

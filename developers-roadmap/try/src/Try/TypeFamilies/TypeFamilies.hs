@@ -9,11 +9,14 @@
 {-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-missing-kind-signatures #-}
+{-# OPTIONS_GHC -Wno-unticked-promoted-constructors #-}
+{-# OPTIONS_GHC -Wno-unused-type-patterns #-}
 
 module Try.TypeFamilies.TypeFamilies where
 
 import Data.Data (Proxy (Proxy), Typeable, typeRep)
-import Data.Functor.Identity (Identity (..))
+import Data.Functor.Identity (Identity (Identity))
 import Data.Kind (Type)
 
 -- Type families
@@ -34,13 +37,13 @@ instance Add Double Integer where
 
 instance (Num a) => Add a a where
   type SumTy a a = a
-  plus :: Num a => a -> a -> SumTy a a
+  plus :: a -> a -> SumTy a a
   plus x y = x + y
 
 checkAdd :: Double
 checkAdd = plus (5 :: Integer) (6 :: Double)
 
--- >>>checkAdd
+-- >>> checkAdd
 -- 11.0
 
 -- Type families https://serokell.io/blog/type-families-haskell
@@ -138,7 +141,7 @@ class Container2 a where
   elements' :: a -> [Elem2 a]
 
 -- Checks during pattern matching
-dedup :: Eq a => [a] -> [a]
+dedup :: (Eq a) => [a] -> [a]
 dedup (x1 : x2 : xs) | x1 == x2 = dedup (x1 : xs)
 dedup (y : xs) = y : dedup xs
 dedup [] = []
@@ -175,3 +178,5 @@ instance Vectorizable S where
 -- Data family
 data family SomeFamily a
 newtype instance SomeFamily Int = SomeF Int
+
+-- TODO deduplicate with Theory

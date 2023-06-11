@@ -13,11 +13,10 @@ build-type:     Simple
 library
   exposed-modules:
       Try.Aeson.HKD
-      Try.Concurrency.Async
-      Try.Concurrency.Exceptions
-      Try.Concurrency.ParallelAndConcurrentHaskell
       Try.Debug.Breakpoint
       Try.Effectful.Dynamic
+      Try.Exceptions.Exceptions
+      Try.Exceptions.Theory
       Try.Functions.Composition
       Try.Functions.Folds
       Try.Functions.General
@@ -33,9 +32,18 @@ library
       Try.Monads.FunctionalDependencies
       Try.Monads.MonadBaseControl
       Try.Monads.Monads
-      Try.TemplateHaskell.Declare
-      Try.TemplateHaskell.Use
+      Try.ParallelAndConcurrentHaskell.Exceptions
+      Try.ParallelAndConcurrentHaskell.MVar
+      Try.ParallelAndConcurrentHaskell.STM
+      Try.TemplateHaskell.ConstructorTags.Declare
+      Try.TemplateHaskell.ConstructorTags.Use
+      Try.TemplateHaskell.Typed.Declare
+      Try.TemplateHaskell.Typed.Use
+      Try.Test.Theory
+      Try.TypeClasses.Monoid
+      Try.TypeClasses.Theory
       Try.TypeClasses.TypeClasses
+      Try.TypeFamilies.Theory
       Try.TypeFamilies.TypeFamilies
   other-modules:
       Paths_nix_managed
@@ -131,7 +139,6 @@ test-suite docs
     , breakpoint
     , bytestring
     , containers
-    , data-default
     , deepseq
     , effectful
     , exceptions
@@ -157,7 +164,6 @@ test-suite docs
     , time
     , transformers
     , transformers-base
-    , turtle
     , unliftio
     , unordered-containers
   default-language: Haskell2010

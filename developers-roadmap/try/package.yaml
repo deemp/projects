@@ -50,13 +50,3 @@ ghc-options:
 library:
   source-dirs:
     - src
-
-tests:
-  docs:
-    main: test/Docs.hs
-    dependencies:
-      - turtle
-      - string-interpolate
-      - text
-      - lima
-      - data-default

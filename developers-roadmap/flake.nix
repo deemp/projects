@@ -13,8 +13,6 @@
       url = "github:fused-effects/fused-effects-exceptions";
       flake = false;
     };
-    lima_.url = "github:deemp/flakes?dir=source-flake/lima";
-    lima.follows = "lima_/lima";
   };
   outputs = inputs: inputs.flake-utils.lib.eachDefaultSystem (system:
     let
@@ -22,26 +20,16 @@
       inherit (inputs.my-codium.functions.${system}) writeSettingsJSON mkCodium;
       inherit (inputs.drv-tools.functions.${system}) mkBin withAttrs withMan withDescription mkShellApp;
       inherit (inputs.drv-tools.configs.${system}) man;
-      inherit (inputs.my-codium.configs.${system}) extensions settingsNix;
-      inherit (inputs.flakes-tools.functions.${system}) mkFlakesTools;
-      inherit (inputs.devshell.functions.${system}) mkCommands mkShell;
+      inherit (inputs.my-codium.configs.${system}) extensions extensionsCommon settingsNix settingsCommonNix;
+      inherit (inputs.devshell.functions.${system}) mkCommands mkRunCommands mkShell;
       inherit (inputs.haskell-tools.functions.${system}) toolsGHC;
 
-      ghcVersion_ = "928";
+      ghcVersion = "928";
 
       # and the name of the package
-      myPackageName = "nix-managed";
-
-      # Then, we list separately the libraries that our package needs
-      myPackageDepsLib = [ ];
-
-      # And the binaries. 
-      # In our case, the Haskell app will call the `hello` command
-      myPackageDepsBin = [ ];
+      packageName = "nix-managed";
 
       inherit (pkgs.haskell.lib)
-        # doJailbreak - remove package bounds from build-depends of a package
-        doJailbreak
         # dontCheck - skip tests
         dontCheck
         # override deps of a package
@@ -52,95 +40,59 @@
       override = {
         overrides = self: super: {
           fused-effects-exceptions = dontCheck (self.callCabal2nix "fused-effects-exceptions" inputs.fused-effects-exceptions-src { });
-          myPackage = overrideCabal
-            (super.callCabal2nix myPackageName ./. { })
-            (x: {
-              # we can combine the existing deps and new deps
-              # these deps will be in haskellPackages.myPackage.getCabalDeps.librarySystemDepends
-              librarySystemDepends = myPackageDepsLib ++ (x.librarySystemDepends or [ ]);
-              # if we want to override the existing deps, we just don't include them
-              executableSystemDepends = myPackageDepsBin ++ (x.executableSystemDepends or [ ]);
-              # here's how we can add a package built from sources
-              # then, we may use this package in .cabal in a test-suite
-              testHaskellDepends = [
-                (super.callCabal2nix "lima" inputs.lima.outPath { })
-              ] ++ (x.testHaskellDepends or [ ]);
-            });
+          ${packageName} = super.callCabal2nix packageName ./. { };
         };
       };
 
-      inherit (toolsGHC {
-        version = ghcVersion_;
-        inherit override;
-        packages = (ps: [ ps.myPackage ]);
-      })
-        hls cabal implicit-hie justStaticExecutable
-        ghcid callCabal2nix haskellPackages hpack;
-
-      writeSettings = writeSettingsJSON {
-        inherit (settingsNix) haskell todo-tree files editor gitlens
-          git nix-ide workbench markdown-all-in-one markdown-language-features
-          yaml;
+      packages = {
+        codium = mkCodium { extensions = extensionsCommon // { inherit (extensions) haskell; }; };
+        writeSettings = writeSettingsJSON (settingsCommonNix // { inherit (settingsNix) haskell; });
       };
 
-      codiumTools = [
-        ghcid
-        hpack
-        implicit-hie
-        cabal
-        pkgs.haskell.packages.ghc945.fourmolu
-        hls
+      hpkgs = pkgs.haskell.packages."ghc${ghcVersion}";
+
+      devShells.shellFor = (hpkgs.override override).shellFor {
+        packages = ps: [ ps.${packageName} ];
+        buildInputs = [ pkgs.cabal-install ];
+      };
+
+      tools = [
+        pkgs.ghcid
+        pkgs.hpack
+        pkgs.cabal-install
+        pkgs.haskellPackages.fourmolu_0_12_0_0
+        hpkgs.haskell-language-server
       ];
 
-      codium = mkCodium {
-        extensions = { inherit (extensions) nix haskell misc github markdown; };
-        runtimeDependencies = codiumTools;
-      };
-
-      tools = codiumTools;
-
-      defaultShell = mkShell {
+      devShells.default = mkShell {
         packages = tools;
+        packagesFrom = [ devShells.shellFor ];
         bash.extra = "export LANG=C.utf8";
-        commands = (mkCommands "tools" tools) ++ [
+        commands = (mkCommands "tools" tools) ++ (mkRunCommands "ide" {
+          "codium ." = packages.codium;
+          inherit (packages) writeSettings;
+        }) ++
+        [
           {
             name = "mkdocs";
             category = "docs";
             help = "generate docs (`README.md`, etc.)";
             command = "cabal v1-test";
           }
-          {
-            name = "nix run .#codium .";
-            category = "ide";
-            help = "Run " + codium.meta.description + " in the current dir";
-          }
-          {
-            name = "nix run .#writeSettings";
-            category = "ide";
-            help = writeSettings.meta.description;
-          }
         ];
       };
     in
     {
-      packages = {
-        inherit writeSettings codium;
-      };
-
-      devShells = {
-        default = defaultShell;
-      };
+      inherit devShells packages;
     });
 
   nixConfig = {
     extra-substituters = [
-      "https://haskell-language-server.cachix.org"
       "https://nix-community.cachix.org"
       "https://cache.iog.io"
       "https://deemp.cachix.org"
     ];
     extra-trusted-public-keys = [
-      "haskell-language-server.cachix.org-1:juFfHrwkOxqIOZShtC4YC1uT1bBcq2RSvC7OMKx0Nz8="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
       "deemp.cachix.org-1:9shDxyR2ANqEPQEEYDL/xIOnoPwxHot21L5fiZnFL18="
