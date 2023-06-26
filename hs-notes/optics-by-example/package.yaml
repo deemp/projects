@@ -1,14 +1,14 @@
-name: nix-managed
+name: optics-by-example
 version: 0.1.0.0
-github: "value/nix-managed"
+github: "value/optics-by-example"
 license: BSD3
 author: "value"
 maintainer: "value"
 copyright: "value"
 
-extra-source-files:
-  - README.md
-  - CHANGELOG.md
+# extra-source-files:
+#   - README.md 
+#   - CHANGELOG.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -17,7 +17,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description: Please see the README on GitHub at <https://github.com/value/nix-managed#readme>
+description: Please see the README on GitHub at <https://github.com/value/optics-by-example#readme>
 
 default-extensions:
   - ImportQualifiedPost
@@ -38,7 +38,7 @@ ghc-options:
   - -Wredundant-constraints
 
 executables:
-  nix-managed:
+  optics-by-example:
     main: README.hs
     ghc-options:
       - -threaded

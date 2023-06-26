@@ -4,29 +4,25 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 
-name:           nix-managed
+name:           optics-by-example
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/value/nix-managed#readme>
-homepage:       https://github.com/value/nix-managed#readme
-bug-reports:    https://github.com/value/nix-managed/issues
+description:    Please see the README on GitHub at <https://github.com/value/optics-by-example#readme>
+homepage:       https://github.com/value/optics-by-example#readme
+bug-reports:    https://github.com/value/optics-by-example/issues
 author:         value
 maintainer:     value
 copyright:      value
 license:        BSD3
-license-file:   LICENSE
 build-type:     Simple
-extra-source-files:
-    README.md
-    CHANGELOG.md
 
 source-repository head
   type: git
-  location: https://github.com/value/nix-managed
+  location: https://github.com/value/optics-by-example
 
-executable nix-managed
+executable optics-by-example
   main-is: README.hs
   other-modules:
-      Paths_nix_managed
+      Paths_optics_by_example
   default-extensions:
       ImportQualifiedPost
       OverloadedRecordDot
@@ -49,7 +45,7 @@ test-suite docs
   type: exitcode-stdio-1.0
   main-is: test/Main.hs
   other-modules:
-      Paths_nix_managed
+      Paths_optics_by_example
   default-extensions:
       ImportQualifiedPost
       OverloadedRecordDot

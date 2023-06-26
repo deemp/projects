@@ -1,5 +1,0 @@
--c cabal repl README.hs
--W
---reload=./
---reverse-errors
---allow-eval
