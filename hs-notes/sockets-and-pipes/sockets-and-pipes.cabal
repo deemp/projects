@@ -1,14 +1,14 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 
-name:           nix-managed
+name:           sockets-and-pipes
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/value/nix-managed#readme>
-homepage:       https://github.com/value/nix-managed#readme
-bug-reports:    https://github.com/value/nix-managed/issues
+description:    Please see the README on GitHub at <https://github.com/value/sockets-and-pipes#readme>
+homepage:       https://github.com/value/sockets-and-pipes#readme
+bug-reports:    https://github.com/value/sockets-and-pipes/issues
 author:         value
 maintainer:     value
 copyright:      value
@@ -21,7 +21,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/value/nix-managed
+  location: https://github.com/value/sockets-and-pipes
 
 library
   exposed-modules:
@@ -37,7 +37,7 @@ library
       C_8_Responding
       C_9_Content_types
   other-modules:
-      Paths_nix_managed
+      Paths_sockets_and_pipes
   hs-source-dirs:
       src
   default-extensions:
