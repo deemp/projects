@@ -1,6 +1,6 @@
-name: nix-managed
+name: thinking-with-types
 version: 0.1.0.0
-github: "value/nix-managed"
+github: "value/thinking-with-types"
 license: BSD3
 author: "value"
 maintainer: "value"
@@ -8,7 +8,6 @@ copyright: "value"
 
 extra-source-files:
   - README.md
-  - CHANGELOG.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -17,7 +16,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description: Please see the README on GitHub at <https://github.com/value/nix-managed#readme>
+description: Please see the README on GitHub at <https://github.com/value/thinking-with-types#readme>
 
 default-extensions:
   - ImportQualifiedPost
@@ -38,29 +37,3 @@ ghc-options:
 
 library:
   source-dirs: src
-  dependencies:
-    - ghc-prim
-
-executables:
-  nix-managed:
-    main: Main.hs
-    source-dirs: app
-    ghc-options:
-      - -threaded
-      - -rtsopts
-      - -with-rtsopts=-N
-    dependencies:
-      - nix-managed
-
-tests:
-  nix-managed-test:
-    main: Spec.hs
-    source-dirs: test
-    ghc-options:
-      - -threaded
-      - -rtsopts
-      - -with-rtsopts=-N
-    dependencies:
-      - nix-managed
-      - lima
-      - text

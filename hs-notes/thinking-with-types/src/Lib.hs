@@ -47,9 +47,6 @@ constructors.
 1. Finally, write a helper function to map between the Rep and the
 desired type.
 
--}
-
-{-
 ### 2.4 Type-Level functions
 
 - Type families must be saturated
