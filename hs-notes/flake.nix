@@ -89,7 +89,7 @@
         });
       } // (mkShellApps {
         genDocs = {
-          text = "${mkBin cabal} run make-docs";
+          text = "LANG=C.utf8 ${mkBin cabal} run make-docs";
           description = "Convert .hs to .md for mdbook";
         };
       });
