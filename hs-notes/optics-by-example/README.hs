@@ -82,6 +82,7 @@ import Data.Tree (Tree (..))
 import GHC.Word qualified
 import Numeric.Lens (adding, multiplying, negated)
 import Text.Read (readMaybe)
+import Data.Kind (Type)
 
 main :: IO ()
 main = print "hello"
@@ -748,7 +749,7 @@ We compose `Lens' a b` and `Lens' b c`.
 Inside, they are `b -> a` and `c -> b` so that we can compose them like `(b -> a) . (c -> b)`
 -}
 
-ex9 :: forall a b c d e f. (e -> f)
+ex9 :: forall (a :: Type) (b :: Type) (c :: Type) (d :: Type) e f. (e -> f)
 ex9 = (d . s) m
  where
   m :: a -> b

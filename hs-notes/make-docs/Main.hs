@@ -15,5 +15,5 @@ main = do
   mapM_
     (uncurry convert)
     [ ("optics-by-example/README.hs", "OpticsByExample.md")
-    -- , ("developers-roadmap/README.hs", "DevelopersRoadmap.md")
+    , ("developers-roadmap/README.hs", "DevelopersRoadmap.md")
     ]
