@@ -150,7 +150,10 @@
 
 ### Helper function libs
 
-1. [flake-compat](https://github.com/edolstra/flake-compat). Whenever possible, add a flake into a repo, and then use `flake-compat` to create `default.nix` and `shell.nix`
+1. [flake-compat](https://github.com/edolstra/flake-compat).
+   1. Whenever possible, add a flake into a repo, and then use `flake-compat` to create `default.nix` and `shell.nix`
+   1. Use it to access scripts from a flake in a child directory
+      - [example](https://github.com/deemp/flakes/blob/d545aa9b13e784afdcb39d30f2c8655fd6031a4a/templates/codium/haskell/stack.nix#L1)
 
 1. [flake-utils](https://github.com/numtide/flake-utils)
 
@@ -258,11 +261,14 @@
 
      1. Choose to squash the latest commits
 
-- `git rebase -Xtheirs another_branch` - to favor current branch over `another_branch` - [src](https://demisx.github.io/git/rebase/2015/07/02/git-rebase-keep-my-branch-changes.html)
+1. [git-subtree](https://www.atlassian.com/git/tutorials/git-subtree)
+1. [git-filter-repo](https://github.com/newren/git-filter-repo)
+1. Submodules: don't use them!
+   - [Add](https://git-scm.com/book/en/v2/Git-Tools-Submodules) a submodule
+   - Clone [nested submodules](https://stackoverflow.com/a/6562038)
+   - Convert a submodule to a folder while preserving its history: [src](https://medium.com/walkme-engineering/how-to-merge-a-git-submodule-into-its-main-repository-d83a215a319c)
 
-- [Add](https://git-scm.com/book/en/v2/Git-Tools-Submodules) a submodule
-- Clone [nested submodules](https://stackoverflow.com/a/6562038)
-- Convert a submodule to a folder while preserving its history: [src](https://medium.com/walkme-engineering/how-to-merge-a-git-submodule-into-its-main-repository-d83a215a319c)
+- `git rebase -Xtheirs another_branch` - to favor current branch over `another_branch` - [src](https://demisx.github.io/git/rebase/2015/07/02/git-rebase-keep-my-branch-changes.html)
 
 ## GitHub
 
