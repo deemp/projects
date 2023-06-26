@@ -4,24 +4,20 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 
-name:           sockets-and-pipes
+name:           sockets-and-pipes-notes
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/value/sockets-and-pipes#readme>
-homepage:       https://github.com/value/sockets-and-pipes#readme
-bug-reports:    https://github.com/value/sockets-and-pipes/issues
+description:    Please see the README on GitHub at <https://github.com/value/sockets-and-pipes-notes#readme>
+homepage:       https://github.com/value/sockets-and-pipes-notes#readme
+bug-reports:    https://github.com/value/sockets-and-pipes-notes/issues
 author:         value
 maintainer:     value
 copyright:      value
 license:        BSD3
-license-file:   LICENSE
 build-type:     Simple
-extra-source-files:
-    README.md
-    CHANGELOG.md
 
 source-repository head
   type: git
-  location: https://github.com/value/sockets-and-pipes
+  location: https://github.com/value/sockets-and-pipes-notes
 
 library
   exposed-modules:
@@ -37,7 +33,7 @@ library
       C_8_Responding
       C_9_Content_types
   other-modules:
-      Paths_sockets_and_pipes
+      Paths_sockets_and_pipes_notes
   hs-source-dirs:
       src
   default-extensions:
@@ -48,6 +44,7 @@ library
       InstanceSigs
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-unused-top-binds
   build-depends:
-      base >=4.7 && <5
+      ascii-superset
+    , base >=4.7 && <5
     , sockets-and-pipes
   default-language: Haskell2010

@@ -17,12 +17,16 @@ import Relude (Handle, IOMode (..), UnicodeException)
 import System.FilePath ((</>))
 import System.IO qualified as IO
 
--- 3.1 Packed octets
+{-
+3.1 Packed octets
+-}
 
 exampleBytes :: [Word8]
 exampleBytes = [104, 101, 108, 111] :: [Word8]
 
--- 3.2 Copying a file
+{-
+3.2 Copying a file
+-}
 
 greeting2Txt :: FilePath
 greeting2Txt = "greeting2.txt"
@@ -37,7 +41,9 @@ copyGreetingFile = runResourceT @IO do
 binaryFileResource :: FilePath -> IOMode -> ResourceT IO (ReleaseKey, Handle)
 binaryFileResource path mode = allocate (IO.openBinaryFile path mode) IO.hClose
 
--- 3.5 Avoiding system defaults
+{-
+3.5 Avoiding system defaults
+-}
 
 helloHandle :: IO ()
 helloHandle = IO.hPutStrLn IO.stdout "Hello, world!"
@@ -76,9 +82,13 @@ helloUtf8 = do
 
 -- >>>helloUtf8
 
--- 3.6 Exercises
+{-
+3.6 Exercises
+-}
 
---- Ex 8
+{-
+Ex 8
+-}
 
 greet :: BS.ByteString -> IO ()
 greet nameBS = case T.decodeUtf8' nameBS of
@@ -91,7 +101,9 @@ p1 = T.decodeUtf8' (fromString "♫")
 -- >>>p1
 -- Right "k"
 
---- Ex 9
+{-
+Ex 9
+-}
 
 asciiUpper :: BS.ByteString -> BS.ByteString
 asciiUpper = BS.map (\x -> if 97 <= x && x <= 122 then 65 + x - 97 else x)

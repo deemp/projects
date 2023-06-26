@@ -13,7 +13,9 @@ import System.FilePath ((</>))
 import System.IO qualified as IO
 import Prelude hiding (print, putStrLn, show)
 
--- 0 Setup
+{-
+0 Setup
+-}
 
 getDataDir :: IO FilePath
 getDataDir = do
@@ -21,7 +23,9 @@ getDataDir = do
   Dir.createDirectoryIfMissing True dir
   return dir
 
--- 1.2 Writing to a file
+{-
+1.2 Writing to a file
+-}
 
 greetingTxt :: IO.FilePath
 greetingTxt = "greeting.txt"
@@ -35,14 +39,20 @@ writeGreetingFile = do
   IO.hClose h
   IO.putStrLn dir
 
--- 1.4 MonadIO
+{-
+1.4 MonadIO
+-}
 
-helloWorld :: MonadIO m => m ()
+helloWorld :: (MonadIO m) => m ()
 helloWorld = liftIO (IO.putStrLn "hello, world")
 
--- 1.5 Exercises
+{-
+1.5 Exercises
+-}
 
----- Ex 1
+{-
+Ex 1
+-}
 
 writeGreetingSafe :: IO ()
 writeGreetingSafe = runResourceT @IO do
@@ -57,7 +67,9 @@ fileResource p m =
     (IO.openFile p m)
     IO.hClose
 
----- Ex 2
+{-
+Ex 2
+-}
 
 handlePrintTest :: IO ()
 handlePrintTest = runResourceT do
@@ -65,7 +77,9 @@ handlePrintTest = runResourceT do
   liftIO $ print p1
   liftIO $ IO.hShow p1 >>= print
 
----- Ex 3
+{-
+Ex 3
+-}
 
 howManyHandles :: IO ()
 howManyHandles = runResourceT @IO do

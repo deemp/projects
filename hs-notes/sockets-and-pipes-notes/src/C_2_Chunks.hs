@@ -14,7 +14,9 @@ import Relude (IOMode (ReadMode))
 import System.FilePath ((</>))
 import System.IO qualified as IO
 
--- 2.1 Packed characters
+{-
+2.1 Packed characters
+-}
 
 helloText :: IO ()
 helloText = T.hPutStrLn stdout (T.pack "hello, world!")
@@ -31,12 +33,15 @@ helloTextFile = runResourceT @IO do
 >>>helloTextFile
 -}
 
--- Text is strict
--- this crashes
+{-
+Text is strict. This crashes
+-}
 p :: T.Text
 p = T.take 10 (T.pack (cycle "abc"))
 
--- 2.2 Reading from a file, one chunk at a time
+{-
+2.2 Reading from a file, one chunk at a time
+-}
 
 printFileContentsUpperCase :: IO ()
 printFileContentsUpperCase = runResourceT @IO do
@@ -74,7 +79,9 @@ repeatUntilIO getChunk isEnd f = continue
           continue
       )
 
---- Ex 4
+{-
+Ex 4
+-}
 
 digitsOnly :: Text -> Text
 digitsOnly = T.filter isDigit
@@ -132,17 +139,21 @@ characterCount fp = runResourceT @IO do
 12
 -}
 
---- Ex 6
+{-
+Ex 6
+-}
 
-when :: Monad m => Bool -> m () -> m ()
+when :: (Monad m) => Bool -> m () -> m ()
 when cond action = if cond then action else return ()
 
-unless :: Monad m => Bool -> m () -> m ()
+unless :: (Monad m) => Bool -> m () -> m ()
 unless cond = when (not cond)
 
---- Ex 7
+{-
+Ex 7
+-}
 
-repeatUntil :: Monad m => m chunk -> (chunk -> Bool) -> (chunk -> m x) -> m ()
+repeatUntil :: (Monad m) => m chunk -> (chunk -> Bool) -> (chunk -> m x) -> m ()
 repeatUntil getChunk isEnd f = continue
  where
   continue = do

@@ -17,7 +17,9 @@ import Network.Socket (Family (..))
 import Network.Socket qualified as S
 import Network.Socket.ByteString qualified as S
 
--- 4.1 Open up and connect
+{-
+4.1 Open up and connect
+-}
 
 makeFriend :: S.SockAddr -> IO ()
 makeFriend address = do
@@ -28,7 +30,9 @@ makeFriend address = do
       T.pack "Hello, will you be my friend?"
   repeatUntil (S.recv s 1024) BS.null BS.putStr
 
--- 4.2 Extra details
+{-
+4.2 Extra details
+-}
 
 sec :: Int -> Int
 sec t = t * 1000
@@ -51,7 +55,9 @@ makeFriendSafely address = runResourceT @IO do
     repeatUntil (S.recv s 1024) BS.null BS.putStr
     S.gracefulClose s sec1
 
--- 4.4 Address information
+{-
+4.4 Address information
+-}
 
 myHints :: S.AddrInfo
 myHints = S.defaultHints{S.addrFamily = AF_INET6}
@@ -86,9 +92,13 @@ mkFriend = makeFriendSafely (S.SockAddrInet 80 (S.tupleToHostAddress (147, 75, 5
 
 -- >>>mkFriend
 
--- 4.5 Exercises
+{-
+4.5 Exercises
+-}
 
---- Ex 10
+{-
+Ex 10
+-}
 
 openAndConnect :: S.AddrInfo -> ResourceT IO (ReleaseKey, Socket)
 openAndConnect addressInfo = do
@@ -98,7 +108,9 @@ openAndConnect addressInfo = do
     S.connect s (S.addrAddress addressInfo)
   return (r, s)
 
---- Ex 11
+{-
+Ex 11
+-}
 
 findGopherWebsite :: IO S.AddrInfo
 findGopherWebsite = do
@@ -107,7 +119,9 @@ findGopherWebsite = do
     [] -> fail "getAddrInfo returned []"
     x : _ -> return x
 
---- Ex 12
+{-
+Ex 12
+-}
 
 resolve :: S.ServiceName -> S.HostName -> IO S.AddrInfo
 resolve sname hname = do

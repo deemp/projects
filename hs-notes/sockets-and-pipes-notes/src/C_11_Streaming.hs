@@ -13,7 +13,9 @@ import Network.Simple.TCP (HostPreference (..), serve)
 import System.FilePath ((</>))
 import Text.Blaze.Html5 as Html ()
 
--- 11
+{-
+11. Streaming
+-}
 
 hContentsResponse :: Handle -> IO Response
 hContentsResponse h = do

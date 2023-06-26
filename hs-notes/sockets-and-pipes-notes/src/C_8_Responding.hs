@@ -29,7 +29,9 @@ import GHC.Natural (Natural)
 import Network.Simple.TCP (HostPreference (HostAny), Socket, serve)
 import Network.Simple.TCP qualified as Net
 
--- 8.1 A measure of success
+{-
+8.1 A measure of success
+-}
 
 countHelloAscii :: Natural -> LBS.ByteString
 countHelloAscii count =
@@ -47,7 +49,9 @@ countHelloAscii count =
 
 data Status = Status StatusCode ReasonPhrase
 
--- 8.2 Response-building utilities
+{-
+8.2 Response-building utilities
+-}
 
 ok :: Status
 ok =
@@ -92,9 +96,13 @@ asciiOk str = Response (status ok) [typ, len] (Just body)
 bodyLengthValue :: MessageBody -> FieldValue
 bodyLengthValue (MessageBody x) = FieldValue (A.showIntegralDecimal (LBS.length x))
 
--- 8.3 Integers
+{-
+8.3 Integers
+-}
 
--- 8.4 Response transmission
+{-
+8.4 Response transmission
+-}
 
 sendResponse :: Socket -> Response -> IO ()
 sendResponse s r =
@@ -106,13 +114,19 @@ stuckCountingServer = serve @IO HostAny "8000" \(s, _) -> do
   let count = 0
   sendResponse s (asciiOk (countHelloAscii count))
 
--- 8.5 Exercises
+{-
+8.5 Exercises
+-}
 
---- Ex 21
+{-
+Ex 21
+-}
 
--- c`url http://localhost:8000 --dump-header -
+-- curl http://localhost:8000 --dump-header -
 
---- Ex 22
+{-
+Ex 22
+-}
 
 mid :: Word8 -> Word8 -> Word8
 mid x y = fromInteger (div (toInteger x + toInteger y) 2)

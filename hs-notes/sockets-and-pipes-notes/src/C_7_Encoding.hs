@@ -10,6 +10,7 @@ module C_7_Encoding (
   encodeRequest,
 ) where
 
+import ASCII (DigitStringSuperset (fromDigitList), fromCharList)
 import ASCII qualified as A
 import ASCII.Char qualified as AC
 import C_1_Handles (getDataDir)
@@ -41,7 +42,9 @@ import Data.Text.Lazy.Builder qualified as TB
 import Data.Time qualified as Time
 import System.FilePath ((</>))
 
--- 7.1 String builders
+{-
+7.1 String builders
+-}
 
 sayHello :: T.Text -> T.Text
 sayHello name = T.pack "Hello, " <> name <> T.pack "!"
@@ -57,7 +60,9 @@ sayHelloWithBuilder name =
     TB.toLazyText $
       TB.fromString "Hello" <> TB.fromText name <> TB.fromString "!"
 
--- 7.2 Measuring time
+{-
+7.2 Measuring time
+-}
 
 time :: IO () -> IO ()
 time action = do
@@ -82,7 +87,9 @@ concatSpeedTest n = do
 >>>concatSpeedTest 10000
 -}
 
--- 7.3 Request and response
+{-
+7.3 Request and response
+-}
 
 encodeRequest :: Request -> BSB.Builder
 encodeRequest (Request requestLine headerFields bodyMaybe) =
@@ -101,7 +108,9 @@ encodeResponse (Response statusLine headerFields bodyMaybe) =
 encodeLineEnd :: BSB.Builder
 encodeLineEnd = A.lift crlf
 
--- 7.4 Higher-order encodings
+{-
+7.4 Higher-order encodings
+-}
 
 optionallyEncode :: (a -> BSB.Builder) -> Maybe a -> BSB.Builder
 optionallyEncode = foldMap
@@ -109,10 +118,12 @@ optionallyEncode = foldMap
 repeatedlyEncode :: (a -> BSB.Builder) -> [a] -> BSB.Builder
 repeatedlyEncode = foldMap
 
--- 7.5 The start line
+{-
+7.5 The start line
+-}
 
 encodeSpace :: BSB.Builder
-encodeSpace = A.lift [AC.Space]
+encodeSpace = A.lift $ fromCharList [AC.Space]
 
 encodeRequestLine :: RequestLine -> BSB.Builder
 encodeRequestLine (RequestLine method requestTarget httpVersion) =
@@ -139,7 +150,7 @@ encodeStatusLine (StatusLine httpVersion statusCode reasonPhrase) =
     <> encodeLineEnd
 
 encodeStatusCode :: StatusCode -> BSB.Builder
-encodeStatusCode (StatusCode c1 c2 c3) = A.lift [c1, c2, c3]
+encodeStatusCode (StatusCode c1 c2 c3) = A.lift $ fromDigitList [c1, c2, c3]
 
 encodeReasonPhrase :: ReasonPhrase -> BSB.Builder
 encodeReasonPhrase (ReasonPhrase s) = BSB.byteString s
@@ -148,15 +159,17 @@ encodeHttpVersion :: HttpVersion -> BSB.Builder
 encodeHttpVersion (HttpVersion v1 v2) =
   BSB.byteString [A.string|HTTP/|]
     <> A.digitString v1
-    <> A.lift [AC.FullStop]
+    <> A.lift (fromCharList [AC.FullStop])
     <> A.digitString v2
 
--- 7.6 Exercises
+{-
+7.6 Exercises
+-}
 
 encodeHeaderField :: HeaderField -> BSB.Builder
 encodeHeaderField (HeaderField (FieldName x) (FieldValue y)) =
   BSB.byteString x
-    <> A.lift [AC.Colon]
+    <> A.lift (fromCharList [AC.Colon])
     <> encodeSpace
     <> BSB.byteString y
 

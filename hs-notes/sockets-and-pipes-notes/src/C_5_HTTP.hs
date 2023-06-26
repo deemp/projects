@@ -1,7 +1,9 @@
 module C_5_HTTP (crlf, helloRequestString, helloResponseString) where
 
+import ASCII (ASCII, fromCharList)
 import ASCII qualified as A
 import ASCII.Char qualified as A
+import ASCII.Superset (FromString)
 import C_4_Sockets (openAndConnect, resolve)
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Trans.Resource (runResourceT)
@@ -10,13 +12,15 @@ import Network.Simple.TCP (HostPreference (..))
 import Network.Simple.TCP qualified as Net
 import Relude (putBSLn)
 
--- 5.3 ASCII strings
+{-
+5.3 ASCII strings
+-}
 
 line :: BS.ByteString -> BS.ByteString
 line x = x <> A.lift crlf
 
-crlf :: [A.Char]
-crlf = [A.CarriageReturn, A.LineFeed]
+crlf :: (FromString superset) => ASCII superset
+crlf = fromCharList [A.CarriageReturn, A.LineFeed]
 
 text :: [BS.ByteString] -> BS.ByteString
 text = foldMap line
@@ -30,7 +34,9 @@ helloRequestString =
     , [A.string||]
     ]
 
--- 5.4 HTTP responses
+{-
+5.4 HTTP responses
+-}
 
 helloResponseString :: BS.ByteString
 helloResponseString =
@@ -42,9 +48,11 @@ helloResponseString =
     ]
     <> [A.string|Hello|]
 
--- 5.5 Serving others
+{-
+5.5 Serving others
+-}
 
-p :: MonadIO m => HostPreference -> Net.ServiceName -> ((Net.Socket, Net.SockAddr) -> IO ()) -> m a
+p :: (MonadIO m) => HostPreference -> Net.ServiceName -> ((Net.Socket, Net.SockAddr) -> IO ()) -> m a
 p = Net.serve
 
 ourFirstServer :: IO a
@@ -52,16 +60,22 @@ ourFirstServer = Net.serve @IO HostAny "8000" \(s, a) -> do
   putStrLn ("New connection from " <> show a)
   Net.send s helloResponseString
 
--- 5.6 Exercises
+{-
+5.6 Exercises
+-}
 
---- Ex 13
+{-
+Ex 13
+-}
 
-repeatUntilNothing :: Monad m => m (Maybe chunk) -> (chunk -> m x) -> m ()
+repeatUntilNothing :: (Monad m) => m (Maybe chunk) -> (chunk -> m x) -> m ()
 repeatUntilNothing getChunkMaybe f = continue
  where
   continue = do getChunkMaybe >>= maybe (return ()) (\x -> f x >> continue)
 
---- Ex 14
+{-
+Ex 14
+-}
 
 requestText :: BS.ByteString
 requestText =

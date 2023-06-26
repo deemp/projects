@@ -37,7 +37,9 @@ import Text.Blaze.Html.Renderer.Utf8 qualified as BR
 import Text.Blaze.Html5 as Html ()
 import Text.Blaze.Html5 qualified as HTML
 
--- 9.1 Some common types
+{-
+9.1 Some common types
+-}
 
 plainUtf8 :: FieldValue
 plainUtf8 = FieldValue [A.string|text/plain; charset=utf-8|]
@@ -48,7 +50,9 @@ htmlUtf8 = FieldValue [A.string|text/html; charset=utf-8|]
 json :: FieldValue
 json = FieldValue [A.string|application/json|]
 
--- 9.2 UTF-8
+{-
+9.2 UTF-8
+-}
 
 countHelloText :: Natural -> LT.Text
 countHelloText count =
@@ -75,7 +79,9 @@ stuckCountingServerText = serve @IO HostAny "8000" \(s, _) -> do
   let count = 0
   sendResponse s (textOk (countHelloText count))
 
--- 9.3 HTML
+{-
+9.3 HTML
+-}
 
 countHelloHtml :: Natural -> Html
 countHelloHtml count = HTML.docType <> htmlDocument
@@ -100,7 +106,9 @@ countHelloHtml count = HTML.docType <> htmlDocument
 renderHtml' :: Html -> LBS.ByteString
 renderHtml' = BR.renderHtml
 
--- 9.4 JSON
+{-
+9.4 JSON
+-}
 
 countHelloJSON1 :: Natural -> J.Value
 countHelloJSON1 count = toJSON (J.KeyMap.fromList [greetingJson, hitsJson])
@@ -136,7 +144,9 @@ jsonOk str = Response (status ok) [typ, len] (Just body)
   len = contentLengthField body
   body = MessageBody (J.encode str)
 
--- 9.5 Exercises
+{-
+9.5 Exercises
+-}
 
 htmlOk :: Html -> Response
 htmlOk str = Response (status ok) [typ, len] (Just body)
@@ -150,7 +160,9 @@ stuckCountingServerHtml = serve @IO HostAny "8000" \(s, _) -> do
   let count = 0
   sendResponse s (htmlOk (countHelloHtml count))
 
---- Ex 25
+{-
+Ex 25
+-}
 
 class Encode a where
   encode :: a -> BSB.Builder

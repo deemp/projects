@@ -1,14 +1,13 @@
-name:                sockets-and-pipes
+name:                sockets-and-pipes-notes
 version:             0.1.0.0
-github:              "value/sockets-and-pipes"
+github:              "value/sockets-and-pipes-notes"
 license:             BSD3
 author:              "value"
 maintainer:          "value"
 copyright:           "value"
 
-extra-source-files:
-- README.md
-- CHANGELOG.md
+# extra-source-files:
+# - README.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -17,7 +16,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/value/sockets-and-pipes#readme>
+description:         Please see the README on GitHub at <https://github.com/value/sockets-and-pipes-notes#readme>
 
 default-extensions:
 - ImportQualifiedPost
@@ -29,6 +28,7 @@ default-extensions:
 dependencies:
 - base >= 4.7 && < 5
 - sockets-and-pipes
+- ascii-superset
 
 ghc-options:
 - -Wall

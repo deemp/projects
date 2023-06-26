@@ -89,6 +89,6 @@
 
 - Sockets connect machines; files connect processes; `TVar`s connect threads.
 
-## C_10_5 
+## C_10_5
 
 - `stm-containers` - `TVar` - based hash map
