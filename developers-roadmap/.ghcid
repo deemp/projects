@@ -1,4 +1,0 @@
--c cabal repl app/TryAsync.hs
--W
--r=stuckCountingServerHtml
---reload=app

@@ -1,0 +1,91 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.2.
+--
+-- see: https://github.com/sol/hpack
+
+name:           developers-roadmap
+version:        0.0.1
+license:        BSD3
+build-type:     Simple
+
+library
+  other-modules:
+      Paths_developers_roadmap
+  hs-source-dirs:
+      src
+  ghc-options: -Weverything -Wno-implicit-prelude -Wno-missing-safe-haskell-mode -Wno-unsafe -Wno-missing-imports
+  build-depends:
+      aeson
+    , async
+    , base >=4.7 && <5
+    , binary <=0.8.9.1
+    , breakpoint
+    , bytestring
+    , containers
+    , deepseq
+    , effectful
+    , exceptions
+    , first-class-families
+    , fused-effects
+    , fused-effects-exceptions
+    , generic-lens
+    , http-client
+    , http-client-tls
+    , http-types
+    , lens
+    , lifted-base
+    , managed
+    , matrix
+    , monad-control
+    , monad-logger
+    , mtl
+    , random
+    , string-interpolate
+    , template-haskell
+    , time
+    , transformers
+    , transformers-base
+    , unliftio
+    , unordered-containers
+  default-language: Haskell2010
+
+executable README
+  main-is: README.hs
+  other-modules:
+      Paths_developers_roadmap
+  ghc-options: -Weverything -Wno-implicit-prelude -Wno-missing-safe-haskell-mode -Wno-unsafe -Wno-missing-imports
+  build-depends:
+      aeson
+    , async
+    , base >=4.7 && <5
+    , binary <=0.8.9.1
+    , breakpoint
+    , bytestring
+    , containers
+    , deepseq
+    , effectful
+    , exceptions
+    , first-class-families
+    , fused-effects
+    , fused-effects-exceptions
+    , generic-lens
+    , http-client
+    , http-client-tls
+    , http-types
+    , lens
+    , lifted-base
+    , managed
+    , matrix
+    , monad-control
+    , monad-logger
+    , mtl
+    , random
+    , string-interpolate
+    , template-haskell
+    , time
+    , transformers
+    , transformers-base
+    , unliftio
+    , unordered-containers
+  default-language: Haskell2010
