@@ -5,7 +5,7 @@
       inputs_ =
         let flakes = inputs.flakes.flakes; in
         {
-          inherit (flakes.source-flake) nixpkgs flake-utils;
+          inherit (flakes.source-flake) nixpkgs flake-utils formatter;
           inherit (flakes) drv-tools workflows flakes-tools devshell codium;
           inherit flakes;
         };
@@ -62,7 +62,7 @@
                 "scala"
                 "vlang/vforces"
                 "."
-              ]) updateLocks pushToCachix;
+              ]) updateLocks pushToCachix format;
 
               # --- GH Actions
 
@@ -95,6 +95,7 @@
           in
           {
             inherit packages devShells;
+            formatter = inputs.formatter.${system};
           });
     in
     outputs;
