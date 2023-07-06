@@ -82,14 +82,10 @@
             devShells.default = mkShell {
               packages = tools;
               commands =
-                mkCommands "tools" tools ++
-                mkRunCommands "ide" {
-                  "codium ." = packages.codium;
-                  inherit (packages) writeSettings;
-                } ++
-                mkRunCommands "docs" {
-                  inherit (packages) genDocs;
-                }
+                mkCommands "tools" tools
+                ++ mkRunCommands "ide" { "codium ." = packages.codium; inherit (packages) writeSettings; }
+                ++ mkRunCommands "docs" { inherit (packages) genDocs; }
+                ++ mkRunCommands "infra" { inherit (packages) writeWorkflows; }
               ;
             };
           in
