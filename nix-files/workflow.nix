@@ -11,7 +11,7 @@ let
   workflow =
     nixCI { } // {
       jobs = {
-        "${job1}" = (nixCI { doCacheNix = false; }).jobs.nixCI;
+        "${job1}" = (nixCI { }).jobs.nixCI;
         "${job2}" =
           {
             name = "Publish static files";
