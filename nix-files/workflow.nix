@@ -32,7 +32,7 @@ let
                 uses = "peaceiris/actions-gh-pages@v3.9.3";
                 "with" = {
                   github_token = expr names.secrets.GITHUB_TOKEN;
-                  publish_dir = "./docs";
+                  publish_dir = "./docs/dist";
                   force_orphan = true;
                 };
               }

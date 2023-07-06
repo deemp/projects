@@ -90,7 +90,7 @@ jobs:
         with:
           force_orphan: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          publish_dir: ./docs/dist
 name: Nix CI
 "on":
   pull_request: {}

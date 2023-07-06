@@ -33,6 +33,7 @@
                   text = ''
                     (cd haskell && ${getExe (import ./haskell).packages.${system}.genDocs})
                     ${getExe pkgs.mdbook} build docs
+                    mv docs/book docs/dist
                   '';
                   description = "Generate docs";
                 };
