@@ -13,7 +13,7 @@
         let
           pkgs = inputs.nixpkgs.legacyPackages.${system};
           inherit (inputs.devshell.lib.${system}) mkShell mkCommands;
-          inherit (inputs.haskell.toolsGHCPackage.${system} "simplex-cheat" ./. {}) hls ghcid cabal fourmolu hpack;
+          inherit (inputs.haskell.toolsGHCPackage.${system} "simplex-cheat" ./. { }) hls ghcid cabal fourmolu hpack;
           tools = [ hls ghcid cabal fourmolu hpack ];
           devShells.default = mkShell {
             packages = tools;

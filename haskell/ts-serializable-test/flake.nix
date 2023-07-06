@@ -19,7 +19,7 @@
           pkgs = inputs.nixpkgs.legacyPackages.${system};
           inherit (inputs.devshell.lib.${system}) mkShell mkCommands mkRunCommands mkShellCommands;
           inherit (inputs.codium.lib.${system}) mkCodium writeSettingsJSON settingsCommonNix settingsNix extensionsCommon extensions;
-          inherit (inputs.haskell.toolsGHCPackage.${system} "ts-serializable-test" ./. {}) hls ghcid cabal fourmolu hpack;
+          inherit (inputs.haskell.toolsGHCPackage.${system} "ts-serializable-test" ./. { }) hls ghcid cabal fourmolu hpack;
 
           haskell-tools = [ hls ghcid cabal fourmolu hpack ];
           node-tools = [ pkgs.nodejs_18 ];

@@ -15,14 +15,16 @@ let
               (name: value:
                 mapAttrsToList
                   (name_: value_:
-                    let val = {
-                      file = "${config.dataDir}/${config.contacts.dir}/${value_.file}.yaml";
-                      starts =
-                        # in config {a.b = {}}, the root is "a"
-                        if value_.startsRoot
-                        then name
-                        else name_;
-                    }; in
+                    let
+                      val = {
+                        file = "${config.dataDir}/${config.contacts.dir}/${value_.file}.yaml";
+                        starts =
+                          # in config {a.b = {}}, the root is "a"
+                          if value_.startsRoot
+                          then name
+                          else name_;
+                      };
+                    in
                     {
                       "${name}"."${name_}" = val;
                       "${name_}"."${name}" = val;
