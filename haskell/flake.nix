@@ -26,7 +26,7 @@
         let
           pkgs = inputs.nixpkgs.legacyPackages.${system};
           inherit (inputs.codium.lib.${system}) writeSettingsJSON mkCodium;
-          inherit (inputs.drv-tools.lib.${system}) mkBin withAttrs withMan withDescription mkShellApps mapGenAttrs;
+          inherit (inputs.drv-tools.lib.${system}) getExe withAttrs withMan withDescription mkShellApps mapGenAttrs;
           inherit (inputs.codium.lib.${system}) extensions extensionsCommon settingsNix settingsCommonNix;
           inherit (inputs.devshell.lib.${system}) mkCommands mkRunCommands mkShell;
           inherit (inputs.haskell-tools.lib.${system}) toolsGHC;
@@ -79,13 +79,10 @@
 
           packages = {
             codium = mkCodium { extensions = extensionsCommon // { inherit (extensions) haskell; }; };
-
-            writeSettings = writeSettingsJSON (settingsCommonNix // {
-              inherit (settingsNix) haskell;
-            });
+            writeSettings = writeSettingsJSON (settingsCommonNix // { inherit (settingsNix) haskell; });
           } // (mkShellApps {
             genDocs = {
-              text = "LANG=C.utf8 ${mkBin cabal} run make-docs";
+              text = "LANG=C.utf8 ${getExe (toolsGHCPackage "make-docs" ./make-docs { }).haskellPackages.make-docs}";
               description = "Convert .hs to .md for mdbook";
             };
           });
@@ -97,13 +94,8 @@
             bash.extra = "export LANG=C.utf8";
             commands =
               mkCommands "tools" tools
-              ++ mkRunCommands "ide" {
-                "codium ." = packages.codium;
-                inherit (packages) writeSettings;
-              }
-              ++ mkRunCommands "docs" {
-                inherit (packages) genDocs;
-              };
+              ++ mkRunCommands "ide" { "codium ." = packages.codium; inherit (packages) writeSettings; }
+              ++ mkRunCommands "docs" { inherit (packages) genDocs; };
           };
         in
         {

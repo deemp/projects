@@ -1,1 +1,1 @@
-packages: */*.cabal
+packages: developers-roadmap optics-by-example sockets-and-pipes-notes thinking-with-types
