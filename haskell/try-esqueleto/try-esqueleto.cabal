@@ -1,0 +1,191 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.2.
+--
+-- see: https://github.com/sol/hpack
+
+name:           try-esqueleto
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/value/try-esqueleto#readme>
+homepage:       https://github.com/value/try-esqueleto#readme
+bug-reports:    https://github.com/value/try-esqueleto/issues
+author:         value
+maintainer:     value
+copyright:      value
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/value/try-esqueleto
+
+library
+  exposed-modules:
+      Lib
+      Recursive
+  other-modules:
+      Paths_try_esqueleto
+  hs-source-dirs:
+      src
+  default-extensions:
+      DerivingStrategies
+      GeneralizedNewtypeDeriving
+      StandaloneDeriving
+      TemplateHaskell
+      QuasiQuotes
+      AllowAmbiguousTypes
+      BlockArguments
+      DataKinds
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      ImportQualifiedPost
+      InstanceSigs
+      MultiParamTypeClasses
+      OverloadedRecordDot
+      OverloadedStrings
+      QuasiQuotes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TemplateHaskell
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      UndecidableInstances
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , esqueleto
+    , monad-logger
+    , mtl
+    , persistent
+    , persistent-postgresql
+    , persistent-template
+    , pretty-simple
+    , resourcet
+    , string-interpolate
+    , text
+    , transformers
+    , with-utf8
+    , yaml
+  default-language: Haskell2010
+
+executable try-esqueleto
+  main-is: Main.hs
+  other-modules:
+      Paths_try_esqueleto
+  hs-source-dirs:
+      app
+  default-extensions:
+      DerivingStrategies
+      GeneralizedNewtypeDeriving
+      StandaloneDeriving
+      TemplateHaskell
+      QuasiQuotes
+      AllowAmbiguousTypes
+      BlockArguments
+      DataKinds
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      ImportQualifiedPost
+      InstanceSigs
+      MultiParamTypeClasses
+      OverloadedRecordDot
+      OverloadedStrings
+      QuasiQuotes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TemplateHaskell
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      UndecidableInstances
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , esqueleto
+    , monad-logger
+    , mtl
+    , persistent
+    , persistent-postgresql
+    , persistent-template
+    , pretty-simple
+    , resourcet
+    , string-interpolate
+    , text
+    , transformers
+    , try-esqueleto
+    , with-utf8
+    , yaml
+  default-language: Haskell2010
+
+test-suite try-esqueleto-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_try_esqueleto
+  hs-source-dirs:
+      test
+  default-extensions:
+      DerivingStrategies
+      GeneralizedNewtypeDeriving
+      StandaloneDeriving
+      TemplateHaskell
+      QuasiQuotes
+      AllowAmbiguousTypes
+      BlockArguments
+      DataKinds
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      ImportQualifiedPost
+      InstanceSigs
+      MultiParamTypeClasses
+      OverloadedRecordDot
+      OverloadedStrings
+      QuasiQuotes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TemplateHaskell
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      UndecidableInstances
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , esqueleto
+    , monad-logger
+    , mtl
+    , persistent
+    , persistent-postgresql
+    , persistent-template
+    , pretty-simple
+    , resourcet
+    , string-interpolate
+    , text
+    , transformers
+    , try-esqueleto
+    , with-utf8
+    , yaml
+  default-language: Haskell2010

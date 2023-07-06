@@ -1,14 +1,22 @@
 # Scala
 
-A repo with solutions and notes for Stepik Scala courses
+A repo with solutions and notes for Stepik Scala courses.
 
-- [basic-course](./basic-course/README.md) - [Basics of Scala](https://stepik.org/course/89974/syllabus)
+- [basic-course](./basic-course/README.md)
+- [Basics of Scala on stepik](https://stepik.org/course/89974/syllabus)
 
 ## Run
 
-Start VSCodium with `sbt` and several useful extensions
+- [Install Nix](https://github.com/deemp/flakes/blob/main/README/InstallNix.md)
 
-```sh
-nix develop
-codium basic-course
-```
+- Start a devshell with `sbt`
+
+    ```console
+    nix develop
+    ```
+
+- (Optionally) Start `VSCodium` with several useful extensions
+
+    ```console
+    nix run .#codium .
+    ```

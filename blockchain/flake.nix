@@ -1,81 +1,75 @@
 {
-  inputs = {
-    nixpkgs_.url = "github:deemp/flakes?dir=source-flake/nixpkgs";
-    flake-utils_.url = "github:deemp/flakes?dir=source-flake/flake-utils";
-    drv-tools.url = "github:deemp/flakes?dir=drv-tools";
-    nixpkgs.follows = "nixpkgs_/nixpkgs";
-    flake-utils.follows = "flake-utils_/flake-utils";
-    formatter.url = "github:deemp/flakes?dir=source-flake/formatter";
-    my-codium.url = "github:deemp/flakes?dir=codium";
-    vscode-extensions_.url = "github:deemp/flakes?dir=source-flake/nix-vscode-extensions";
-    vscode-extensions.follows = "vscode-extensions_/vscode-extensions";
-    python-tools.url = "github:deemp/flakes?dir=language-tools/python";
-    my-devshell.url = "github:deemp/flakes?dir=devshell";
-  };
-  outputs =
-    { self
-    , nixpkgs
-    , flake-utils
-    , drv-tools
-    , my-codium
-    , formatter
-    , python-tools
-    , vscode-extensions
-    , my-devshell
-    , ...
-    }: flake-utils.lib.eachDefaultSystem
-      (system:
-      let
-        inherit (my-codium.configs.${system}) extensions;
-        inherit (my-codium.functions.${system}) mkCodium writeSettingsJSON;
-        inherit (my-codium.configs.${system}) settingsNix;
-        inherit (drv-tools.functions.${system}) mkShellApp;
-        inherit (python-tools.snippets.${system}) activateVenv;
-        inherit (vscode-extensions.packages.${system}) vscode open-vsx;
-        createVenvs = python-tools.functions.${system}.createVenvs [ "." ];
-        pkgs = nixpkgs.legacyPackages.${system};
+  inputs = { };
+  outputs = inputs:
+    let
+      inputs_ =
+        let flakes = inputs.flakes.flakes; in
+        {
+          inherit (flakes.source-flake) nixpkgs flake-utils formatter nix-vscode-extensions;
+          inherit (flakes) drv-tools devshell codium;
+          python-tools = flakes.language-tools.python;
+        };
 
-        codiumTools = [
-          pkgs.docker
-          pkgs.poetry
-          pkgs.rustup
-          pkgs.nodePackages.near-cli
-          createVenvs
-          writeSettings
-        ];
-        codium = mkCodium {
-          extensions = {
-            inherit (extensions)
-              python markdown github nix misc typescript yaml;
-            other = {
-              inherit (vscode.mtxr) sqltools;
-              inherit (vscode.nomicfoundation) hardhat-solidity;
+      outputs = outputs_ { } // { inputs = inputs_; outputs = outputs_; };
+
+      outputs_ =
+        inputs__:
+        let inputs = inputs_ // inputs__; in
+        inputs.flake-utils.lib.eachDefaultSystem
+          (system:
+          let
+            pkgs = inputs.nixpkgs.legacyPackages.${system};
+            inherit (inputs.codium.lib.${system})
+              settingsNix mkCodium writeSettingsJSON
+              extensionsCommon extensions;
+            inherit (inputs.drv-tools.lib.${system}) mkShellApp;
+            inherit (inputs.python-tools.lib.${system}) activateVenv;
+            inherit (inputs.devshell.lib.${system}) mkShell mkCommands mkRunCommands;
+            inherit (inputs.nix-vscode-extensions.extensions.${system}) vscode-marketplace;
+
+            packages = {
+              codium = mkCodium {
+                extensions = extensionsCommon // {
+                  inherit (extensions) python sql;
+                  other = {
+                    inherit (vscode-marketplace.nomicfoundation) hardhat-solidity;
+                  };
+                };
+              };
+              writeSettings = writeSettingsJSON settingsNix;
+              createVenvs = inputs.python-tools.lib.${system}.createVenvs [ "." ];
             };
-          };
-          runtimeDependencies = codiumTools;
-        };
-        writeSettings = writeSettingsJSON settingsNix;
-        devshell = my-devshell.devshell.${system};
-        inherit (my-devshell.functions.${system}) mkCommands;
-        tools = codiumTools ++ [ codium ];
-      in
-      {
-        devShells.default = devshell.mkShell {
-          bash.extra = activateVenv;
-          packages = tools;
-          commands = mkCommands "ide" tools;
-        };
-      });
+
+            tools = [
+              pkgs.docker
+              pkgs.poetry
+              pkgs.rustup
+              pkgs.nodePackages.near-cli
+            ];
+            devShells.default = mkShell {
+              bash.extra = ''
+                ${pkgs.lib.getExe packages.createVenvs}
+                ${activateVenv}
+              '';
+              packages = tools;
+              commands =
+                mkCommands "tools" tools
+                ++ mkRunCommands "ide" { "codium ." = packages.codium; inherit (packages) createVenvs; };
+            };
+          in
+          {
+            inherit packages devShells;
+          });
+    in
+    outputs;
 
   nixConfig = {
     extra-trusted-substituters = [
-      "https://haskell-language-server.cachix.org"
       "https://nix-community.cachix.org"
       "https://hydra.iohk.io"
       "https://deemp.cachix.org"
     ];
     extra-trusted-public-keys = [
-      "haskell-language-server.cachix.org-1:juFfHrwkOxqIOZShtC4YC1uT1bBcq2RSvC7OMKx0Nz8="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
       "deemp.cachix.org-1:9shDxyR2ANqEPQEEYDL/xIOnoPwxHot21L5fiZnFL18="

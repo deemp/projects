@@ -4,9 +4,9 @@ Some of my projects with `Nix` flakes
 
 ## Prerequisites
 
-- [Nix prerequisites](./README/NixPrerequisites.md)
-- [Conventions](./README/Conventions.md)
-- [Troubleshooting](./README/Troubleshooting.md)
+- [Nix prerequisites](https://github.com/deemp/flakes/blob/main/README/NixPrerequisites.md)
+- [Conventions](https://github.com/deemp/flakes/blob/main/README/Conventions.md)
+- [Troubleshooting](https://github.com/deemp/flakes/blob/main/README/Troubleshooting.md)
 
 ## Projects
 
@@ -36,3 +36,7 @@ Some of my projects with `Nix` flakes
 ### V language
 
 - [vforces](./vforces/) - Solutions to `Codeforces` problems in [V](https://vlang.io/).
+
+## References
+
+- [Find non-UTF8 characters](https://stackoverflow.com/a/68205939)

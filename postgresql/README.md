@@ -11,18 +11,28 @@ See these for additional info:
 - [Prerequisites](https://github.com/deemp/flakes#prerequisites).
 - [Troubleshooting](https://github.com/deemp/flakes/blob/main/README/Troubleshooting.md)
 
-## Example
+## Development
 
 1. Install Nix - see [how](https://github.com/deemp/flakes/blob/main/README/InstallNix.md).
 
-1. In a new terminal, start a devshell:
+1. Install [pulumi](https://www.pulumi.com/) and its `NodeJS` plugin.
+
+1. In a new terminal, start a devshell.
 
     ```console
-    nix flake new my-project -t github:deemp/flakes#codium-generic
-    cd my-project
-    git init && git add
     nix develop
-    hello
+    ```
+
+1. Install dependencies.
+
+    ```console
+    npm i
+    ```
+
+1. Start `pulumi`.
+
+    ```console
+    cd pulumi && pulumi up
     ```
 
 1. (Optionally) Write `settings.json` and start `VSCodium`:

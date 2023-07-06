@@ -1,3 +1,6 @@
 .vscode
 .kube
 .github
+/bin/
+/node_modules/
+yaml

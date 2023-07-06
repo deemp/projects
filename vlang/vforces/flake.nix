@@ -4,11 +4,10 @@
   outputs = inputs:
     let
       inputs_ =
-        let flakes = (import ../.).outputs.inputs.flakes; in
+        let flakes = (import ../..).outputs.inputs.flakes; in
         {
           inherit (flakes.source-flake) nixpkgs flake-utils;
-          inherit (flakes) devshell codium;
-          python-tools = flakes.language-tools.python;
+          inherit (flakes) drv-tools devshell codium;
         };
 
       outputs = outputs_ { } // { inputs = inputs_; outputs = outputs_; };
@@ -19,27 +18,23 @@
         inputs.flake-utils.lib.eachDefaultSystem (system:
         let
           pkgs = inputs.nixpkgs.legacyPackages.${system};
-          inherit (inputs.codium.lib.${system}) writeSettingsJSON mkCodium extensions extensionsCommon settingsCommonNix;
-          inherit (inputs.devshell.lib.${system}) mkShell mkCommands mkRunCommands;
+          inherit (inputs.codium.lib.${system}) mkCodium writeSettingsJSON extensions extensionsCommon settingsNix;
+          inherit (inputs.devshell.lib.${system}) mkCommands mkRunCommands mkShell;
 
           packages = {
-            codium = mkCodium {
-              extensions = extensionsCommon // { inherit (extensions) scala; };
-            };
-
-            writeSettings = writeSettingsJSON settingsCommonNix;
+            codium = mkCodium { extensions = extensionsCommon // { inherit (extensions) vlang; }; };
+            writeSettings = writeSettingsJSON extensionsCommon;
           };
 
-          tools = [
-            pkgs.sbt
-          ];
+          tools = [ pkgs.vlang ];
 
           devShells.default = mkShell {
             packages = tools;
-            bash.extra = '''';
+            bash.extra = "";
             commands =
-              mkCommands "tools" tools
-              ++ mkRunCommands "ide" { "codium ." = packages.codium; inherit (packages) writeSettings; };
+              mkCommands "tools" tools ++
+              mkRunCommands "ide" { "codium ." = packages.codium; inherit (packages) writeSettings; }
+            ;
           };
         in
         {
@@ -49,9 +44,9 @@
     outputs;
 
   nixConfig = {
-    extra-substituters = [
+    extra-trusted-substituters = [
       "https://nix-community.cachix.org"
-      "https://hydra.iohk.io"
+      "https://cache.iog.io"
       "https://deemp.cachix.org"
     ];
     extra-trusted-public-keys = [

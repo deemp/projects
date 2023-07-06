@@ -2,16 +2,16 @@
 let
   inherit (workflows.lib.${system})
     writeWorkflow expr mkAccessors genAttrsId
-    steps run os nixCI installNix cacheNix;
+    steps run os nixCI;
   job1 = "_1_update_flake_locks";
   job2 = "_2_front";
   names = mkAccessors {
     secrets = genAttrsId [ "GITHUB_TOKEN" ];
   };
   workflow =
-    nixCI // {
+    nixCI { } // {
       jobs = {
-        "${job1}" = nixCI.jobs.nixCI;
+        "${job1}" = (nixCI { }).jobs.nixCI;
         "${job2}" =
           {
             name = "Publish static files";
@@ -21,8 +21,8 @@ let
             runs-on = os.ubuntu-20;
             steps = [
               steps.checkout
-              (installNix { })
-              (cacheNix { keySuffix = "static"; })
+              (steps.installNix { })
+              (steps.cacheNix { keyJob = "static"; })
               {
                 name = "Build docs";
                 run = run.nixScript { name = scripts.genDocs.pname; };
@@ -36,7 +36,6 @@ let
                   force_orphan = true;
                 };
               }
-              steps.nixStoreCollectGarbage
             ];
           };
       };
