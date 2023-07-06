@@ -10,9 +10,9 @@
           python-tools = flakes.language-tools.python;
         };
 
-      outputs = flake { } // { inherit flake; inputs = inputs_; };
+      outputs = outputs_ { } // { inputs = inputs_; outputs = outputs_; };
 
-      flake =
+      outputs_ =
         inputs__:
         let inputs = inputs_ // inputs__; in
         inputs.flake-utils.lib.eachDefaultSystem
