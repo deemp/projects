@@ -23,7 +23,7 @@
           inherit (inputs.haskell.toolsGHCPackage.${system} "try-esqueleto" ./. { }) hls ghcid cabal fourmolu hpack;
 
           haskell-tools = [ hls ghcid cabal fourmolu hpack ];
-          infra-tools = [ pkgs.kubectl pkgs.postgresql_15 pkgs.helm ];
+          infra-tools = [ pkgs.kubectl pkgs.postgresql_15 pkgs.kubernetes-helm ];
 
           packages = {
             # --- IDE ---
