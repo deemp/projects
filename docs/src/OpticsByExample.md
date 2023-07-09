@@ -84,6 +84,8 @@ import GHC.Word qualified
 import Numeric.Lens (adding, multiplying, negated)
 import Text.Read (readMaybe)
 import Data.Kind (Type)
+import qualified Data.Text as Text
+import qualified Data.Map as Map
 
 main :: IO ()
 main = print "hello"
@@ -3926,6 +3928,16 @@ index :: (Indexable i p, Eq i, Applicative f) => i -> Optical' p (Indexed i) f a
         
         -- >>> ex74
         -- [0,10,15]
+        
+        
+        x :: Map.Map Text.Text Int
+        x = fromList [("WORLD", 456)]
+        
+        x1 :: Map.Map Text.Text Int
+        x1 = x & at "HELLO" . non 678 .~ 3
+        
+        -- >>> x1
+        -- fromList [("HELLO",3),("WORLD",456)]
         ```
 
 1. Board
