@@ -32,8 +32,8 @@
                 {
                   text = ''
                     (cd haskell && ${getExe (import ./haskell).packages.${system}.genDocs})
+                    cp notes/README.md docs/src/MiscNotes.md
                     ${getExe pkgs.mdbook} build docs
-                    mv docs/book docs/dist
                   '';
                   description = "Generate docs";
                 };
