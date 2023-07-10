@@ -1,6 +1,7 @@
 {
   inputs.flakes.url = "github:deemp/flakes";
-  outputs = inputs:
+  outputs =
+    inputs@{ self, ... }:
     let
       inputs_ =
         let flakes = inputs.flakes.flakes; in
@@ -51,19 +52,25 @@
               # --- Flakes ---
 
               # Scripts that can be used in CI
-              inherit (mkFlakesTools [
-                "blockchain"
-                "F22/total-virtualization"
-                (subDirectories ./. "F22/total-virtualization")
-                "haskell"
-                (subDirectories ./. "haskell")
-                "postgresql"
-                "prolog/maze"
-                "rescript"
-                "scala"
-                "vlang/vforces"
-                "."
-              ]) updateLocks pushToCachix format;
+              inherit (mkFlakesTools
+                {
+                  root = self.outPath;
+                  dirs = [
+                    "blockchain"
+                    "F22/total-virtualization"
+                    "haskell"
+                    "postgresql"
+                    "prolog/maze"
+                    "rescript"
+                    "scala"
+                    "vlang/vforces"
+                    "."
+                  ];
+                  subDirs = [
+                    "F22/total-virtualization"
+                    "haskell"
+                  ];
+                }) updateLocks pushToCachix format;
 
               # --- GH Actions
 
