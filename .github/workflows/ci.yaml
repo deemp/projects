@@ -6,15 +6,26 @@ jobs:
       - name: Checkout this repo
         uses: actions/checkout@v3
       - name: Install Nix
-        uses: cachix/install-nix-action@v22
+        uses: nixbuild/nix-quick-install-action@v25
         with:
-          extra_nix_config: |
+          nix_conf: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
             substituters = https://cache.nixos.org/ https://nix-community.cachix.org https://cache.iog.io https://deemp.cachix.org
             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= deemp.cachix.org-1:9shDxyR2ANqEPQEEYDL/xIOnoPwxHot21L5fiZnFL18=
             keep-outputs = true
-            keep-derivations = true
-          install_url: https://releases.nixos.org/nix/nix-2.16.1/install
+      - name: Restore and cache Nix store
+        uses: deemp/cache-nix-too@v1
+        with:
+          key: nix-${{ matrix.os }}-cachix-${{ hashfiles('**/flake.nix', '**/flake.lock') }}
+          linux-gc-enabled: true
+          linux-max-store-size: 10000000000
+          macos-gc-enabled: true
+          macos-max-store-size: 10000000000
+          restore-keys: |
+            nix-${{ matrix.os }}-cachix-${{ hashfiles('**/flake.nix', '**/flake.lock') }}
+            nix-${{ matrix.os }}-cachix-
+      - name: Remove old cache profiles
+        run: rm -rf /nix/var/nix/profiles/cache
       - if: matrix.os == 'ubuntu-22.04'
         name: Config git for github-actions
         run: |
@@ -24,6 +35,7 @@ jobs:
         name: Format Nix files
         run: |+
           nix run .#format
+          nix profile install .#format
 
       - if: matrix.os == 'ubuntu-22.04'
         name: Update flake locks
@@ -31,6 +43,7 @@ jobs:
           git pull --rebase --autostash
 
           nix run .#updateLocks
+          nix profile install .#updateLocks
 
           git commit -a -m "action: Update flake locks" \
                                  && git push || echo "push failed!"
@@ -41,6 +54,7 @@ jobs:
         name: Push flakes to Cachix
         run: |+
           nix run .#pushToCachix
+          nix profile install .#pushToCachix
 
     strategy:
       matrix:
@@ -58,26 +72,24 @@ jobs:
       - name: Checkout this repo
         uses: actions/checkout@v3
       - name: Install Nix
-        uses: cachix/install-nix-action@v22
+        uses: nixbuild/nix-quick-install-action@v25
         with:
-          extra_nix_config: |
+          nix_conf: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
             substituters = https://cache.nixos.org/ https://nix-community.cachix.org https://cache.iog.io https://deemp.cachix.org
             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= deemp.cachix.org-1:9shDxyR2ANqEPQEEYDL/xIOnoPwxHot21L5fiZnFL18=
             keep-outputs = true
-            keep-derivations = true
-          install_url: https://releases.nixos.org/nix/nix-2.16.1/install
       - name: Build docs
         run: |+
           nix run .#genDocs
-          mv docs/book docs/dist
+          nix profile install .#genDocs
 
       - name: GitHub Pages action
         uses: peaceiris/actions-gh-pages@v3.9.3
         with:
           force_orphan: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/dist
+          publish_dir: ./docs/dist
 name: Nix CI
 "on":
   pull_request: {}

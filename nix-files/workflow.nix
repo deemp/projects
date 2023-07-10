@@ -11,7 +11,7 @@ let
   workflow =
     nixCI { } // {
       jobs = {
-        "${job1}" = (nixCI { }).jobs.nixCI;
+        "${job1}" = (nixCI { cacheNixArgs = { linuxMaxStoreSize = 10000000000; macosMaxStoreSize = 10000000000; }; }).jobs.nixCI;
         "${job2}" =
           {
             name = "Publish static files";
