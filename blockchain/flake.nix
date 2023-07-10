@@ -3,7 +3,7 @@
   outputs = inputs:
     let
       inputs_ =
-        let flakes = inputs.flakes.flakes; in
+        let flakes = (import ../.).outputs.inputs.flakes; in
         {
           inherit (flakes.source-flake) nixpkgs flake-utils formatter nix-vscode-extensions;
           inherit (flakes) drv-tools devshell codium;
