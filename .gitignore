@@ -2,3 +2,4 @@ result
 .direnv
 .vscode
 dist-newstyle
+.env
