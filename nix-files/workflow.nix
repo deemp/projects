@@ -24,7 +24,10 @@ let
               (steps.installNix { })
               {
                 name = "Build docs";
-                run = run.nixScript { name = scripts.genDocs.pname; };
+                run = ''
+                  ${run.nixScript { name = scripts.genDocs.pname; }}
+                  cp -r docs/book docs/dist
+                '';
               }
               {
                 name = "GitHub Pages action";
