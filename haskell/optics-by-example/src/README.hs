@@ -22,6 +22,7 @@ Notes on [Optics by example](https://leanpub.com/optics-by-example).
 
 {- FOURMOLU_DISABLE -}
 
+{-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE InstanceSigs #-}
@@ -52,7 +53,7 @@ Notes on [Optics by example](https://leanpub.com/optics-by-example).
 
 {- FOURMOLU_ENABLE -}
 
-module Main (main) where
+module README (main) where
 
 import Control.Applicative (Applicative (..))
 import Control.Lens
@@ -3924,17 +3925,6 @@ ex74 = exercises ^.. traversed . at "pushups" . non 0
 
 -- >>> ex74
 -- [0,10,15]
-
-
-x :: Map.Map Text.Text Int
-x = fromList [("WORLD", 456)]
-
-x1 :: Map.Map Text.Text Int
-x1 = x & at "HELLO" . non 678 .~ 3
-
--- >>> x1
--- fromList [("HELLO",3),("WORLD",456)]
-
 
 {-
 1. Board

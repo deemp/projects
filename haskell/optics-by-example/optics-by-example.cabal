@@ -19,10 +19,14 @@ source-repository head
   type: git
   location: https://github.com/value/optics-by-example
 
-executable optics-by-example
-  main-is: README.hs
+library
+  exposed-modules:
+      Extra
+      README
   other-modules:
       Paths_optics_by_example
+  hs-source-dirs:
+      src
   default-extensions:
       ImportQualifiedPost
       OverloadedRecordDot

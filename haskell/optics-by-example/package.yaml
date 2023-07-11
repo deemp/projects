@@ -37,24 +37,24 @@ ghc-options:
   - -Wpartial-fields
   - -Wredundant-constraints
 
-executables:
-  optics-by-example:
-    main: README.hs
-    ghc-options:
-      - -threaded
-      - -rtsopts
-      - -with-rtsopts=-N
-    dependencies:
-      - aeson
-      - containers
-      - lens
-      - lens-aeson
-      - mtl
-      - text
-      - template-haskell
-      - bytestring
-      - either
-      - generic-lens
+library:
+  source-dirs: src
+  ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+  dependencies:
+    - aeson
+    - containers
+    - lens
+    - lens-aeson
+    - mtl
+    - text
+    - template-haskell
+    - bytestring
+    - either
+    - generic-lens
+    - split
 
 tests:
   docs:
