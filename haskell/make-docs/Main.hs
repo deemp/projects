@@ -63,5 +63,6 @@ main = do
         , "TypeFamilies/Theory"
         , "TypeFamilies/TypeFamilies"
         ]
-        <> copyPaths "optics-by-example/src" "optics-by-example" ["Extra", "README"]
+        <> copyPaths "developers-roadmap" "developers-roadmap" ["README"]
+        <> copyPaths "optics-by-example/src" "optics-by-example" ["Extra", "Book"]
     )

@@ -53,7 +53,7 @@ Notes on [Optics by example](https://leanpub.com/optics-by-example).
 
 {- FOURMOLU_ENABLE -}
 
-module README (main) where
+module Book (main) where
 
 import Control.Applicative (Applicative (..))
 import Control.Lens
