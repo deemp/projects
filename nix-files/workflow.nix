@@ -29,6 +29,7 @@ let
                   cp -r docs/book docs/dist
                 '';
               }
+              steps.configGitAsGHActions
               {
                 name = "Update docs";
                 run = ''

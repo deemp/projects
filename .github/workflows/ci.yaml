@@ -84,8 +84,11 @@ jobs:
           nix profile install .#genDocs
           nix run .#genDocs
 
-
           cp -r docs/book docs/dist
+      - name: Config git for github-actions
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
       - name: Update docs
         run: |
           git add "docs/src"
