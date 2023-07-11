@@ -23,10 +23,17 @@ let
               steps.checkout
               (steps.installNix { })
               {
-                name = "Build docs";
+                name = "Build docs.";
                 run = ''
                   ${run.nixScript { name = scripts.genDocs.pname; }}
                   cp -r docs/book docs/dist
+                '';
+              }
+              {
+                name = "Update docs";
+                run = ''
+                  git add "docs/src"
+                  git commit -a -m "Update docs" && git push || echo "push failed!"
                 '';
               }
               {
