@@ -48,3 +48,6 @@ executables:
       - lima
       - text
       - string-interpolate
+      - directory
+      - split
+      - lens
