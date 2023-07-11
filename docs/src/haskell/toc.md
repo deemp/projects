@@ -1,5 +1,3 @@
-# Summary
-
 # Developers' Roadmap
 
 - [Aeson](dummy/0)
@@ -62,6 +60,3 @@
 - [Book](haskell/optics-by-example/Book.md)
 - [Extra](haskell/optics-by-example/Extra.md)
 
-# Miscellaneous Notes
-
-- [Notes](./miscNotes/MiscNotes.md)

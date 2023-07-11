@@ -1,3 +1,4 @@
+```haskell
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
@@ -10,20 +11,20 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Try.GADT.GADT where
+```
 
-{-
 ## GADTs
 
 - Wikibooks ([src](https://en.wikibooks.org/wiki/Haskell/GADT)):
   > With GADTs, a constructor for `Foo` a is not obliged to return `Foo a`; it can return any `Foo blah` that you can think of.
--}
 
-{- i 4 -}
+    <!-- i 4 -->
 
-data TrueGadtFoo a where
-  MkTrueGadtFoo :: a -> TrueGadtFoo Int
+    ```haskell
+    data TrueGadtFoo a where
+      MkTrueGadtFoo :: a -> TrueGadtFoo Int
+    ```
 
-{-
     - Still, need to use a relevant data constructor
 
       ```hs
@@ -40,10 +41,10 @@ data TrueGadtFoo a where
 ## Heterogeneous list
 
 [src](https://www.parsonsmatt.org/2017/04/26/basic_type_level_programming_in_haskell.html#heterogeneous-lists)
--}
 
-{- d -}
+<!-- d -->
 
+```haskell
 data HList_ xs where
   HNil_ :: HList_ '[]
   (:::) :: a -> HList_ as -> HList_ (a ': as)
@@ -52,11 +53,11 @@ infixr 6 :::
 
 hex :: HList_ '[Char, Integer, String]
 hex = 'a' ::: 1 ::: "hello" ::: HNil_
+```
 
-{-
 ## Non-empty list
--}
 
+```haskell
 data Empty
 data NonEmpty
 
@@ -76,3 +77,4 @@ st1 = safeTail $ Cons 3 (Cons 4 Nil)
 
 -- >>>st1
 -- 4
+```

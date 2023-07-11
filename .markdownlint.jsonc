@@ -1,5 +1,6 @@
 {
     "no-duplicate-header": false,
     "line-length": false,
-    "no-blanks-blockquote": false
+    "no-blanks-blockquote": false,
+    "no-empty-links": false
 }

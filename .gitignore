@@ -3,3 +3,4 @@ result
 .vscode
 dist-newstyle
 .env
+docs/src/dummy
