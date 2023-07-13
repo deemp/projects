@@ -55,3 +55,4 @@ executables:
       - mtl
       - transformers
       - yaml
+      - filepath

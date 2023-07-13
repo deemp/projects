@@ -32,7 +32,7 @@
               genDocs =
                 {
                   text = ''
-                    (cd haskell && ${getExe (import ./haskell).packages.${system}.genDocs})
+                    (cd haskell && set -a && source .env && ${getExe (import ./haskell).packages.${system}.genDocs})
                     cp notes/README.md docs/src/miscNotes/README.md
                     (cd docs/src && cat prefix.md haskell/toc.md miscNotes/toc.md > SUMMARY.md)
                     ${getExe pkgs.mdbook} build docs

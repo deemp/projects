@@ -32,6 +32,7 @@ executable make-docs
       base >=4.7 && <5
     , containers
     , directory
+    , filepath
     , lens
     , lima
     , mtl

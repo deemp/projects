@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE LambdaCase #-}
@@ -10,24 +11,28 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE ViewPatterns #-}
 
 module Main (main) where
 
-import Control.Lens (At (at), itraverse_, use, (%=), (&), (+=), (.=), (<>=), (?~), (^.))
+import Control.Lens (At (at), itraverse_, use, (%=), (&), (+=), (.=), (<&>), (<>=), (?~), (^.))
 import Control.Monad.State
 import Converter (Format (Hs, Md), convertTo, dedent, def, disable, enable, indent)
-import Data.List (intercalate)
+import Data.List (intercalate, sort)
 import Data.List.Split (splitOn)
 import Data.Map qualified as Map
 import Data.String (IsString)
 import Data.String.Interpolate (i)
+import Data.Text (Text)
 import Data.Text qualified as Text
 import Data.Text.IO qualified as T
 import Data.Traversable (for)
-import Data.Yaml (FromJSON, ToJSON, decodeFileThrow)
+import Data.Yaml (FromJSON, decodeFileThrow)
 import GHC.Generics (Generic)
-import System.Directory (createDirectoryIfMissing)
+import System.Directory (createDirectoryIfMissing, doesDirectoryExist, doesFileExist, listDirectory)
+import System.Environment (getArgs, getEnv)
+import System.FilePath (dropExtension, isExtensionOf, joinPath, splitPath)
 
 newtype Path = Path {_path :: FilePath} deriving newtype (Eq, IsString)
 instance Show Path where
@@ -46,12 +51,13 @@ addPath (x : xs) finalPath currentNode = do
         Nothing -> do
           idx <- use id
           id += 1
-          addPath xs_ finalPath NodeSubDir{path = [i|dummy/#{idx}|], children = Map.empty}
+          -- TODO enable path = [i|dummy/#{idx}|]?
+          addPath xs_ finalPath NodeSubDir{path = [i||], children = Map.empty}
         Just n -> do
           addPath xs_ finalPath n
   pure NodeSubDir{children = currentNode.children & at x ?~ childNode, path = currentNode.path}
 
-data NodeProject = NodeProject {heading :: Text.Text, nodes :: [NodeSubDir]}
+data NodeProject = NodeProject {heading :: Text, nodes :: [NodeSubDir]}
 
 mkNodesProject :: FilePath -> [Project] -> [NodeProject]
 mkNodesProject prefix projects =
@@ -74,7 +80,7 @@ mkNodesProject prefix projects =
           pure NodeProject{heading, nodes}
       )
 
-pPrintNodeSubDir :: Int -> NodeSubDir -> State [Text.Text] ()
+pPrintNodeSubDir :: Int -> NodeSubDir -> State [Text] ()
 pPrintNodeSubDir depth t =
   itraverse_
     ( \idx child -> do
@@ -84,7 +90,7 @@ pPrintNodeSubDir depth t =
     )
     t.children
 
-pPrintNodeProject :: NodeProject -> Text.Text
+pPrintNodeProject :: NodeProject -> Text
 pPrintNodeProject t =
   Text.intercalate
     "\n"
@@ -92,38 +98,53 @@ pPrintNodeProject t =
     , Text.intercalate "\n" $ (\x -> Text.intercalate "\n" (execState (pPrintNodeSubDir 0 x) [])) <$> t.nodes
     ]
 
-pPrintProjects :: FilePath -> [Project] -> Text.Text
+pPrintProjects :: FilePath -> [Project] -> Text
 pPrintProjects prefix ns = Text.intercalate "\n\n" $ pPrintNodeProject <$> mkNodesProject prefix ns
 
-newtype M = M Text.Text
+newtype M = M Text
 instance Show M where
   show :: M -> String
   show (M s) = Text.unpack s
 
-configPath :: FilePath
-configPath = "make-docs/config.yaml"
+data Project = Project {heading :: Text, subDirs :: [SubDir]} deriving (Generic, Show)
+data SubDir = SubDir {hsPrefix :: FilePath, mdPrefix :: FilePath, hsModules :: [FilePath]} deriving (Generic, Show)
 
-docsPrefix :: FilePath
-docsPrefix = "haskell"
+findPaths :: Int -> Int -> FilePath -> IO [FilePath]
+findPaths depth maxDepth dir =
+  if depth > maxDepth
+    then error "depth > max depth"
+    else do
+      paths <- ((\p -> [i|#{dir}/#{p}|]) <$>) <$> listDirectory dir
+      files <- filterM (\x -> (&&) <$> doesFileExist x <*> pure (".hs" `isExtensionOf` x)) paths
+      dirs <- filterM doesDirectoryExist paths
+      subDirFiles <- if depth < maxDepth then concat <$> mapM (findPaths (depth + 1) maxDepth) dirs else pure []
+      pure (files <> subDirFiles)
 
-t5 :: IO M
-t5 = do
-  projects <- decodeFileThrow configPath
-  let prefix = docsPrefix
-  pure $ M $ pPrintProjects prefix projects
+findModules :: Int -> FilePath -> IO [FilePath]
+findModules maxDepth path = do
+  paths <- findPaths 1 maxDepth path
+  pure $ paths <&> dropExtension <&> splitPath <&> drop (length (splitPath path)) <&> joinPath & sort
 
-data Project = Project {heading :: Text.Text, subDirs :: [SubDir]} deriving (Generic)
-instance FromJSON Project
-data SubDir = SubDir {hsPrefix :: FilePath, mdPrefix :: FilePath, hsModules :: [FilePath]} deriving (Generic)
-instance FromJSON SubDir
+data ConfigProject = ConfigProject {heading :: Text, subDirs :: [ConfigSubDir]} deriving (Generic)
+instance FromJSON ConfigProject
+data ConfigSubDir = ConfigSubDir {hsPrefix :: FilePath, mdPrefix :: FilePath, maxDepth :: Int} deriving (Generic)
+instance FromJSON ConfigSubDir
 
 main :: IO ()
 main = do
   putStrLn "Generating docs"
-  projects :: [Project] <- decodeFileThrow configPath
+  configPath <- getEnv "CONFIG_PATH"
+  docsPath <- getEnv "DOCS_PATH"
+  docsPrefix <- getEnv "DOCS_PREFIX"
+
+  configsProject :: [ConfigProject] <- decodeFileThrow configPath
+  projects <- forM configsProject $ \configProject -> do
+    subDirs <- forM configProject.subDirs $ \ConfigSubDir{..} -> do
+      hsModules <- findModules maxDepth hsPrefix
+      pure SubDir{..}
+    pure Project{heading = configProject.heading, subDirs}
+
   let
-    docsPath :: FilePath
-    docsPath = "../docs/src/haskell"
     convert :: FilePath -> FilePath -> IO ()
     convert hs md = do
       hsContent <- T.readFile hs
@@ -134,11 +155,11 @@ main = do
       T.writeFile [i|#{docsPath}/#{md}|] converted
     copyPaths :: SubDir -> [(FilePath, FilePath)]
     copyPaths SubDir{..} = (\x -> let y = [i|#{hsPrefix}/#{x}|] :: FilePath in ([i|#{y}.hs|], [i|#{mdPrefix}/#{x}.md|])) <$> hsModules
-  
+
   -- Write text
   mapM_
     (uncurry convert)
     (concatMap (\Project{..} -> concatMap copyPaths subDirs) projects)
-  
+
   -- Write Table of Contents
   T.writeFile [i|#{docsPath}/toc.md|] (pPrintProjects docsPrefix projects <> "\n\n")
