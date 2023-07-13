@@ -22,14 +22,14 @@ let
             steps = [
               steps.checkout
               (steps.installNix { })
+              steps.configGitAsGHActions
               {
-                name = "Build docs.";
+                name = "Build docs";
                 run = ''
                   ${run.nixScript { name = scripts.genDocs.pname; }}
                   cp -r docs/book docs/dist
                 '';
               }
-              steps.configGitAsGHActions
               {
                 name = "Update docs";
                 run = ''
