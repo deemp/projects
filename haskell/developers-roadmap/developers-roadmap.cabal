@@ -10,6 +10,41 @@ license:        BSD3
 build-type:     Simple
 
 library
+  exposed-modules:
+      Try.Aeson.HKD
+      Try.Debug.Breakpoint
+      Try.Effectful.Dynamic
+      Try.Exceptions.Exceptions
+      Try.Exceptions.Theory
+      Try.Functions.Composition
+      Try.Functions.Folds
+      Try.Functions.General
+      Try.FusedEffects.ReinterpretingEffects
+      Try.FusedEffects.UndoIO
+      Try.GADT.GADT
+      Try.Generics.Generics
+      Try.ImplicitParams.ImplicitParams
+      Try.IO.RandomNumbers
+      Try.Lens.MissingKey
+      Try.Lens.Node
+      Try.Misc.Determinant
+      Try.Monads.FunctionalDependencies
+      Try.Monads.MonadBaseControl
+      Try.Monads.Monads
+      Try.ParallelAndConcurrentHaskell.Exceptions
+      Try.ParallelAndConcurrentHaskell.MVar
+      Try.ParallelAndConcurrentHaskell.STM
+      Try.TemplateHaskell.ConstructorTags.Declare
+      Try.TemplateHaskell.ConstructorTags.Use
+      Try.TemplateHaskell.Typed.Declare
+      Try.TemplateHaskell.Typed.Use
+      Try.Test.Theory
+      Try.TypeClasses.Monoid
+      Try.TypeClasses.Theory
+      Try.TypeClasses.TypeClasses
+      Try.TypeFamilies.TaggedClasses
+      Try.TypeFamilies.Theory
+      Try.TypeFamilies.TypeFamilies
   other-modules:
       Paths_developers_roadmap
   hs-source-dirs:
