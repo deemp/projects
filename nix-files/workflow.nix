@@ -2,53 +2,41 @@
 let
   inherit (workflows.lib.${system})
     writeWorkflow expr mkAccessors genAttrsId
-    steps run os nixCI;
+    steps run os nixCI names stepsIf;
   job1 = "_1_update_flake_locks";
   job2 = "_2_front";
-  names = mkAccessors {
-    secrets = genAttrsId [ "GITHUB_TOKEN" ];
-  };
   workflow =
-    nixCI { } // {
-      jobs = {
-        "${job1}" = (nixCI { cacheNixArgs = { linuxMaxStoreSize = 15000000000; macosMaxStoreSize = 15000000000; }; }).jobs.nixCI;
-        "${job2}" =
+    nixCI
+      {
+        cacheNixArgs = {
+          linuxMaxStoreSize = 15000000000;
+          macosMaxStoreSize = 15000000000;
+        };
+        steps = _: stepsIf "${names.matrix.os} == '${os.ubuntu-22}'" [
           {
-            name = "Publish static files";
-            permissions = {
-              contents = "write";
+            name = "Build docs";
+            run = ''
+              ${run.nixScript { name = scripts.genDocs.pname; }}
+              cp -r docs/book docs/dist
+            '';
+          }
+          {
+            name = "Commit & Push docs";
+            run = ''
+              git add "docs/src"
+              git commit -m "Update docs" && git push || echo "push failed!"
+            '';
+          }
+          {
+            name = "GitHub Pages action";
+            uses = "peaceiris/actions-gh-pages@v3.9.3";
+            "with" = {
+              github_token = expr names.secrets.GITHUB_TOKEN;
+              publish_dir = "./docs/dist";
+              force_orphan = true;
             };
-            runs-on = os.ubuntu-20;
-            steps = [
-              steps.checkout
-              (steps.installNix { })
-              steps.configGitAsGHActions
-              {
-                name = "Build docs";
-                run = ''
-                  ${run.nixScript { name = scripts.genDocs.pname; }}
-                  cp -r docs/book docs/dist
-                '';
-              }
-              {
-                name = "Update docs";
-                run = ''
-                  git add "docs/src"
-                  git commit -a -m "Update docs" && git push || echo "push failed!"
-                '';
-              }
-              {
-                name = "GitHub Pages action";
-                uses = "peaceiris/actions-gh-pages@v3.9.3";
-                "with" = {
-                  github_token = expr names.secrets.GITHUB_TOKEN;
-                  publish_dir = "./docs/dist";
-                  force_orphan = true;
-                };
-              }
-            ];
-          };
+          }
+        ];
       };
-    };
 in
 writeWorkflow name workflow
