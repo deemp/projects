@@ -71,7 +71,7 @@
                     "F22/total-virtualization"
                     "haskell"
                   ];
-                }) updateLocks pushToCachix format;
+                }) updateLocks saveFlakes format;
 
               # --- GH Actions
 

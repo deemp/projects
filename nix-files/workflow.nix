@@ -9,7 +9,9 @@ let
     nixCI
       {
         cacheNixArgs = {
+          linuxGCEnabled = true;
           linuxMaxStoreSize = 15000000000;
+          macosGCEnabled = true;
           macosMaxStoreSize = 15000000000;
         };
         steps = _: stepsIf "${names.matrix.os} == '${os.ubuntu-22}'" [
