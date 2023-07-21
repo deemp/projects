@@ -19,13 +19,13 @@ jobs:
       - name: Restore and cache Nix store
         uses: nix-community/cache-nix-action@v1
         with:
-          key: nix-${{ matrix.os }}-cachix-${{ hashfiles('**/flake.nix', '**/flake.lock') }}
+          key: nix-${{ matrix.os }}-job-${{ hashfiles('**/flake.nix', '**/flake.lock') }}
           linux-gc-enabled: true
           linux-max-store-size: 15000000000
           macos-gc-enabled: true
           macos-max-store-size: 15000000000
           restore-keys: |
-            nix-${{ matrix.os }}-cachix-
+            nix-${{ matrix.os }}-job-
       - name: Remove old cache profiles
         run: rm -rf /nix/var/nix/profiles/cache
       - if: matrix.os == 'ubuntu-22.04'
