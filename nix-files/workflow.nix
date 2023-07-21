@@ -24,14 +24,7 @@ let
                   name = nameUpdateDocs;
                   run = run.nixScript { name = scripts.genDocs.pname; };
                 }
-                {
-                  name = "Commit and push";
-                  run = run.nix_ {
-                    doGitPull = true;
-                    doCommit = true;
-                    commitArgs.messages = [ (steps.updateLocks { }).name (steps.format { }).name nameUpdateDocs ];
-                  };
-                }
+                (steps.commit { messages = [ (steps.updateLocks { }).name (steps.format { }).name nameUpdateDocs ]; })
               ]
             )
             {
