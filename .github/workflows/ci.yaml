@@ -58,7 +58,8 @@ jobs:
             -m "action" \
             -m "Update flake locks" \
             -m "Format Nix files" \
-            -m "Update docs"
+            -m "Update docs" \
+            || echo "commit failed!"
           git push
       - if: matrix.os == 'ubuntu-22.04'
         name: Copy docs
