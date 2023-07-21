@@ -8,37 +8,47 @@ let
   workflow =
     nixCI
       {
-        cacheNixArgs = {
-          linuxGCEnabled = true;
-          linuxMaxStoreSize = 15000000000;
-          macosGCEnabled = true;
-          macosMaxStoreSize = 15000000000;
+        jobArgs = {
+          cacheNixArgs = {
+            linuxGCEnabled = true;
+            linuxMaxStoreSize = 15000000000;
+            macosGCEnabled = true;
+            macosMaxStoreSize = 15000000000;
+          };
+          doCommit = false;
+          steps = _: stepsIf "${names.matrix.os} == '${os.ubuntu-22}'" [
+            (
+              let nameUpdateDocs = "Update docs"; in
+              [
+                {
+                  name = nameUpdateDocs;
+                  run = run.nixScript { name = scripts.genDocs.pname; };
+                }
+                {
+                  name = "Commit and push";
+                  run = run.nix_ {
+                    doGitPull = true;
+                    doCommit = true;
+                    commitArgs.messages = [ (steps.updateLocks { }).name (steps.format { }).name nameUpdateDocs ];
+                  };
+                }
+              ]
+            )
+            {
+              name = "Copy docs";
+              run = "cp -r docs/book docs/dist";
+            }
+            {
+              name = "Publish docs to GitHub Pages";
+              uses = "peaceiris/actions-gh-pages@v3.9.3";
+              "with" = {
+                github_token = expr names.secrets.GITHUB_TOKEN;
+                publish_dir = "docs/dist";
+                force_orphan = true;
+              };
+            }
+          ];
         };
-        steps = _: stepsIf "${names.matrix.os} == '${os.ubuntu-22}'" [
-          {
-            name = "Build docs";
-            run = ''
-              ${run.nixScript { name = scripts.genDocs.pname; }}
-              cp -r docs/book docs/dist
-            '';
-          }
-          {
-            name = "Commit & Push docs";
-            run = ''
-              git add "docs/src"
-              git commit -m "Update docs" && git push || echo "push failed!"
-            '';
-          }
-          {
-            name = "GitHub Pages action";
-            uses = "peaceiris/actions-gh-pages@v3.9.3";
-            "with" = {
-              github_token = expr names.secrets.GITHUB_TOKEN;
-              publish_dir = "./docs/dist";
-              force_orphan = true;
-            };
-          }
-        ];
       };
 in
 writeWorkflow name workflow

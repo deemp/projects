@@ -41,34 +41,35 @@ jobs:
       - if: matrix.os == 'ubuntu-22.04'
         name: Update flake locks
         run: |-
-          git pull --rebase --autostash
-
           nix profile install .#updateLocks
           nix run .#updateLocks
+      - if: matrix.os == 'ubuntu-22.04'
+        name: Update docs
+        run: |-
+          nix profile install .#genDocs
+          nix run .#genDocs
+      - if: matrix.os == 'ubuntu-22.04'
+        name: Commit and push
+        run: |-
+          git pull --rebase --autostash
 
           git add .
           git commit \
-            -m "action: Update flake locks" \
-            || echo "commit failed!"
+            -m "action" \
+            -m "Update flake locks" \
+            -m "Format Nix files" \
+            -m "Update docs"
           git push
       - if: matrix.os == 'ubuntu-22.04'
-        name: Build docs
-        run: |
-          nix profile install .#genDocs
-          nix run .#genDocs
-          cp -r docs/book docs/dist
+        name: Copy docs
+        run: cp -r docs/book docs/dist
       - if: matrix.os == 'ubuntu-22.04'
-        name: Commit & Push docs
-        run: |
-          git add "docs/src"
-          git commit -m "Update docs" && git push || echo "push failed!"
-      - if: matrix.os == 'ubuntu-22.04'
-        name: GitHub Pages action
+        name: Publish docs to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3.9.3
         with:
           force_orphan: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/dist
+          publish_dir: docs/dist
       - name: Save flakes
         run: |-
           nix profile install .#saveFlakes
