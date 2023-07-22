@@ -29,12 +29,14 @@ dependencies:
   - mtl
   - random
   - string-interpolate
-  - unliftio
+  - text
   - template-haskell
   - time
   - transformers
   - transformers-base
+  - unliftio
   - unordered-containers
+  - large-anon
 
 executables:
   README:

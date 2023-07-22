@@ -12,6 +12,7 @@ build-type:     Simple
 library
   exposed-modules:
       Try.Aeson.HKD
+      Try.Data.LargeAnon
       Try.Debug.Breakpoint
       Try.Effectful.Dynamic
       Try.Exceptions.Exceptions
@@ -42,6 +43,7 @@ library
       Try.TypeClasses.Monoid
       Try.TypeClasses.Theory
       Try.TypeClasses.TypeClasses
+      Try.TypeFamilies.StringInterpolate
       Try.TypeFamilies.TaggedClasses
       Try.TypeFamilies.Theory
       Try.TypeFamilies.TypeFamilies
@@ -68,6 +70,7 @@ library
     , http-client
     , http-client-tls
     , http-types
+    , large-anon
     , lens
     , lifted-base
     , managed
@@ -78,6 +81,7 @@ library
     , random
     , string-interpolate
     , template-haskell
+    , text
     , time
     , transformers
     , transformers-base
@@ -108,6 +112,7 @@ executable README
     , http-client
     , http-client-tls
     , http-types
+    , large-anon
     , lens
     , lifted-base
     , managed
@@ -118,6 +123,7 @@ executable README
     , random
     , string-interpolate
     , template-haskell
+    , text
     , time
     , transformers
     , transformers-base
