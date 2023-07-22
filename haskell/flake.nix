@@ -68,7 +68,7 @@
               version = ghcVersion;
               inherit override;
               packages = ps: builtins.map (name: ps.${name}) packageNames;
-            }) hls ghcid cabal fourmolu hpack;
+            }) ghc hls ghcid cabal fourmolu hpack;
 
           toolsGHCPackage = name: path: args@{ ... }:
             toolsGHC ({
@@ -87,7 +87,15 @@
             };
           });
 
-          tools = [ hls ghcid cabal fourmolu hpack ];
+          tools = [
+            # GHC should go before HLS - see https://github.com/NixOS/nixpkgs/issues/225895
+            ghc
+            hls
+            ghcid
+            cabal
+            fourmolu
+            hpack
+          ];
 
           devShells.default = mkShell {
             packages = tools;
