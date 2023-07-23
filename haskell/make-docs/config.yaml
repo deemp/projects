@@ -16,3 +16,8 @@
     - hsPrefix: "thinking-with-types/src"
       mdPrefix: "thinking-with-types"
       maxDepth: 1
+- heading: "Sockets and Pipes"
+  subDirs:
+    - hsPrefix: "sockets-and-pipes-notes/src"
+      mdPrefix: "sockets-and-pipes-notes"
+      maxDepth: 1
