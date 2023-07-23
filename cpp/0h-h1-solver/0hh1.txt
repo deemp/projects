@@ -1,0 +1,355 @@
+﻿<html class="signed-out theme1 web"><head>
+    <title>0h h1</title>
+    <meta name="description" content="A little logic game by Q42.">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="format-detection" content="telephone=no">
+    <meta charset="utf-8">
+
+    <link rel="manifest" href="manifest.js">
+    <link rel="icon" type="image/png" href="img/icon-1024.png">
+    <link rel="shortcut icon" href="img/icon-1024.png">
+    <link rel="apple-touch-icon-precomposed" href="img/icon-1024.png">
+    
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@q42">
+    <meta name="twitter:creator" content="@mrtnkl">
+    <meta name="twitter:title" content="0h h1">
+    <meta name="twitter:description" content="A little logic game by Q42.">
+    <meta name="twitter:image" content="http://0hh1.com/img/twitter-promotion.png">
+    <meta name="twitter:url" content="http://0hh1.com/">
+
+    <meta property="og:url" content="http://0hh1.com/">
+    <meta property="og:site_name" content="0h h1">
+    <meta property="og:title" content="0h h1">
+    <meta property="og:description" content="A little logic game by Q42.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="http://0hh1.com/img/facebook-promotion.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <style>html,body{background:#222;}</style>
+    <link href="css/style.css" type="text/css" rel="stylesheet">
+    <link href="css/theme2.css" type="text/css" rel="stylesheet">
+    <link href="css/theme3.css" type="text/css" rel="stylesheet">
+    <link href="fonts/fonts.css" type="text/css" rel="stylesheet">
+  <style id="tempcss">.odd  .tile-1 .inner { background-color: #c24b31; }.even .tile-1 .inner { background-color: #d55336; }.odd  .tile-2 .inner { background-color: #30a7c2; }.even .tile-2 .inner { background-color: #35b8d5; }</style><style id="titlegridradius">#titlegrid .tile .inner { border-radius: 5px; }#titlegrid .tile-1 .inner:after, #titlegrid .tile-2 .inner:after { border-radius: 5px; }</style><style id="loadinggridradius">#loadinggrid .tile .inner { border-radius: 10px; }#loadinggrid .tile-1 .inner:after, #loadinggrid .tile-2 .inner:after { border-radius: 10px; }</style><style id="boardradius">#board .tile .inner { border-radius: 24px; }#board .tile-1 .inner:after, #board .tile-2 .inner:after { border-radius: 24px; }</style><style id="menugridradius">#menugrid .tile .inner { border-radius: 28px; }#menugrid .tile-1 .inner:after, #menugrid .tile-2 .inner:after { border-radius: 28px; }</style><style id="tileSize">.tile.marked .inner { border-width: 11px }</style></head>
+  <body bgcolor="#222222">
+    <div id="container" style="width: 911px; height: 1367px;">
+        <div id="grain"></div>
+        <div id="gameContainer" style="transform: none;">
+        <div id="title" class="screen hidehs finalanim" data-action="close-titleScreen" style="display: none;">
+            <div class="vertical">
+                <h1 style="font-size: 219px;">Oh hi</h1>
+                <div id="titlegrid" class="board">
+                    <div id="digits" style="width: 100px; height: 0px; line-height: 0px; font-size: 0px;">                    
+                        <span id="zero">0</span><span id="hs"> h h </span><span id="one">1</span>
+                    </div>
+<table data-grid="titlegrid" cellspacing="0" cellpadding="0"><tbody><tr><td class="odd"><div class="tile tile-2" style="width: 50px; height: 50px; line-height: 43px; font-size: 25px;"><div class="inner"></div></div></td><td class="even"><div class="tile tile-1" style="width: 50px; height: 50px; line-height: 43px; font-size: 25px;"><div class="inner"></div></div></td></tr></tbody></table>
+
+                </div>
+                <p style="font-size: 64px;">
+                  <text data-text-id="A little logic game">A little logic game</text><br><text class="by by1" style="font-size: 46px;" data-text-id="By Q42">By Q42</text><br><text class="by by2" style="font-size: 46px;" data-text-id="Created by Martin Kool">Created by Martin Kool</text><br><img id="q42" src="img/q42.png">
+                </p>
+            </div>
+        </div>
+
+        <div id="menu" class="screen" style="display: none;">
+            <div class="vertical">
+            <h2 style="font-size: 219px;">Oh hi</h2>
+                <p data-action="tutorial" style="font-size: 91px; padding: 46px 0px; line-height: 73px;">
+                <text data-text-id="How to play">How to play</text>
+                </p>
+                <p data-action="play" data-config="unlimited" style="font-size: 91px; padding: 46px 0px; line-height: 73px;">
+                <text data-config="playLabelPlay" style="display: none;" data-text-id="Play">Play</text>
+                <text data-config="playLabelFree" data-text-id="Free play">Free play</text>
+                </p>
+                <p data-action="play-daily" data-config="daily" class="rel" style="font-size: 91px; padding: 46px 0px; line-height: 73px;">
+                <span class="new" data-config="newLabel"><text data-text-id="New">New</text></span>
+                <text data-text-id="Today's puzzles">Today's puzzles</text>    
+                </p>
+                <p data-action="settings" style="font-size: 91px; padding: 46px 0px; line-height: 73px;">
+                <text data-text-id="Settings">Settings</text>
+                </p>
+                <p data-action="about" style="font-size: 91px; padding: 46px 0px; line-height: 73px;">
+                <text data-text-id="About">About</text>
+                </p>
+                <p data-action="thanks" style="font-size: 91px; padding: 46px 0px; line-height: 73px;">
+                <text data-text-id="Thanks">Thanks</text>
+                </p>
+            </div>
+            <div id="bar">
+                <div class="iconcon" data-action="playcenter" style="display: none;"><div id="playcenter" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+            </div>
+        </div>
+
+        <div id="about" class="screen text" data-action="rules" style="display: none;">
+            <div class="vertical">
+            <h3 style="font-size: 137px;"><text data-text-id="About">About</text></h3>
+            <div class="side-padded">
+                <p style="font-size: 64px;">
+                <text data-text-id="0h h1 is a little logic game<br>by Q42. It was created by<br>Martin Kool.">0h h1 is a little logic game<br>by Q42. It was created by<br>Martin Kool.</text>
+                <br>
+                <br>
+                <text data-text-id="The concept is also known<br>as Takuzu or Binary Sudoku.">The concept is also known<br>as Takuzu or Binary Sudoku.</text>
+                <br>                
+                <img id="q42" src="img/q42.png"><br>
+                <text class="web-link" data-text-id="Q42.com">Q42.com</text> · <span class="web-link">0hh1.com</span>
+                </p>
+                </div>
+            </div>
+            <div id="bar">
+                <div class="iconcon"><div id="continue" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+            </div>
+        </div>
+
+        <div id="rules" class="screen text" data-action="end-rules" style="display: none;">
+            <div class="vertical">
+            <h3 style="font-size: 137px;"><text data-text-id="Rules">Rules</text></h3>
+                <div class="side-padded">
+                <p style="font-size: 64px;">
+                    <text data-text-id="Three adjacent tiles of the same color in a row or column isn't allowed.">Three adjacent tiles of the same color in a row or column isn't allowed.</text>
+                </p>
+                <p style="font-size: 64px;">
+                    <text data-text-id="Rows and columns have an equal number of each color.">Rows and columns have an equal number of each color.</text>
+                </p>
+                <p style="font-size: 64px;">
+                    <text data-text-id="No two rows and no two columns are the same.">No two rows and no two columns are the same.</text>
+                </p>
+                </div>
+            </div>
+            <div id="bar">
+                <div class="iconcon"><div id="continue" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+            </div>
+        </div>
+
+        <div id="thanks" class="screen text" data-action="afterThanks" style="display: none;">
+            <div class="vertical">
+            <h3 style="font-size: 137px;"><text data-text-id="Thanks">Thanks</text></h3>
+                <div class="side-padded">
+                <p style="font-size: 64px;">
+                    <text data-text-id="Thank you for supporting<br> 0h h1">Thank you for supporting<br> 0h h1</text>.
+                </p>
+                <p style="font-size: 64px;">
+                    <text data-text-id="Please feel free to leave me a message about the game anytime">Please feel free to leave me a message about the game anytime</text>!
+                </p>
+                <p style="font-size: 64px;">
+                    Martin<br>
+                    martin@q42.nl<br>
+                    @mrtnkl
+                </p>
+                </div>
+            </div>
+            <div id="bar">
+                <div class="iconcon"><div id="continue" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+            </div>
+        </div>
+
+        <div id="apps" class="screen text" data-action="games" style="display: none;">
+            <div class="vertical">
+            <h3 style="font-size: 137px;"><text data-text-id="Apps">Apps</text></h3>
+                <div class="side-padded">
+                <p style="font-size: 64px;">
+                    <text data-text-id="The 0h h1 app is also free">The 0h h1 app is also free</text>:
+                </p>
+                <p style="font-size: 64px;">
+                    <a target="_blank" href="https://itunes.apple.com/us/app/0h-h1/id936504196?mt=8">iOS</a>
+                </p>
+                <p style="font-size: 64px;">
+                    <a target="_blank" href="https://play.google.com/store/apps/details?id=com.q42.ohhi">Android</a>
+                </p>
+                <p style="font-size: 64px;">
+                    <a target="_blank" href="http://www.windowsphone.com/en-us/store/app/0h-h1/0846c771-cc12-484e-8cc3-ac2287534f63">Windows Phone</a>
+                </p>
+                </div>
+            </div>
+            <div id="bar">
+                <div class="iconcon"><div id="continue" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+            </div>
+        </div>
+
+        <div id="games" class="screen text" data-action="back" style="display: none;">
+            <div class="vertical">
+            <h3 style="font-size: 137px;"><text data-text-id="Games">Games</text></h3>
+                <div class="side-padded">
+                <p style="font-size: 64px;">
+                    <text data-text-id="Enjoy our other games too">Enjoy our other games too</text>!
+                </p>
+                <p style="font-size: 64px;">
+                    <a target="_blank" href="http://0hn0.com" id="game_link_0hn0">0h n0</a>
+                </p>
+                <p style="font-size: 64px;">
+                    <a target="_blank" href="http://contranoid.com" id="game_link_contranoid">Contranoid</a>
+                </p>
+                <p style="font-size: 64px;">
+                    <a target="_blank" href="http://quento.com" id="game_link_quento">Quento</a>
+                </p>
+                <p style="font-size: 64px;">
+                    <a target="_blank" href="http://numolition.com" id="game_link_numolition">Numolition</a>
+                </p>
+                <p style="font-size: 64px;">
+                    <a target="_blank" href="http://flippybitandtheattackofthehexadecimalsfrombase16.com" id="game_link_flippybit">Flippy Bit</a>
+                </p>
+                </div>
+            </div>
+            <div id="bar">
+                <div class="iconcon"><div id="back" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+            </div>
+        </div>
+
+        <div id="message" class="screen text" data-action="back" style="display: none;">
+            <div class="vertical">
+                <div class="side-padded">
+                <p id="message-body" style="font-size: 64px;">
+                    <text data-text-id="This is a message">This is a message</text>.
+                </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="screen" style="display: none;">
+            <div class="vertical">
+                <h2 style="font-size: 164px;"><text data-text-id="Loading">Loading</text></h2>
+                <p style="font-size: 64px;"></p>
+                <div id="loadinggrid" class="board">
+<table data-grid="loadinggrid" cellspacing="0" cellpadding="0"><tbody><tr><td class="odd"><div class="tile tile-2 loading" style="width: 100px; height: 100px; line-height: 85px; font-size: 50px;"><div class="inner"></div></div></td></tr></tbody></table>
+</div>
+            </div>
+        </div>
+
+        <div id="game" class="screen show" style="display: block;">
+            <p id="hintMsg" class="topMsg" style="font-size: 64px; height: 0px;"></p>
+            <p id="chooseSize" class="topMsg" style="font-size: 64px;"><text data-text-id="Select a size to play...">Select a size to play...</text></p>
+            <h2 id="boardsize" style="font-size: 164px;"><span>6 x 6</span></h2>
+            <div id="board" class="vertical board"><table data-grid="board" id="grid" cellspacing="0" cellpadding="0"><tbody><tr><td data-x="0" data-y="0" class="odd"><div id="tile-0-0" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="1" data-y="0" class="even"><div id="tile-1-0" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="2" data-y="0" class="odd"><div id="tile-2-0" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="3" data-y="0" class="even"><div id="tile-3-0" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="4" data-y="0" class="odd"><div id="tile-4-0" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="5" data-y="0" class="even"><div id="tile-5-0" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td></tr><tr><td data-x="0" data-y="1" class="even"><div id="tile-0-1" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="1" data-y="1" class="odd"><div id="tile-1-1" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="2" data-y="1" class="even"><div id="tile-2-1" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="3" data-y="1" class="odd"><div id="tile-3-1" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="4" data-y="1" class="even"><div id="tile-4-1" class="tile tile-2" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="5" data-y="1" class="odd"><div id="tile-5-1" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td></tr><tr><td data-x="0" data-y="2" class="odd"><div id="tile-0-2" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="1" data-y="2" class="even"><div id="tile-1-2" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="2" data-y="2" class="odd"><div id="tile-2-2" class="tile tile-1" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="3" data-y="2" class="even"><div id="tile-3-2" class="tile tile-1" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="4" data-y="2" class="odd"><div id="tile-4-2" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="5" data-y="2" class="even"><div id="tile-5-2" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td></tr><tr><td data-x="0" data-y="3" class="even"><div id="tile-0-3" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="1" data-y="3" class="odd"><div id="tile-1-3" class="tile tile-1" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="2" data-y="3" class="even"><div id="tile-2-3" class="tile tile-1" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="3" data-y="3" class="odd"><div id="tile-3-3" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="4" data-y="3" class="even"><div id="tile-4-3" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="5" data-y="3" class="odd"><div id="tile-5-3" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td></tr><tr><td data-x="0" data-y="4" class="odd"><div id="tile-0-4" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="1" data-y="4" class="even"><div id="tile-1-4" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="2" data-y="4" class="odd"><div id="tile-2-4" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="3" data-y="4" class="even"><div id="tile-3-4" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="4" data-y="4" class="odd"><div id="tile-4-4" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="5" data-y="4" class="even"><div id="tile-5-4" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td></tr><tr><td data-x="0" data-y="5" class="even"><div id="tile-0-5" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="1" data-y="5" class="odd"><div id="tile-1-5" class="tile tile-1" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="2" data-y="5" class="even"><div id="tile-2-5" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="3" data-y="5" class="odd"><div id="tile-3-5" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="4" data-y="5" class="even"><div id="tile-4-5" class="tile tile-2" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td><td data-x="5" data-y="5" class="odd"><div id="tile-5-5" class="tile tile-" style="width: 238px; height: 238px; line-height: 202px; font-size: 119px;"><div class="inner"></div></div></td></tr></tbody></table></div>
+
+
+            <div id="menugrid" class="vertical board hidden">
+<table data-grid="menugrid" cellspacing="0" cellpadding="0"><tbody>
+<tr>
+<td class="odd"><div class="tile tile-2" style="width: 283px; height: 283px; line-height: 241px; font-size: 142px;"><div data-action="startGame" data-size="1" data-gridsize="4" class="inner">4</div></div></td>
+<td class="even"><div class="tile tile-1" style="width: 283px; height: 283px; line-height: 241px; font-size: 142px;"><div data-action="startGame" data-size="2" data-gridsize="6" class="inner">6</div></div></td>
+<td class="odd"><div class="tile tile-2" style="width: 283px; height: 283px; line-height: 241px; font-size: 142px;"><div data-action="startGame" data-size="3" data-gridsize="8" class="inner">8</div></div></td>
+</tr>
+
+<tr>
+<td class="even"><div class="tile tile-1" style="width: 283px; height: 283px; line-height: 241px; font-size: 142px;"><div data-action="startGame" data-size="4" data-gridsize="10" class="inner">10</div></div></td>
+<td class="odd"><div class="tile tile-2" style="width: 283px; height: 283px; line-height: 241px; font-size: 142px;"><div data-action="gift" data-size="5" data-gridsize="12" class="inner">12</div></div></td>
+<td class="odd"><div class="tile tile-1" style="width: 283px; height: 283px; line-height: 241px; font-size: 142px;"><div data-action="games" data-value="sizes" class="inner">...</div></div></td>
+</tr>
+
+ </tbody></table>
+            </div>
+
+            <div id="score" style="display: none; font-size: 91px; line-height: 77.35px; height: 91px;" class="">
+                
+                <span id="scorelabel">Score </span><span id="scorenr">0</span>
+            </div>
+            <span id="times">
+                <div id="time" style="display: block;" class="hidden">
+                    <span id="timer">
+                        <span id="minutes-l" class="digit" style="width: 9px;">0</span>
+                        <span id="minutes-r" class="digit" style="width: 9px;">0</span>
+                        <span>:</span>
+                        <span id="seconds-l" class="digit" style="width: 9px;">2</span>
+                        <span id="seconds-r" class="digit" style="width: 9px;">4</span>
+                    </span>
+                    <span id="percentage"><span class="sep"> · </span><span class="value">0%</span></span>
+                </div>
+            </span>
+            <div id="bar">
+                <div class="iconcon" data-action="back" style="display: inline-block;"><div id="back" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+                <div class="iconcon" data-action="achievements" style="display: none;"><div id="achievements" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+                <div class="iconcon" data-action="leaderboards" style="display: none;"><div id="leaderboards" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+                <div class="iconcon" data-action="undo" style="display: inline-block;"><div id="undo" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+                <a class="iconcon" id="facebook" target="_blank" href="http://www.facebook.com/sharer/sharer.php" data-action="facebook" data-link="social" style="display: none;"><span id="facebookicon" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></span></a>
+                <a class="iconcon" id="tweeturl" target="_blank" href="about:blank" data-link="social" data-action="tweet" style="display: none;"><span id="tweet" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></span></a>
+                <div class="iconcon" data-action="help" style="display: inline-block;"><div id="help" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+                <div class="iconcon" data-action="settings" style="display: inline-block;"><div id="cog" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+                <div class="iconcon" data-action="about" style="display: inline-block;"><div id="rules" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+                <div class="iconcon" data-action="continue" style="display: none;"><div id="continue" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+            </div>
+        </div>
+
+        <div id="online" class="screen text" style="display: none;">
+            <div class="vertical">
+            <h3 style="font-size: 137px;">Google<br>Play</h3>
+                <div class="status-signed-in side-padded">
+                    <p style="font-size: 64px;">
+                        <text data-text-id="You are currently signed in">You are currently signed in</text>.
+                    </p>
+                    <p data-action="sign-out" style="font-size: 64px;">
+                        <span class="link"><text data-text-id="Sign out">Sign out</text></span>
+                    </p>
+                </div>
+                <div class="status-signed-out side-padded">
+                    <p style="font-size: 64px;">
+                        <text data-text-id="Sign in to unlock fun achievements, earn experience points and compete with friends in leaderboards">Sign in to unlock fun achievements, earn experience points and compete with friends in leaderboards</text>.
+                    </p>
+                    <p data-action="sign-in" style="font-size: 64px;">
+                        <span class="link"><text data-text-id="Sign in">Sign in</text></span>
+                    </p>
+                </div>
+            </div>
+            <div id="bar">
+                <div class="iconcon" data-action="back" style="display: inline-block;"><div id="back" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+                <div class="iconcon" data-action="achievements" style="display: none;"><div id="achievements" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+                <div class="iconcon" data-action="leaderboards" style="display: none;"><div id="leaderboards" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+            </div>
+        </div>
+        
+        <div id="settings" class="screen text" data-action="back" style="display: none;">
+            <div class="vertical">
+                <h3 style="font-size: 137px;"><text data-text-id="Settings">Settings</text></h3>
+                <div class="side-padded">
+                    <p style="font-size: 64px;">
+                        <span data-action="toggleTimeTrial" data-value="1"><text data-text-id="Show elapsed time">Show elapsed time</text> -</span>
+                        <span id="toggleTimeTrialValue" class="link" data-action="toggleTimeTrial"><text data-text-id="No">No</text></span>
+                    </p>
+                    <p style="font-size: 64px;">
+                        <span data-action="toggleHintIcon" data-value="1"><text data-text-id="Show hint icon">Show hint icon</text> -</span>
+                        <span id="toggleHintIcon" class="link" data-action="toggleHintIcon"><text data-text-id="Yes">Yes</text></span>
+                    </p>
+                    <div class="pick-theme pick-theme-1" data-config="colorTheme">
+                        <p style="font-size: 64px;">
+                            <span data-action="color-theme" data-value="1"><text data-text-id="Color theme">Color theme</text> -</span>
+                            <span class="link" data-action="color-theme" data-value="1">0h h1</span>
+                        </p>
+                        </div>
+                    <div class="pick-theme pick-theme-2" data-config="colorTheme">
+                        <p style="font-size: 64px;">
+                            <span data-action="color-theme" data-value="2"><text data-text-id="Color theme">Color theme</text> -</span>
+                            <span class="link" data-action="color-theme" data-value="2">0h n0</span>
+                        </p>
+                    </div>
+                    <div class="pick-theme pick-theme-3" data-config="colorTheme">
+                        <p style="font-size: 64px;">
+                            <span data-action="color-theme" data-value="3"><text data-text-id="Color theme">Color theme</text> -</span>
+                            <span class="link" data-action="color-theme" data-value="3">Contranoid</span>
+                        </p>
+                    </div>
+                    <p data-config="languageSwitch" style="font-size: 64px;">
+                        <span data-action="toggleLanguage"><text data-text-id="Language">Language</text> -</span>
+                        <span id="toggleLanguage" class="link" data-action="toggleLanguage">EN</span>
+                    </p>
+                    
+                </div>
+            </div>
+            <div id="bar">
+                <div class="iconcon" data-action="back" style="display: inline-block;"><div id="back" class="icon" style="width: 62px; height: 62px; margin-left: 43.4px; margin-right: 43.4px;"></div></div>
+            </div>
+        </div>
+        
+        </div>
+
+    <canvas id="scratch-canvas" width="911" height="1367"></canvas></div>
+    <div id="feelsize"><span id="hiddendigit">5</span></div>
+    <script async="" src="js/analytics.js"></script><script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/jquery-2.1.0.min.js"><\/script>')</script>
+    <script type="text/javascript" src="js/0hh1.js"></script>
+  
+<div id="SL_balloon_obj" alt="0" style="display: block;"><div id="SL_button" class="SL_ImTranslatorLogo" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/imtranslator-s.png&quot;) repeat scroll 0% 0%; display: none;"></div><div id="SL_shadow_translation_result2" style="display: none;"></div><div id="SL_shadow_translator" style="left: -10000px; top: -10000px; display: none;"><div id="SL_planshet"><div id="SL_arrow_up" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/up.png&quot;) repeat scroll 0% 0%;"></div><div id="SL_Bproviders"><div class="SL_BL_LABLE_ON" title="Google" id="SL_P0">G</div><div class="SL_BL_LABLE_ON" title="Microsoft" id="SL_P1">M</div><div class="SL_BL_LABLE_ON" title="Translator" id="SL_P2">T</div><div class="SL_BL_LABLE_ON" title="Yandex" id="SL_P3">Y</div></div><div id="SL_alert_bbl"><div id="SLHKclose" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/delete.png&quot;) repeat scroll 0% 0%;"></div><div id="SL_alert_cont"></div></div><div id="SL_TB"><table id="SL_tables" cellspacing="1"><tr><td class="SL_td" width="10%" align="right"><input id="SL_locer" type="checkbox" title="Зафиксировать язык"></td><td class="SL_td" width="20%" align="left"><select id="SL_lng_from" style="background: rgb(255, 255, 255) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/select.png&quot;) no-repeat scroll 100% 0px;"><option value="auto">Определить язык</option><option value="az">Азербайджанский</option><option value="sq">Албанский</option><option value="am">Амхарский</option><option value="en">Английский</option><option value="ar">Арабский</option><option value="hy">Армянский</option><option value="af">Африкаанс</option><option value="eu">Баскский</option><option value="be">Белорусский</option><option value="bn">Бенгальский</option><option value="my">Бирманский</option><option value="bg">Болгарский</option><option value="bs">Боснийский</option><option value="cy">Валлийский</option><option value="hu">Венгерский</option><option value="vi">Вьетнамский</option><option value="haw">Гавайский</option><option value="ht">Гаитянский</option><option value="gl">Галисийский</option><option value="nl">Голландский</option><option value="el">Греческий</option><option value="ka">Грузинский</option><option value="gu">Гуджарати</option><option value="da">Датский</option><option value="zu">Зулу</option><option value="iw">Иврит</option><option value="ig">Игбо</option><option value="yi">Идиш</option><option value="id">Индонезийский</option><option value="ga">Ирландский</option><option value="is">Исландский</option><option value="es">Испанский</option><option value="it">Итальянский</option><option value="yo">Йоруба</option><option value="kk">Казахский</option><option value="kn">Каннада</option><option value="ca">Каталанский</option><option value="ky">Киргизский</option><option value="zh-TW">Китайский Трад</option><option value="zh-CN">Китайский Упр</option><option value="ko">Корейский</option><option value="co">Корсиканский</option><option value="ku">Курманджи</option><option value="km">Кхмерский</option><option value="xh">Кхоса</option><option value="lo">Лаосский</option><option value="la">Латинский</option><option value="lv">Латышский</option><option value="lt">Литовский</option><option value="lb">Люксембургский</option><option value="mk">Македонский</option><option value="mg">Малагасийский</option><option value="ms">Малайский</option><option value="ml">Малаялам</option><option value="mt">Мальтийский</option><option value="mi">Маори</option><option value="mr">Маратхи</option><option value="mn">Монгольский</option><option value="de">Немецкий</option><option value="ne">Непальский</option><option value="no">Норвежский</option><option value="pa">Панджаби</option><option value="fa">Персидский</option><option value="pl">Польский</option><option value="pt">Португальский</option><option value="ps">Пушту</option><option value="ro">Румынский</option><option value="ru">Русский</option><option value="sm">Самоанский</option><option value="ceb">Себуанский</option><option value="sr">Сербский</option><option value="st">Сесото</option><option value="si">Сингальский</option><option value="sd">Синдхи</option><option value="sk">Словацкий</option><option value="sl">Словенский</option><option value="so">Сомалийский</option><option value="sw">Суахили</option><option value="su">Сунданский</option><option value="tg">Таджикский</option><option value="th">Тайский</option><option value="ta">Тамильский</option><option value="te">Телугу</option><option value="tr">Турецкий</option><option value="uz">Узбекский</option><option value="uk">Украинский</option><option value="ur">Урду</option><option value="tl">Филиппинский</option><option value="fi">Финский</option><option value="fr">Французский</option><option value="fy">Фризский</option><option value="ha">Хауса</option><option value="hi">Хинди</option><option value="hmn">Хмонг</option><option value="hr">Хорватский</option><option value="ny">Чева</option><option value="cs">Чешский</option><option value="sv">Шведский</option><option value="sn">Шона</option><option value="gd">Шотландский (гэльский)</option><option value="eo">Эсперанто</option><option value="et">Эстонский</option><option value="jw">Яванский</option><option value="ja">Японский</option></select></td><td class="SL_td" width="3" align="center"><div id="SL_switch_b" title="Переключить направление" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/switchb.png&quot;) repeat scroll 0% 0%;"></div></td><td class="SL_td" width="20%" align="left"><select id="SL_lng_to" style="background: rgb(255, 255, 255) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/select.png&quot;) no-repeat scroll 100% 0px;"><option value="az">Азербайджанский</option><option value="sq">Албанский</option><option value="am">Амхарский</option><option value="en">Английский</option><option value="ar">Арабский</option><option value="hy">Армянский</option><option value="af">Африкаанс</option><option value="eu">Баскский</option><option value="be">Белорусский</option><option value="bn">Бенгальский</option><option value="my">Бирманский</option><option value="bg">Болгарский</option><option value="bs">Боснийский</option><option value="cy">Валлийский</option><option value="hu">Венгерский</option><option value="vi">Вьетнамский</option><option value="haw">Гавайский</option><option value="ht">Гаитянский</option><option value="gl">Галисийский</option><option value="nl">Голландский</option><option value="el">Греческий</option><option value="ka">Грузинский</option><option value="gu">Гуджарати</option><option value="da">Датский</option><option value="zu">Зулу</option><option value="iw">Иврит</option><option value="ig">Игбо</option><option value="yi">Идиш</option><option value="id">Индонезийский</option><option value="ga">Ирландский</option><option value="is">Исландский</option><option value="es">Испанский</option><option value="it">Итальянский</option><option value="yo">Йоруба</option><option value="kk">Казахский</option><option value="kn">Каннада</option><option value="ca">Каталанский</option><option value="ky">Киргизский</option><option value="zh-TW">Китайский Трад</option><option value="zh-CN">Китайский Упр</option><option value="ko">Корейский</option><option value="co">Корсиканский</option><option value="ku">Курманджи</option><option value="km">Кхмерский</option><option value="xh">Кхоса</option><option value="lo">Лаосский</option><option value="la">Латинский</option><option value="lv">Латышский</option><option value="lt">Литовский</option><option value="lb">Люксембургский</option><option value="mk">Македонский</option><option value="mg">Малагасийский</option><option value="ms">Малайский</option><option value="ml">Малаялам</option><option value="mt">Мальтийский</option><option value="mi">Маори</option><option value="mr">Маратхи</option><option value="mn">Монгольский</option><option value="de">Немецкий</option><option value="ne">Непальский</option><option value="no">Норвежский</option><option value="pa">Панджаби</option><option value="fa">Персидский</option><option value="pl">Польский</option><option value="pt">Португальский</option><option value="ps">Пушту</option><option value="ro">Румынский</option><option selected="selected" value="ru">Русский</option><option value="sm">Самоанский</option><option value="ceb">Себуанский</option><option value="sr">Сербский</option><option value="st">Сесото</option><option value="si">Сингальский</option><option value="sd">Синдхи</option><option value="sk">Словацкий</option><option value="sl">Словенский</option><option value="so">Сомалийский</option><option value="sw">Суахили</option><option value="su">Сунданский</option><option value="tg">Таджикский</option><option value="th">Тайский</option><option value="ta">Тамильский</option><option value="te">Телугу</option><option value="tr">Турецкий</option><option value="uz">Узбекский</option><option value="uk">Украинский</option><option value="ur">Урду</option><option value="tl">Филиппинский</option><option value="fi">Финский</option><option value="fr">Французский</option><option value="fy">Фризский</option><option value="ha">Хауса</option><option value="hi">Хинди</option><option value="hmn">Хмонг</option><option value="hr">Хорватский</option><option value="ny">Чева</option><option value="cs">Чешский</option><option value="sv">Шведский</option><option value="sn">Шона</option><option value="gd">Шотландский (гэльский)</option><option value="eo">Эсперанто</option><option value="et">Эстонский</option><option value="jw">Яванский</option><option value="ja">Японский</option></select></td><td class="SL_td" width="8%" align="center"><div id="SL_TTS_voice" title="undefined" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/ttsvoice.png&quot;) repeat scroll 0% 0%;"></div></td><td class="SL_td" width="8%" align="center"><div id="SL_copy" title="Скопировать" class="SL_copy" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/copy.png&quot;) repeat scroll 0% 0%;"></div></td><td class="SL_td" width="8%" align="center"><div id="SL_bbl_font_patch"></div><div id="SL_bbl_font" title="Размер шрифта" class="SL_bbl_font" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/font.png&quot;) repeat scroll 0% 0%;"></div></td><td class="SL_td" width="8%" align="center"><div id="SL_bbl_help" title="Справка" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/bhelp.png&quot;) repeat scroll 0% 0%;"></div></td><td class="SL_td" width="15%" align="right"><div id="SL_pin" class="SL_pin_off" title="Закрепить всплывающее окно" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/pin-on.png&quot;) repeat scroll 0% 0%;"></div></td></tr></table></div></div><div id="SL_shadow_translation_result" style="visibility: visible;"></div><div id="SL_loading" class="SL_loading" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/loading.gif&quot;) repeat scroll 0% 0%;"></div><div id="SL_player2"></div><div id="SL_alert100">Звуковая функция ограничена 200 символами</div><div id="SL_Balloon_options" style="background: rgb(255, 255, 255) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/bg3.png&quot;) repeat scroll 0% 0%;"><div id="SL_arrow_down" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/down.png&quot;) repeat scroll 0% 0%;"></div><table id="SL_tbl_opt" width="100%"><tr><td class="SL_td" width="5%" align="center"><input id="SL_BBL_locer" type="checkbox" checked="1" title="Показывать кнопку ImTranslator Bubble 3 секунд"></td><td class="SL_td" width="5%" align="left"><div id="SL_BBL_IMG" title="Показывать кнопку ImTranslator Bubble 3 секунд" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/img/util/bbl-logo.png&quot;) repeat scroll 0% 0%;"></div></td><td class="SL_td" width="70%" align="center"><a href="moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/html/options/options.html?bbl" target="_blank" class="SL_options" id="SL_opt1" title="Показать настройки">Настройки</a> : <a href="moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/html/options/options.html?hist" target="_blank" class="SL_options" id="SL_opt2" title="История переводов">История</a> : <a href="moz-extension://473a459c-0cd9-441c-aabe-01f1810a71bb/content/html/options/options.html?feed" target="_blank" class="SL_options" id="SL_opt3" title="Обратная связь">Обратная связь</a> : <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=GD9D8CPW8HFA2" target="_blank" class="SL_options" id="SL_opt4" title="Сделать пожертвование">Donate</a></td><td class="SL_td" width="15%" align="right"><span id="SL_Balloon_Close" class="SL_options" title="Закрыть">Закрыть</span></td></tr></table></div></div></div></body></html>
