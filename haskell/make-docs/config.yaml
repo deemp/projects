@@ -11,3 +11,8 @@
     - hsPrefix: "optics-by-example/src"
       mdPrefix: "optics-by-example"
       maxDepth: 1
+- heading: "Thinking with Types"
+  subDirs:
+    - hsPrefix: "thinking-with-types/src"
+      mdPrefix: "thinking-with-types"
+      maxDepth: 1

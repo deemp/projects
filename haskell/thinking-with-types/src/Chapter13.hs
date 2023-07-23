@@ -1,12 +1,11 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unused-imports #-}
 
-module Lib () where
+module Chapter13 () where
 
 import Data.Data (Proxy)
 import GHC.Generics (Generic (..))
@@ -51,7 +50,6 @@ desired type.
 
 - Type families must be saturated
   - no currying
-
 -}
 
 {- INDENT 4 -}
