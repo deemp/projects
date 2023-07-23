@@ -1,20 +1,13 @@
 {
   inputs = { };
   outputs = inputs:
-    let
-      inputs_ =
-        let haskell = (import ../.); in
-        {
-          inherit (haskell.outputs.inputs) devshell nixpkgs drv-tools flake-utils codium;
-          inherit haskell;
-        };
-
-      outputs = outputs_ { } // { inputs = inputs_; outputs = outputs_; };
-
-      outputs_ =
-        inputs__:
-        let inputs = inputs_ // inputs__; in
-        inputs.flake-utils.lib.eachDefaultSystem (system:
+    let flakes = (import ../../.).outputs.inputs.flakes; in
+    flakes.makeFlake {
+      inputs = {
+        inherit (flakes.all) nixpkgs codium drv-tools devshell;
+        haskell = (import ../.);
+      };
+      perSystem = { inputs, system }:
         let
           pkgs = inputs.nixpkgs.legacyPackages.${system};
           inherit (inputs.devshell.lib.${system}) mkShell mkCommands mkRunCommands mkShellCommands;
@@ -42,11 +35,9 @@
           };
         in
         {
-          inherit devShells;
-        }
-        );
-    in
-    outputs;
+          inherit packages devShells;
+        };
+    };
 
   nixConfig = {
     extra-substituters = [

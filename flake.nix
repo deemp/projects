@@ -1,109 +1,96 @@
 {
   inputs.flakes.url = "github:deemp/flakes";
-  outputs =
-    inputs@{ self, ... }:
-    let
-      inputs_ =
-        let flakes = inputs.flakes.flakes; in
-        {
-          inherit (flakes.source-flake) nixpkgs flake-utils formatter;
-          inherit (flakes) drv-tools workflows flakes-tools devshell codium;
-          inherit flakes;
-        };
+  outputs = inputs:
+    let makeFlake = inputs.flakes.makeFlake; in
+    makeFlake {
+      inputs = {
+        inherit (inputs.flakes.all) nixpkgs formatter drv-tools workflows flakes-tools devshell codium;
+        inherit (inputs) flakes;
+      };
+      perSystem = { inputs, system }:
+        let
+          pkgs = inputs.nixpkgs.legacyPackages.${system};
+          inherit (inputs.codium.lib.${system}) mkCodium writeSettingsJSON extensions extensionsCommon settingsNix settingsCommonNix;
+          inherit (inputs.devshell.lib.${system}) mkCommands mkRunCommands mkShell;
+          inherit (inputs.workflows.lib.${system}) writeWorkflow nixCI;
+          inherit (inputs.flakes-tools.lib.${system}) mkFlakesTools;
+          inherit (inputs.drv-tools.lib.${system}) mkShellApps subDirectories getExe;
 
-      outputs = outputs_ { } // { inputs = inputs_; outputs = outputs_; };
-
-      outputs_ =
-        inputs__:
-        let inputs = inputs_ // inputs__; in
-        inputs.flake-utils.lib.eachDefaultSystem
-          (system:
-          let
-            pkgs = inputs.nixpkgs.legacyPackages.${system};
-            inherit (inputs.codium.lib.${system}) mkCodium writeSettingsJSON;
-            inherit (inputs.codium.lib.${system}) extensions extensionsCommon settingsNix settingsCommonNix;
-            inherit (inputs.devshell.lib.${system}) mkCommands mkRunCommands mkShell;
-            inherit (inputs.workflows.lib.${system}) writeWorkflow;
-            inherit (inputs.workflows.lib.${system}) nixCI;
-            inherit (inputs.flakes-tools.lib.${system}) mkFlakesTools;
-            inherit (inputs.drv-tools.lib.${system}) mkShellApps subDirectories getExe;
-
-            scripts = (mkShellApps {
-              genDocs =
-                {
-                  text = ''
-                    (cd haskell && set -a && source .env && ${getExe (import ./haskell).packages.${system}.genDocs})
-                    cp notes/README.md docs/src/miscNotes/README.md
-                    (cd docs/src && cat prefix.md haskell/toc.md miscNotes/toc.md > SUMMARY.md)
-                    ${getExe pkgs.mdbook} build docs
-                  '';
-                  description = "Generate docs";
-                };
-            });
-
-            packages = {
-              # --- IDE ---
-
-              # VSCodium with extensions
-              codium = mkCodium { extensions = extensionsCommon; };
-
-              # a script to write `.vscode/settings.json`
-              writeSettings = writeSettingsJSON settingsCommonNix;
-
-              # --- Flakes ---
-
-              # Scripts that can be used in CI
-              inherit (mkFlakesTools
-                {
-                  root = self.outPath;
-                  dirs = [
-                    "blockchain"
-                    "F22/total-virtualization"
-                    "haskell"
-                    "postgresql"
-                    "prolog/maze"
-                    "rescript"
-                    "scala"
-                    "vlang/vforces"
-                    "."
-                  ];
-                  subDirs = [
-                    "F22/total-virtualization"
-                    "haskell"
-                  ];
-                }) updateLocks saveFlakes format;
-
-              # --- GH Actions
-
-              # A script to write GitHub Actions workflow file into `.github/ci.yaml`
-              writeWorkflows =
-                import ./nix-files/workflow.nix {
-                  name = "ci";
-                  inherit scripts system;
-                  inherit (inputs) workflows;
-                };
-            } // scripts;
-
-            tools = [
-              pkgs.mdbook
-            ];
-
-            devShells.default = mkShell {
-              packages = tools;
-              commands =
-                mkCommands "tools" tools
-                ++ mkRunCommands "ide" { "codium ." = packages.codium; inherit (packages) writeSettings; }
-                ++ mkRunCommands "docs" { inherit (packages) genDocs; }
-                ++ mkRunCommands "infra" { inherit (packages) writeWorkflows; }
-              ;
-            };
-          in
-          {
-            inherit packages devShells;
-            formatter = inputs.formatter.${system};
+          scripts = (mkShellApps {
+            genDocs =
+              {
+                text = ''
+                  (cd haskell && set -a && source .env && ${getExe (import ./haskell).packages.${system}.genDocs})
+                  cp notes/README.md docs/src/miscNotes/README.md
+                  (cd docs/src && cat prefix.md haskell/toc.md miscNotes/toc.md > SUMMARY.md)
+                  ${getExe pkgs.mdbook} build docs
+                '';
+                description = "Generate docs";
+              };
           });
-    in
-    outputs;
+
+          packages = {
+            # --- IDE ---
+
+            # VSCodium with extensions
+            codium = mkCodium { extensions = extensionsCommon; };
+
+            # a script to write `.vscode/settings.json`
+            writeSettings = writeSettingsJSON settingsCommonNix;
+
+            # --- Flakes ---
+
+            # Scripts that can be used in CI
+            inherit (mkFlakesTools
+              {
+                root = ./.;
+                dirs = [
+                  "blockchain"
+                  "F22/total-virtualization"
+                  "haskell"
+                  "postgresql"
+                  "prolog/maze"
+                  "rescript"
+                  "scala"
+                  "vlang/vforces"
+                  "."
+                ];
+                subDirs = [
+                  "F22/total-virtualization"
+                  "haskell"
+                ];
+              }) updateLocks saveFlakes format;
+
+            # --- GH Actions
+
+            # A script to write GitHub Actions workflow file into `.github/ci.yaml`
+            writeWorkflows =
+              import ./nix-files/workflow.nix {
+                name = "ci";
+                inherit scripts system;
+                inherit (inputs) workflows;
+              };
+          } // scripts;
+
+          tools = [
+            pkgs.mdbook
+          ];
+
+          devShells.default = mkShell {
+            packages = tools;
+            commands =
+              mkCommands "tools" tools
+              ++ mkRunCommands "ide" { "codium ." = packages.codium; inherit (packages) writeSettings; }
+              ++ mkRunCommands "docs" { inherit (packages) genDocs; }
+              ++ mkRunCommands "infra" { inherit (packages) writeWorkflows; }
+            ;
+          };
+        in
+        {
+          inherit packages devShells;
+          formatter = inputs.formatter.${system};
+        };
+    };
 
   nixConfig = {
     extra-trusted-substituters = [

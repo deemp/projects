@@ -1,53 +1,41 @@
 {
   inputs = { };
   outputs = inputs:
-    let
-      inputs_ =
-        let flakes = (import ../.).outputs.inputs.flakes; in
+    let flakes = (import ../.).outputs.inputs.flakes; in
+    flakes.makeFlake {
+      inputs = { inherit (flakes.all) nixpkgs drv-tools flakes-tools devshell codium; };
+      perSystem = { inputs, system }:
+        let
+          pkgs = inputs.nixpkgs.legacyPackages.${system};
+          inherit (inputs.codium.lib.${system}) mkCodium writeSettingsJSON;
+          inherit (inputs.codium.lib.${system}) extensions extensionsCommon settingsNix settingsCommonNix;
+          inherit (inputs.devshell.lib.${system}) mkCommands mkRunCommands mkShell;
+
+          tools = [
+            pkgs.postgresql_15
+            pkgs.nodejs_18
+          ];
+
+          packages = {
+            # --- IDE ---
+            codium = mkCodium { extensions = extensionsCommon // { inherit (extensions) postgresql; }; };
+
+            # a script to write `.vscode/settings.json`
+            writeSettings = writeSettingsJSON (settingsCommonNix // { inherit (extensions) prettier-sql-vscode; });
+          };
+
+          devShells.default = mkShell {
+            packages = tools;
+            bash.extra = ''source ${./microk8s.sh}'';
+            commands =
+              mkCommands "tools" tools
+              ++ mkRunCommands "ide" { "codium ." = packages.codium; inherit (packages) writeSettings; };
+          };
+        in
         {
-          inherit (flakes.source-flake) nixpkgs flake-utils;
-          inherit (flakes) drv-tools workflows flakes-tools devshell codium;
+          inherit packages devShells;
         };
-
-      outputs = outputs_ { } // { inputs = inputs_; outputs = outputs_; };
-
-      outputs_ =
-        inputs__:
-        let inputs = inputs_ // inputs__; in
-        inputs.flake-utils.lib.eachDefaultSystem
-          (system:
-          let
-            pkgs = inputs.nixpkgs.legacyPackages.${system};
-            inherit (inputs.codium.lib.${system}) mkCodium writeSettingsJSON;
-            inherit (inputs.codium.lib.${system}) extensions extensionsCommon settingsNix settingsCommonNix;
-            inherit (inputs.devshell.lib.${system}) mkCommands mkRunCommands mkShell;
-
-            tools = [
-              pkgs.postgresql_15
-              pkgs.nodejs_18
-            ];
-
-            packages = {
-              # --- IDE ---
-              codium = mkCodium { extensions = extensionsCommon // { inherit (extensions) postgresql; }; };
-
-              # a script to write `.vscode/settings.json`
-              writeSettings = writeSettingsJSON (settingsCommonNix // { inherit (extensions) prettier-sql-vscode; });
-            };
-
-            devShells.default = mkShell {
-              packages = tools;
-              bash.extra = ''source ${./microk8s.sh}'';
-              commands =
-                mkCommands "tools" tools
-                ++ mkRunCommands "ide" { "codium ." = packages.codium; inherit (packages) writeSettings; };
-            };
-          in
-          {
-            inherit packages devShells;
-          });
-    in
-    outputs;
+    };
 
   nixConfig = {
     extra-trusted-substituters = [

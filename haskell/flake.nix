@@ -9,24 +9,14 @@
       flake = false;
     };
   };
-
   outputs = inputs:
-    let
-      inputs_ =
-        let flakes = (import ../.).outputs.inputs.flakes; in
-        {
-          inherit (flakes.source-flake) nixpkgs flake-utils;
-          inherit (flakes) drv-tools devshell codium;
-          haskell-tools = flakes.language-tools.haskell;
-          inherit (inputs) fused-effects-exceptions large-records;
-        };
-
-      outputs = outputs_ { } // { inputs = inputs_; outputs = outputs_; };
-
-      outputs_ =
-        inputs__:
-        let inputs = inputs_ // inputs__; in
-        inputs.flake-utils.lib.eachDefaultSystem (system:
+    let flakes = (import ../.).outputs.inputs.flakes; in
+    flakes.makeFlake {
+      inputs = {
+        inherit (flakes.all) nixpkgs drv-tools devshell codium haskell-tools;
+        inherit (inputs) fused-effects-exceptions large-records;
+      };
+      perSystem = { inputs, system }:
         let
           pkgs = inputs.nixpkgs.legacyPackages.${system};
           inherit (inputs.codium.lib.${system}) writeSettingsJSON mkCodium;
@@ -51,7 +41,6 @@
             dontCheck
             # remove `broken` flag
             unmarkBroken
-            overrideCabal
             ;
 
           override = {
@@ -116,10 +105,8 @@
         in
         {
           inherit devShells packages toolsGHCPackage;
-        }
-        );
-    in
-    outputs;
+        };
+    };
 
   nixConfig = {
     extra-substituters = [

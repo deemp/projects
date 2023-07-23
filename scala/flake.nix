@@ -1,22 +1,10 @@
 {
   inputs = { };
-
   outputs = inputs:
-    let
-      inputs_ =
-        let flakes = (import ../.).outputs.inputs.flakes; in
-        {
-          inherit (flakes.source-flake) nixpkgs flake-utils;
-          inherit (flakes) devshell codium;
-          python-tools = flakes.language-tools.python;
-        };
-
-      outputs = outputs_ { } // { inputs = inputs_; outputs = outputs_; };
-
-      outputs_ =
-        inputs__:
-        let inputs = inputs_ // inputs__; in
-        inputs.flake-utils.lib.eachDefaultSystem (system:
+    let flakes = (import ../.).outputs.inputs.flakes; in
+    flakes.makeFlake {
+      inputs = { inherit (flakes.all) nixpkgs devshell codium python-tools; };
+      perSystem = { inputs, system }:
         let
           pkgs = inputs.nixpkgs.legacyPackages.${system};
           inherit (inputs.codium.lib.${system}) writeSettingsJSON mkCodium extensions extensionsCommon settingsCommonNix;
@@ -30,9 +18,7 @@
             writeSettings = writeSettingsJSON settingsCommonNix;
           };
 
-          tools = [
-            pkgs.sbt
-          ];
+          tools = [ pkgs.sbt ];
 
           devShells.default = mkShell {
             packages = tools;
@@ -44,9 +30,8 @@
         in
         {
           inherit packages devShells;
-        });
-    in
-    outputs;
+        };
+    };
 
   nixConfig = {
     extra-substituters = [

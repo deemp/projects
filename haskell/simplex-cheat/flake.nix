@@ -1,20 +1,18 @@
 {
   inputs = { };
   outputs = inputs:
-    let
-      inputs_ = (import ../.).outputs.inputs // { haskell = import ../.; };
-
-      outputs = outputs_ { } // { inputs = inputs_; outputs = outputs_; };
-
-      outputs_ =
-        inputs__:
-        let inputs = inputs_ // inputs__; in
-        inputs.flake-utils.lib.eachDefaultSystem (system:
+    let flakes = (import ../../.).outputs.inputs.flakes; in
+    flakes.makeFlake {
+      inputs = {
+        inherit (flakes.all) nixpkgs drv-tools devshell;
+        haskell = (import ../.);
+      };
+      perSystem = { inputs, system }:
         let
           pkgs = inputs.nixpkgs.legacyPackages.${system};
           inherit (inputs.devshell.lib.${system}) mkShell mkCommands;
-          inherit (inputs.haskell.toolsGHCPackage.${system} "simplex-cheat" ./. { }) hls ghcid cabal fourmolu hpack;
-          tools = [ hls ghcid cabal fourmolu hpack ];
+          inherit (inputs.haskell.toolsGHCPackage.${system} "simplex-cheat" ./. { }) ghcid cabal hpack;
+          tools = [ ghcid cabal hpack ];
           devShells.default = mkShell {
             packages = tools;
             bash.extra = "export LANG=C.utf8";
@@ -40,10 +38,8 @@
         in
         {
           inherit devShells;
-        }
-        );
-    in
-    outputs;
+        };
+    };
 
   nixConfig = {
     extra-substituters = [

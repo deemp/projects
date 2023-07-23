@@ -321,6 +321,11 @@ ex2 = runQ [d|decl :: Int; decl = 1 + 2|]
 
 - [rzk-lang/rzk](https://github.com/rzk-lang/rzk) - see `flake.nix`
 
+## Nix
+
+- To keep completions in [share](https://github.com/NixOS/cabal2nix/issues/433#issuecomment-862557347), need to modify [justStaticExecutables](https://github.com/NixOS/nixpkgs/blob/c032f4a16c1d09533c8af71002d5e7ad2d85af60/pkgs/development/haskell-modules/lib/compose.nix#L288C8-L288C8) 
+so that it doesn't remove `share`.
+
 ## Misc
 
 - [Радости и горести побед над C: делаем конфетку из прототипа wc на хаскеле](https://habr.com/ru/articles/496370/)

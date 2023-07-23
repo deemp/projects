@@ -1,94 +1,79 @@
 {
   inputs = { };
-
   outputs = inputs:
-    let
-      inputs_ =
-        let haskell = (import ../.); in
+    let flakes = (import ../../.).outputs.inputs.flakes; in
+    flakes.makeFlake {
+      inputs = {
+        inherit (flakes.all) nixpkgs drv-tools devshell haskell-tools;
+        haskell = (import ../.);
+      };
+      perSystem = { inputs, system }:
+        let
+          pkgs = inputs.nixpkgs.legacyPackages.${system};
+          inherit (inputs.haskell-tools.lib.${system}) toolsGHC;
+          inherit (inputs.drv-tools.lib.${system}) withDescription withMan man;
+          packageName = "manager";
+          runtimeDependencies = [
+            pkgs.coreutils
+            pkgs.nix
+            pkgs.git
+            hpack
+          ];
+
+          inherit (inputs.haskell.toolsGHCPackage.${system} "manager" ./. {
+            inherit runtimeDependencies;
+          }) hls ghcid cabal fourmolu hpack haskellPackages;
+          
+          tools = [ hls ghcid cabal fourmolu hpack ];
+
+          inherit (inputs.devshell.lib.${system}) mkCommands mkRunCommands mkShell;
+
+          packageExecutableName = "manager";
+          packageExe =
+            let
+              packageWithCompletion = haskellPackages.generateOptparseApplicativeCompletions [ packageExecutableName ] haskellPackages.${packageName};
+            in
+            withMan
+              (withDescription packageWithCompletion (_: "Manage Haskell modules in a stack project (Alpha)"))
+              (x: ''
+                ${man.DESCRIPTION}
+                ${x.meta.description}
+              '')
+          ;
+          packages = {
+            default = packageExe;
+            package = haskellPackages.${packageName};
+          };
+          devShells.default = mkShell {
+            commands =
+              mkCommands "tools" tools
+              ++ [
+                {
+                  name = "nix develop .#manager";
+                  help = "Start a devshell with `manager`. Run `manager -h` there.";
+                  category = "manager";
+                }
+              ];
+          };
+          devShells.manager = mkShell {
+            packages = [ packageExe ];
+            commands =
+              mkCommands "manager" [ packageExe ]
+              ++ mkRunCommands "manager" { inherit (packages) default; };
+          };
+        in
         {
-          inherit (haskell.outputs.inputs) devshell nixpkgs drv-tools flake-utils codium;
-          inherit haskell;
+          inherit packages devShells;
         };
-
-      outputs = outputs_ { } // { inputs = inputs_; outputs = outputs_; };
-
-      outputs_ =
-        inputs__:
-        let inputs = inputs_ // inputs__; in
-        inputs.flake-utils.lib.eachDefaultSystem
-          (system:
-          let
-            pkgs = inputs.nixpkgs.legacyPackages.${system};
-            inherit (inputs.haskell-tools.lib.${system}) toolsGHC;
-            inherit (inputs.drv-tools.lib.${system}) withDescription withMan man;
-            packageName = "manager";
-            runtimeDependencies = [
-              pkgs.coreutils
-              pkgs.nix
-              pkgs.git
-              hpack
-            ];
-
-            inherit (inputs.haskell.toolsGHCPackage.${system} "manager" ./. {
-              inherit runtimeDependencies;
-            })
-              hls ghcid cabal fourmolu hpack
-              justStaticExecutable callCabal2nix haskellPackages
-              ;
-            haskell-tools = [ hls ghcid cabal fourmolu hpack ];
-
-            inherit (inputs.devshell.lib.${system}) mkCommands mkRunCommands mkShell;
-
-            packageExecutableName = "manager";
-            packageExe =
-              let
-                packageWithCompletion = haskellPackages.generateOptparseApplicativeCompletions [ packageExecutableName ] haskellPackages.${packageName};
-                staticExecutable = justStaticExecutable { package = packageWithCompletion; };
-              in
-              withMan
-                (withDescription staticExecutable (_: "Manage Haskell modules in a stack project (Alpha)"))
-                (x: ''
-                  ${man.DESCRIPTION}
-                  ${x.meta.description}
-                '')
-            ;
-            packages = {
-              default = packageExe;
-              package = haskellPackages.${packageName};
-            };
-            devShells.default = mkShell {
-              commands =
-                mkCommands "tools" haskell-tools
-                ++ [
-                  {
-                    name = "nix develop .#manager";
-                    help = "Start a devshell with `manager`. Run `manager -h` there.";
-                    category = "manager";
-                  }
-                ];
-            };
-            devShells.manager = mkShell {
-              packages = [ packageExe ];
-              bash.extra = ''source ${packageExe}/share/bash-completion/completions/${packageExecutableName}'';
-              commands =
-                mkCommands "manager" [ packageExe ]
-                ++ mkRunCommands "manager" { inherit (packages) default; };
-            };
-          in
-          {
-            inherit packages devShells;
-          }
-          ) // {
-          templates = {
-            init = {
-              path = ./template;
-              description = ''Used by `manager` to initialize a project'';
-            };
+      raw = _: {
+        templates = {
+          init = {
+            path = ./template;
+            description = ''Used by `manager` to initialize a project'';
           };
         };
-    in
-    outputs;
-
+      };
+    };
   nixConfig = {
     extra-substituters = [
       "https://nix-community.cachix.org"

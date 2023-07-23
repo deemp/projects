@@ -1,60 +1,47 @@
 {
   inputs = { };
   outputs = inputs:
-    let
-      inputs_ =
-        let flakes = (import ../..).outputs.inputs.flakes; in
-        {
-          inherit (flakes.source-flake) nixpkgs flake-utils;
-          inherit (flakes) drv-tools devshell codium;
-          python-tools = flakes.language-tools.python;
-        };
+    let flakes = (import ../../.).outputs.inputs.flakes; in
+    flakes.makeFlake {
+      inputs = { inherit (flakes.all) nixpkgs drv-tools devshell codium python-tools; };
+      perSystem = { inputs, system }:
+        let
+          pkgs = inputs.nixpkgs.legacyPackages.${system};
+          inherit (inputs.codium.lib.${system}) mkCodium writeSettingsJSON;
+          inherit (inputs.codium.lib.${system}) extensions extensionsCommon settingsNix settingsCommonNix;
+          inherit (inputs.devshell.lib.${system}) mkShell mkCommands mkRunCommands;
 
-      outputs = outputs_ { } // { inputs = inputs_; outputs = outputs_; };
+          packages = {
+            writeSettings = writeSettingsJSON (settingsCommonNix // {
+              inherit (settingsNix) python kubernetes;
+            });
+            createVenvs = inputs.python-tools.lib.${system}.createVenvs [ "lab5" "lab6" ];
+            codium = mkCodium {
+              extensions = extensionsCommon // { inherit (extensions) docker python kubernetes; };
+            };
+          };
 
-      outputs_ =
-        inputs__:
-        let inputs = inputs_ // inputs__; in
-        inputs.flake-utils.lib.eachDefaultSystem
-          (system:
-          let
-            pkgs = inputs.nixpkgs.legacyPackages.${system};
-            inherit (inputs.codium.lib.${system}) mkCodium writeSettingsJSON;
-            inherit (inputs.codium.lib.${system}) extensions extensionsCommon settingsNix settingsCommonNix;
-            inherit (inputs.devshell.lib.${system}) mkShell mkCommands mkRunCommands;
+          tools = [
+            pkgs.rabbitmq-server
+            pkgs.hadolint
+            pkgs.poetry
+          ];
 
-            packages = {
-              writeSettings = writeSettingsJSON (settingsCommonNix // {
-                inherit (settingsNix) python kubernetes;
-              });
-              createVenvs = inputs.python-tools.lib.${system}.createVenvs [ "lab5" "lab6" ];
-              codium = mkCodium {
-                extensions = extensionsCommon // { inherit (extensions) docker python kubernetes; };
+          devShells.default = mkShell {
+            packages = tools;
+            bash.extra = '''';
+            commands =
+              mkCommands "tools" tools
+              ++ mkRunCommands "ide" {
+                "codium ." = packages.codium;
+                inherit (packages) writeSettings createVenvs;
               };
-            };
-
-            tools = [
-              pkgs.rabbitmq-server
-              pkgs.hadolint
-              pkgs.poetry
-            ];
-
-            devShells.default = mkShell {
-              packages = tools;
-              bash.extra = '''';
-              commands =
-                mkCommands "tools" tools
-                ++ mkRunCommands "ide" {
-                  "codium ." = packages.codium;
-                  inherit (packages) writeSettings createVenvs;
-                };
-            };
-          in
-          {
-            inherit packages devShells;
-          });
-    in
-    outputs;
+          };
+        in
+        {
+          inherit packages devShells;
+        };
+    };
 
   nixConfig = {
     extra-trusted-substituters = [
