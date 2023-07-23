@@ -1,3 +1,7 @@
+{-
+# Chapter 1
+-}
+
 module C_1_Handles (fileResource, getDataDir, greetingTxt) where
 
 import Control.Exception (Exception (..))
@@ -14,7 +18,7 @@ import System.IO qualified as IO
 import Prelude hiding (print, putStrLn, show)
 
 {-
-0 Setup
+## 0 Setup
 -}
 
 getDataDir :: IO FilePath
@@ -24,7 +28,7 @@ getDataDir = do
   return dir
 
 {-
-1.2 Writing to a file
+## 1.2 Writing to a file
 -}
 
 greetingTxt :: IO.FilePath
@@ -40,18 +44,18 @@ writeGreetingFile = do
   IO.putStrLn dir
 
 {-
-1.4 MonadIO
+## 1.4 MonadIO
 -}
 
 helloWorld :: (MonadIO m) => m ()
 helloWorld = liftIO (IO.putStrLn "hello, world")
 
 {-
-1.5 Exercises
+## 1.5 Exercises
 -}
 
 {-
-Ex 1
+### Ex 1
 -}
 
 writeGreetingSafe :: IO ()
@@ -68,7 +72,7 @@ fileResource p m =
     IO.hClose
 
 {-
-Ex 2
+### Ex 2
 -}
 
 handlePrintTest :: IO ()
@@ -78,7 +82,7 @@ handlePrintTest = runResourceT do
   liftIO $ IO.hShow p1 >>= print
 
 {-
-Ex 3
+### Ex 3
 -}
 
 howManyHandles :: IO ()

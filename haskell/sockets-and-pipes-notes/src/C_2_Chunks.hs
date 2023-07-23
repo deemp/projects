@@ -1,3 +1,7 @@
+{-
+# Chapter 2
+-}
+
 module C_2_Chunks (repeatUntil) where
 
 import C_1_Handles (fileResource, getDataDir, greetingTxt)
@@ -15,7 +19,7 @@ import System.FilePath ((</>))
 import System.IO qualified as IO
 
 {-
-2.1 Packed characters
+## 2.1 Packed characters
 -}
 
 helloText :: IO ()
@@ -29,9 +33,7 @@ helloTextFile = runResourceT @IO do
     T.hPutStrLn h (T.pack "hello")
     T.hPutStrLn h (T.pack "world")
 
-{-
->>>helloTextFile
--}
+-- >>>helloTextFile
 
 {-
 Text is strict. This crashes
@@ -40,7 +42,7 @@ p :: T.Text
 p = T.take 10 (T.pack (cycle "abc"))
 
 {-
-2.2 Reading from a file, one chunk at a time
+## 2.2 Reading from a file, one chunk at a time
 -}
 
 printFileContentsUpperCase :: IO ()
@@ -80,7 +82,7 @@ repeatUntilIO getChunk isEnd f = continue
       )
 
 {-
-Ex 4
+### Ex 4
 -}
 
 digitsOnly :: Text -> Text
@@ -140,7 +142,7 @@ characterCount fp = runResourceT @IO do
 -}
 
 {-
-Ex 6
+### Ex 6
 -}
 
 when :: (Monad m) => Bool -> m () -> m ()
@@ -150,7 +152,7 @@ unless :: (Monad m) => Bool -> m () -> m ()
 unless cond = when (not cond)
 
 {-
-Ex 7
+### Ex 7
 -}
 
 repeatUntil :: (Monad m) => m chunk -> (chunk -> Bool) -> (chunk -> m x) -> m ()

@@ -1,3 +1,7 @@
+{-
+# Chapter 3
+-}
+
 module C_3_Bytes (binaryFileResource) where
 
 import Data.Word (Word8)
@@ -18,14 +22,14 @@ import System.FilePath ((</>))
 import System.IO qualified as IO
 
 {-
-3.1 Packed octets
+## 3.1 Packed octets
 -}
 
 exampleBytes :: [Word8]
 exampleBytes = [104, 101, 108, 111] :: [Word8]
 
 {-
-3.2 Copying a file
+## 3.2 Copying a file
 -}
 
 greeting2Txt :: FilePath
@@ -42,7 +46,7 @@ binaryFileResource :: FilePath -> IOMode -> ResourceT IO (ReleaseKey, Handle)
 binaryFileResource path mode = allocate (IO.openBinaryFile path mode) IO.hClose
 
 {-
-3.5 Avoiding system defaults
+## 3.5 Avoiding system defaults
 -}
 
 helloHandle :: IO ()
@@ -83,11 +87,11 @@ helloUtf8 = do
 -- >>>helloUtf8
 
 {-
-3.6 Exercises
+## 3.6 Exercises
 -}
 
 {-
-Ex 8
+### Ex 8
 -}
 
 greet :: BS.ByteString -> IO ()
@@ -102,7 +106,7 @@ p1 = T.decodeUtf8' (fromString "♫")
 -- Right "k"
 
 {-
-Ex 9
+### Ex 9
 -}
 
 asciiUpper :: BS.ByteString -> BS.ByteString

@@ -68,13 +68,11 @@ inf = [A.string|abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl
 p :: [Int]
 p = BS.length <$> toChunks inf
 
-{-
->>>p
-[32,64,128,256,512,384]
+-- >>>p
+-- [32,64,128,256,512,384]
 
->>>LBS.take 10 inf
-"abcdefghij"
--}
+-- >>>LBS.take 10 inf
+-- "abcdefghij"
 
 httpVersion :: HttpVersion
 httpVersion = HttpVersion A.Digit1 A.Digit1

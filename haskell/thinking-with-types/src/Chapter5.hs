@@ -135,8 +135,6 @@ type family AllEq (ts :: [Type]) :: Constraint where
     AllEq '[] = ()
     AllEq (t ': ts) = (Eq t, AllEq ts)
 
-{-
->>>:kind! AllEq '[Int, Bool]
-AllEq '[Int, Bool] :: Constraint
-= (Eq Int, (Eq Bool, () :: Constraint))
--}
+-- >>>:kind! AllEq '[Int, Bool]
+-- AllEq '[Int, Bool] :: Constraint
+-- = (Eq Int, (Eq Bool, () :: Constraint))

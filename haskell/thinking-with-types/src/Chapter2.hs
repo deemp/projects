@@ -53,7 +53,7 @@ import GHC.TypeLits
 -- = Monad
 
 {-
-### 2.3.3-iv
+### 2.3.3-v
 -}
 
 -- >>>:kind! MonadTrans

@@ -18,7 +18,7 @@ import Network.Socket qualified as S
 import Network.Socket.ByteString qualified as S
 
 {-
-4.1 Open up and connect
+## 4.1 Open up and connect
 -}
 
 makeFriend :: S.SockAddr -> IO ()
@@ -31,7 +31,7 @@ makeFriend address = do
   repeatUntil (S.recv s 1024) BS.null BS.putStr
 
 {-
-4.2 Extra details
+## 4.2 Extra details
 -}
 
 sec :: Int -> Int
@@ -56,7 +56,7 @@ makeFriendSafely address = runResourceT @IO do
     S.gracefulClose s sec1
 
 {-
-4.4 Address information
+## 4.4 Address information
 -}
 
 myHints :: S.AddrInfo
@@ -93,11 +93,11 @@ mkFriend = makeFriendSafely (S.SockAddrInet 80 (S.tupleToHostAddress (147, 75, 5
 -- >>>mkFriend
 
 {-
-4.5 Exercises
+## 4.5 Exercises
 -}
 
 {-
-Ex 10
+### Ex 10
 -}
 
 openAndConnect :: S.AddrInfo -> ResourceT IO (ReleaseKey, Socket)
@@ -109,7 +109,7 @@ openAndConnect addressInfo = do
   return (r, s)
 
 {-
-Ex 11
+### Ex 11
 -}
 
 findGopherWebsite :: IO S.AddrInfo
@@ -120,7 +120,7 @@ findGopherWebsite = do
     x : _ -> return x
 
 {-
-Ex 12
+### Ex 12
 -}
 
 resolve :: S.ServiceName -> S.HostName -> IO S.AddrInfo

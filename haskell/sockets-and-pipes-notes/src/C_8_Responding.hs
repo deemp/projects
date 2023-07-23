@@ -1,3 +1,7 @@
+{-
+# Chapter 8
+-}
+
 module C_8_Responding (
   contentLength,
   contentType,
@@ -30,7 +34,7 @@ import Network.Simple.TCP (HostPreference (HostAny), Socket, serve)
 import Network.Simple.TCP qualified as Net
 
 {-
-8.1 A measure of success
+## 8.1 A measure of success
 -}
 
 countHelloAscii :: Natural -> LBS.ByteString
@@ -50,7 +54,7 @@ countHelloAscii count =
 data Status = Status StatusCode ReasonPhrase
 
 {-
-8.2 Response-building utilities
+## 8.2 Response-building utilities
 -}
 
 ok :: Status
@@ -68,10 +72,8 @@ http_1_1 = HttpVersion A.Digit1 A.Digit1
 encOk :: LBS.ByteString
 encOk = BSB.toLazyByteString (encodeStatusLine (status ok))
 
-{-
->>>encOk
-"HTTP/1.1 200 OK\r\n"
--}
+-- >>>encOk
+-- "HTTP/1.1 200 OK\r\n"
 
 contentType :: FieldName
 contentType = FieldName [A.string|Content-Type|]
@@ -97,11 +99,11 @@ bodyLengthValue :: MessageBody -> FieldValue
 bodyLengthValue (MessageBody x) = FieldValue (A.showIntegralDecimal (LBS.length x))
 
 {-
-8.3 Integers
+## 8.3 Integers
 -}
 
 {-
-8.4 Response transmission
+## 8.4 Response transmission
 -}
 
 sendResponse :: Socket -> Response -> IO ()
@@ -115,25 +117,23 @@ stuckCountingServer = serve @IO HostAny "8000" \(s, _) -> do
   sendResponse s (asciiOk (countHelloAscii count))
 
 {-
-8.5 Exercises
+## 8.5 Exercises
 -}
 
 {-
-Ex 21
+### Ex 21
 -}
 
 -- curl http://localhost:8000 --dump-header -
 
 {-
-Ex 22
+### Ex 22
 -}
 
 mid :: Word8 -> Word8 -> Word8
 mid x y = fromInteger (div (toInteger x + toInteger y) 2)
 
-{-
->>>mid 3 5
-4
->>>mid 220 250
-235
--}
+-- >>>mid 3 5
+-- 4
+-- >>>mid 220 250
+-- 235

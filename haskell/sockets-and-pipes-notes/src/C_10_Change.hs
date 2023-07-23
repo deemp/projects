@@ -1,3 +1,6 @@
+{-
+# Chapter 10
+-}
 module C_10_Change () where
 
 import C_8_Responding (sendResponse)
@@ -21,18 +24,18 @@ import Network.Simple.TCP (HostPreference (..), serve)
 import Text.Blaze.Html5 as Html ()
 
 {-
-10.1 STM
+## 10.1 STM
 -}
 
 {-
-10.2 Increment
+## 10.2 Increment
 -}
 
 increment :: TVar Natural -> STM Natural
 increment tvar = modifyTVar' tvar (+ 1) >> readTVar tvar
 
 {-
-10.4 The counting server
+## 10.4 The counting server
 -}
 
 countingServer :: IO ()
@@ -50,15 +53,11 @@ trySTM = do
   readTVarIO x >>= putStrLn
 
 {-
->>>trySTM
+## 10.6 Exercises
 -}
 
 {-
-10.6 Exercises
--}
-
-{-
-Ex 26
+### Ex 26
 -}
 
 incrementNotAtomic :: TVar Natural -> IO Natural
@@ -74,7 +73,7 @@ testIncrement inc = do
   readTVarIO x
 
 {-
-Ex 27
+### Ex 27
 -}
 
 timingServer :: IO ()

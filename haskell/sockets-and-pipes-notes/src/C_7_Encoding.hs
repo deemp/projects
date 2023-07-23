@@ -1,3 +1,7 @@
+{-
+# Chapter 7
+-}
+
 module C_7_Encoding (
   encodeLineEnd,
   encodeStatusLine,
@@ -43,16 +47,14 @@ import Data.Time qualified as Time
 import System.FilePath ((</>))
 
 {-
-7.1 String builders
+## 7.1 String builders
 -}
 
 sayHello :: T.Text -> T.Text
 sayHello name = T.pack "Hello, " <> name <> T.pack "!"
 
-{-
->>>sayHello $ T.pack "Tim"
-"Hello, Tim!"
--}
+-- >>>sayHello $ T.pack "Tim"
+-- "Hello, Tim!"
 
 sayHelloWithBuilder :: T.Text -> T.Text
 sayHelloWithBuilder name =
@@ -61,7 +63,7 @@ sayHelloWithBuilder name =
       TB.fromString "Hello" <> TB.fromText name <> TB.fromString "!"
 
 {-
-7.2 Measuring time
+## 7.2 Measuring time
 -}
 
 time :: IO () -> IO ()
@@ -83,12 +85,10 @@ concatSpeedTest n = do
   time $ T.writeFile (dir </> "builder.txt") (concatWithBuilder n)
   time $ T.writeFile (dir </> "strict.txt") (concatWithStrict n)
 
-{-
->>>concatSpeedTest 10000
--}
+-- >>>concatSpeedTest 10000
 
 {-
-7.3 Request and response
+## 7.3 Request and response
 -}
 
 encodeRequest :: Request -> BSB.Builder
@@ -109,7 +109,7 @@ encodeLineEnd :: BSB.Builder
 encodeLineEnd = A.lift crlf
 
 {-
-7.4 Higher-order encodings
+## 7.4 Higher-order encodings
 -}
 
 optionallyEncode :: (a -> BSB.Builder) -> Maybe a -> BSB.Builder
@@ -119,7 +119,7 @@ repeatedlyEncode :: (a -> BSB.Builder) -> [a] -> BSB.Builder
 repeatedlyEncode = foldMap
 
 {-
-7.5 The start line
+## 7.5 The start line
 -}
 
 encodeSpace :: BSB.Builder
@@ -163,7 +163,7 @@ encodeHttpVersion (HttpVersion v1 v2) =
     <> A.digitString v2
 
 {-
-7.6 Exercises
+## 7.6 Exercises
 -}
 
 encodeHeaderField :: HeaderField -> BSB.Builder
@@ -179,39 +179,31 @@ encodeMessageBody (MessageBody s) = BSB.lazyByteString s
 req :: BSB.Builder
 req = encodeRequest helloRequest
 
-{-
->>>req
-"GET /hello.txt HTTP/1.1\r\nHost: www.example.com\r\nAccept-Language: en, mi\r\n\r\n"
--}
+-- >>>req
+-- "GET /hello.txt HTTP/1.1\r\nHost: www.example.com\r\nAccept-Language: en, mi\r\n\r\n"
 
 resp :: BSB.Builder
 resp = encodeResponse helloResponse
 
-{-
->>>resp
-"HTTP/1.1 200 OK\r\nHost: www.example.com\r\nAccept-Language: en, mi\r\n\r\nHello"
--}
+-- >>>resp
+-- "HTTP/1.1 200 OK\r\nHost: www.example.com\r\nAccept-Language: en, mi\r\n\r\nHello"
 
 requestEqual :: Bool
 requestEqual = BS.toStrict (BSB.toLazyByteString req) == helloRequestString
 
-{-
->>>reqEqual
-True
->>>helloRequestString
-"GET /hello.txt HTTP/1.1\r\nHost: www.example.com\r\nAccept-Language: en, mi\r\n\r\n"
->>>req
-"GET /hello.txt HTTP/1.1\r\nHost: www.example.com\r\nAccept-Language: en, mi\r\n\r\n"
--}
+-- >>>reqEqual
+-- True
+-- >>>helloRequestString
+-- "GET /hello.txt HTTP/1.1\r\nHost: www.example.com\r\nAccept-Language: en, mi\r\n\r\n"
+-- >>>req
+-- "GET /hello.txt HTTP/1.1\r\nHost: www.example.com\r\nAccept-Language: en, mi\r\n\r\n"
 
 responseEqual :: Bool
 responseEqual = BS.toStrict (BSB.toLazyByteString resp) == helloResponseString
 
-{-
->>>responseEqual
-True
->>>helloResponseString
-"HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=us-ascii\r\nContent-Length: 6\r\n\r\nHello"
->>>resp
-"HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=us-ascii\r\nContent-Length: 6\r\n\r\nHello"
--}
+-- >>>responseEqual
+-- True
+-- >>>helloResponseString
+-- "HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=us-ascii\r\nContent-Length: 6\r\n\r\nHello"
+-- >>>resp
+-- "HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=us-ascii\r\nContent-Length: 6\r\n\r\nHello"

@@ -38,7 +38,7 @@ import Text.Blaze.Html5 as Html ()
 import Text.Blaze.Html5 qualified as HTML
 
 {-
-9.1 Some common types
+## 9.1 Some common types
 -}
 
 plainUtf8 :: FieldValue
@@ -51,7 +51,7 @@ json :: FieldValue
 json = FieldValue [A.string|application/json|]
 
 {-
-9.2 UTF-8
+## 9.2 UTF-8
 -}
 
 countHelloText :: Natural -> LT.Text
@@ -80,7 +80,7 @@ stuckCountingServerText = serve @IO HostAny "8000" \(s, _) -> do
   sendResponse s (textOk (countHelloText count))
 
 {-
-9.3 HTML
+## 9.3 HTML
 -}
 
 countHelloHtml :: Natural -> Html
@@ -107,7 +107,7 @@ renderHtml' :: Html -> LBS.ByteString
 renderHtml' = BR.renderHtml
 
 {-
-9.4 JSON
+## 9.4 JSON
 -}
 
 countHelloJSON1 :: Natural -> J.Value
@@ -121,10 +121,8 @@ countHelloJSON1 count = toJSON (J.KeyMap.fromList [greetingJson, hitsJson])
 ch :: J.Value
 ch = countHelloJSON1 3
 
-{-
->>>ch
-Object (fromList [("greeting",String "Hello! \9835"),("hits",Object (fromList [("count",Number 3.0),("message",String "Hello! \9835\r\nThis page has been viewed 3 times.")]))])
--}
+-- >>>ch
+-- Object (fromList [("greeting",String "Hello! \9835"),("hits",Object (fromList [("count",Number 3.0),("message",String "Hello! \9835\r\nThis page has been viewed 3 times.")]))])
 
 countHelloJSON :: Natural -> J.Value
 countHelloJSON count =
@@ -145,7 +143,7 @@ jsonOk str = Response (status ok) [typ, len] (Just body)
   body = MessageBody (J.encode str)
 
 {-
-9.5 Exercises
+## 9.5 Exercises
 -}
 
 htmlOk :: Html -> Response
@@ -161,7 +159,7 @@ stuckCountingServerHtml = serve @IO HostAny "8000" \(s, _) -> do
   sendResponse s (htmlOk (countHelloHtml count))
 
 {-
-Ex 25
+### Ex 25
 -}
 
 class Encode a where

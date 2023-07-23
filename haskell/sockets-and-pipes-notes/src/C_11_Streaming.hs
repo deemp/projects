@@ -1,3 +1,7 @@
+{-
+# 11. Streaming
+-}
+
 module C_11_Streaming () where
 
 import C_1_Handles (getDataDir)
@@ -13,9 +17,6 @@ import Network.Simple.TCP (HostPreference (..), serve)
 import System.FilePath ((</>))
 import Text.Blaze.Html5 as Html ()
 
-{-
-11. Streaming
--}
 
 hContentsResponse :: Handle -> IO Response
 hContentsResponse h = do
