@@ -1,0 +1,8 @@
+  TABLE: metrics.nginx_v2
+  COLUMNS:
+    - b: a
+    - d: c
+  ENGINE: MergeTree
+  PARTITION BY: Date
+  ORDER BY:  (Status, Date)
+  SETTINGS: index_granularity = 8192
