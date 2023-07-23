@@ -71,6 +71,7 @@ library
     , http-client-tls
     , http-types
     , large-anon
+    , large-generics
     , lens
     , lifted-base
     , managed
@@ -113,6 +114,7 @@ executable README
     , http-client-tls
     , http-types
     , large-anon
+    , large-generics
     , lens
     , lifted-base
     , managed

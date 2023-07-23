@@ -1,6 +1,6 @@
 {
   "nodes": {
-    "fused-effects-exceptions-src": {
+    "fused-effects-exceptions": {
       "flake": false,
       "locked": {
         "lastModified": 1657897851,
@@ -16,9 +16,26 @@
         "type": "github"
       }
     },
+    "large-records": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1688632851,
+        "narHash": "sha256-ZuSzTpFxUJ7q0u+zIZyVJvC7pCiBYZT33kUlZ2GxcJY=",
+        "owner": "well-typed",
+        "repo": "large-records",
+        "rev": "851d04095d72485fc8ce236976152e601c598791",
+        "type": "github"
+      },
+      "original": {
+        "owner": "well-typed",
+        "repo": "large-records",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "fused-effects-exceptions-src": "fused-effects-exceptions-src"
+        "fused-effects-exceptions": "fused-effects-exceptions",
+        "large-records": "large-records"
       }
     }
   },

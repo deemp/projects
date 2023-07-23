@@ -20,6 +20,8 @@ dependencies:
   - http-client
   - http-client-tls
   - http-types
+  - large-anon
+  - large-generics  
   - lens
   - lifted-base
   - managed
@@ -29,14 +31,13 @@ dependencies:
   - mtl
   - random
   - string-interpolate
-  - text
   - template-haskell
+  - text
   - time
   - transformers
   - transformers-base
   - unliftio
   - unordered-containers
-  - large-anon
 
 executables:
   README:

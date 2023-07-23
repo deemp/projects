@@ -1,7 +1,11 @@
 {
   inputs = {
-    fused-effects-exceptions-src = {
+    fused-effects-exceptions = {
       url = "github:fused-effects/fused-effects-exceptions";
+      flake = false;
+    };
+    large-records = {
+      url = "github:well-typed/large-records";
       flake = false;
     };
   };
@@ -14,7 +18,7 @@
           inherit (flakes.source-flake) nixpkgs flake-utils;
           inherit (flakes) drv-tools devshell codium;
           haskell-tools = flakes.language-tools.haskell;
-          inherit (inputs) fused-effects-exceptions-src;
+          inherit (inputs) fused-effects-exceptions large-records;
         };
 
       outputs = outputs_ { } // { inputs = inputs_; outputs = outputs_; };
@@ -47,11 +51,12 @@
             dontCheck
             # remove `broken` flag
             unmarkBroken
+            overrideCabal
             ;
 
           override = {
             overrides = self: super: {
-              fused-effects-exceptions = dontCheck (self.callCabal2nix "fused-effects-exceptions" inputs.fused-effects-exceptions-src { });
+              fused-effects-exceptions = dontCheck (super.callCabal2nix "fused-effects-exceptions" inputs.fused-effects-exceptions { });
               sockets-and-pipes = unmarkBroken super.sockets-and-pipes;
               aeson = super.aeson_2_1_2_1;
               ascii = unmarkBroken super.ascii_1_7_0_0;
@@ -60,6 +65,9 @@
               ascii-superset = super.ascii-superset_1_3_0_0;
               ascii-th = super.ascii-th_1_2_0_0;
               ascii-caseless = unmarkBroken super.ascii-caseless;
+              large-anon = super.callCabal2nixWithOptions "large-anon" "${inputs.large-records.outPath}/large-anon" "-f disablefourmoluexec" { };
+              typelet = unmarkBroken super.typelet;
+              large-generics = super.callCabal2nix "large-generics" "${inputs.large-records.outPath}/large-generics" { };
             } // (mapGenAttrs (name: { "${name}" = super.callCabal2nix name ./${name} { }; }) packageNames);
           };
 
