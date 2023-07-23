@@ -70,6 +70,16 @@
 - [Book](haskell/optics-by-example/Book.md)
 - [Extra](haskell/optics-by-example/Extra.md)
 
+# Thinking with Types
+
+- [Chapter13](haskell/thinking-with-types/Chapter13.md)
+- [Chapter2](haskell/thinking-with-types/Chapter2.md)
+- [Chapter3](haskell/thinking-with-types/Chapter3.md)
+- [Chapter4](haskell/thinking-with-types/Chapter4.md)
+- [Chapter5](haskell/thinking-with-types/Chapter5.md)
+- [Chapter5_1](haskell/thinking-with-types/Chapter5_1.md)
+- [Chapter6](haskell/thinking-with-types/Chapter6.md)
+
 # Miscellaneous Notes
 
 - [Notes](./miscNotes/MiscNotes.md)
