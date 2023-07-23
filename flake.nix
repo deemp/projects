@@ -53,6 +53,7 @@
                   "rescript"
                   "scala"
                   "vlang/vforces"
+                  "cpp"
                   "."
                 ];
                 subDirs = [
