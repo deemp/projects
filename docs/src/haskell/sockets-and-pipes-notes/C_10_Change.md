@@ -1,0 +1,88 @@
+# Chapter 10
+
+```haskell
+module C_10_Change () where
+
+import C_08_Responding (sendResponse)
+import C_09_Content_types (countHelloHtml, htmlOk, textOk)
+import Control.Concurrent.Async as Async (replicateConcurrently_)
+import Control.Concurrent.STM (
+  TVar,
+  atomically,
+  modifyTVar',
+  newTVar,
+  readTVarIO,
+  writeTVar,
+ )
+import Control.Concurrent.STM.TVar (newTVarIO, readTVar)
+import Control.Monad (replicateM)
+import Control.Monad.STM (STM)
+import Data.Text.Lazy qualified as LT
+import Data.Time as Time (diffUTCTime, getCurrentTime)
+import GHC.Natural (Natural)
+import Network.Simple.TCP (HostPreference (..), serve)
+import Text.Blaze.Html5 as Html ()
+```
+
+## 10.1 STM
+
+
+## 10.2 Increment
+
+```haskell
+increment :: TVar Natural -> STM Natural
+increment tvar = modifyTVar' tvar (+ 1) >> readTVar tvar
+```
+
+## 10.4 The counting server
+
+```haskell
+countingServer :: IO ()
+countingServer = do
+  hitCounter <- newTVarIO (0 :: Natural)
+  serve @IO HostAny "8000" \(s, _) -> do
+    count <- atomically (increment hitCounter)
+    sendResponse s (htmlOk (countHelloHtml count))
+
+trySTM :: IO ()
+trySTM = do
+  x <- newTVarIO "Constantinopole"
+  readTVarIO x >>= putStrLn
+  atomically (writeTVar x "Istanbul")
+  readTVarIO x >>= putStrLn
+```
+
+## 10.6 Exercises
+
+
+### Ex 26
+
+```haskell
+incrementNotAtomic :: TVar Natural -> IO Natural
+incrementNotAtomic t = do
+  count <- readTVarIO t
+  atomically $ writeTVar t (count + 1)
+  readTVarIO t
+
+testIncrement :: (TVar Natural -> IO a) -> IO Natural
+testIncrement inc = do
+  x <- atomically (newTVar @Natural 0)
+  Async.replicateConcurrently_ 10 (replicateM 1000 (inc x))
+  readTVarIO x
+```
+
+### Ex 27
+
+```haskell
+timingServer :: IO ()
+timingServer = do
+  lastTime <- newTVarIO Nothing
+  serve @IO HostAny "8000" \(s, _) -> do
+    prevTime <- readTVarIO lastTime
+    curTime <- Time.getCurrentTime
+    atomically $ writeTVar lastTime (Just curTime)
+    sendResponse s $
+      textOk $
+        LT.pack $
+          show (Time.diffUTCTime <$> Just curTime <*> prevTime)
+```

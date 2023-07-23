@@ -72,13 +72,27 @@
 
 # Thinking with Types
 
+- [Chapter02](haskell/thinking-with-types/Chapter02.md)
+- [Chapter03](haskell/thinking-with-types/Chapter03.md)
+- [Chapter04](haskell/thinking-with-types/Chapter04.md)
+- [Chapter05](haskell/thinking-with-types/Chapter05.md)
+- [Chapter05_1](haskell/thinking-with-types/Chapter05_1.md)
+- [Chapter06](haskell/thinking-with-types/Chapter06.md)
 - [Chapter13](haskell/thinking-with-types/Chapter13.md)
-- [Chapter2](haskell/thinking-with-types/Chapter2.md)
-- [Chapter3](haskell/thinking-with-types/Chapter3.md)
-- [Chapter4](haskell/thinking-with-types/Chapter4.md)
-- [Chapter5](haskell/thinking-with-types/Chapter5.md)
-- [Chapter5_1](haskell/thinking-with-types/Chapter5_1.md)
-- [Chapter6](haskell/thinking-with-types/Chapter6.md)
+
+# Sockets and Pipes
+
+- [C_01_Handles](haskell/sockets-and-pipes-notes/C_01_Handles.md)
+- [C_02_Chunks](haskell/sockets-and-pipes-notes/C_02_Chunks.md)
+- [C_03_Bytes](haskell/sockets-and-pipes-notes/C_03_Bytes.md)
+- [C_04_Sockets](haskell/sockets-and-pipes-notes/C_04_Sockets.md)
+- [C_05_HTTP](haskell/sockets-and-pipes-notes/C_05_HTTP.md)
+- [C_06_HTTP_types](haskell/sockets-and-pipes-notes/C_06_HTTP_types.md)
+- [C_07_Encoding](haskell/sockets-and-pipes-notes/C_07_Encoding.md)
+- [C_08_Responding](haskell/sockets-and-pipes-notes/C_08_Responding.md)
+- [C_09_Content_types](haskell/sockets-and-pipes-notes/C_09_Content_types.md)
+- [C_10_Change](haskell/sockets-and-pipes-notes/C_10_Change.md)
+- [C_11_Streaming](haskell/sockets-and-pipes-notes/C_11_Streaming.md)
 
 # Miscellaneous Notes
 
