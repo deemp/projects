@@ -1,6 +1,6 @@
-## Developer roadmap
+# Developers roadmap
 
-Inspired by [src](https://github.com/fullstack-development/developers-roadmap).
+Inspired by [developers-roadmap](https://github.com/fullstack-development/developers-roadmap).
 
 Extensions:
 
@@ -19,6 +19,7 @@ Extensions:
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE InstanceSigs #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 ```
 
 <!-- FOURMOLU_ENABLE -->
@@ -26,13 +27,7 @@ Extensions:
 Imports
 
 ```haskell
-import Control.Applicative
-import Control.Concurrent (threadDelay)
-import Control.Concurrent.Async (wait, withAsync)
 import Control.Monad.Fix (fix)
-import Control.Monad.Identity (Identity)
-import Data.Foldable (Foldable (foldl'), fold)
-import Data.Kind (Type)
 import Language.Haskell.TH.Syntax (Dec, Quasi, runQ)
 ```
 
@@ -44,7 +39,7 @@ main = undefined
 
 <!-- e -->
 
-### Kinds
+## Kinds
 
 - `DataKinds` - [src](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/type_data.html#type-level-data-declarations)
   - What is the data type promotion?
@@ -60,14 +55,14 @@ main = undefined
   - [UnconsSymbol](https://hackage.haskell.org/package/base-4.18.0.0/docs/GHC-TypeLits.html#t:UnconsSymbol)
   - [typed-interpolation](https://github.com/dmjio/typed-interpolation) - a good parsing example.
 
-### Functional dependencies
+## Functional dependencies
 
 - Set a relation between types. Make one type correspond to another type
 
     <!-- i 4 -->
 
     ```haskell
-    class Monad m => MonadError e m | m -> e where
+    class (Monad m) => MonadError e m | m -> e where
       throwError :: e -> m a
       catchError :: m a -> (e -> m a) -> m a
     ```
@@ -120,21 +115,27 @@ main = undefined
             ask = PersonReader id
           ```
 
-### Laziness
+## Laziness
 
 - `Bang patterns`
 
   <!-- i 2 -->
 
+<!-- FOURMOLU_DISABLE -->
+
   ```haskell
   {-# LANGUAGE BangPatterns #-}
+  ```
+
+<!-- FOURMOLU_ENABLE -->
+
+  ```haskell
+  addBang :: Int -> Int -> Int
+  addBang !x !y = x + y
   
-  -- add :: Int -> Int -> Int
-  -- add !x !y = x + y
-  
-  -- -- equivalent to
-  -- add' :: Int -> Int -> Int
-  -- add' x y = x `seq` y `seq` x + y
+  -- equivalent to
+  addSeq :: Int -> Int -> Int
+  addSeq x y = x `seq` y `seq` x + y
   ```
 
 - `$!` - strict application
@@ -164,7 +165,7 @@ main = undefined
 - [safe-exceptions](https://www.fpcomplete.com/haskell/tutorial/exceptions/)
   - force impure exceptions using `tryAnyDeep` and `NFData`.
 
-### Fix combinator
+## Fix combinator
 
   ```haskell
   ex13 :: [Int] -> Int
@@ -181,7 +182,7 @@ main = undefined
   -- 4
   ```
 
-### File IO
+## File IO
 
 - There are several representations of text in `Haskell` - `ByteString`, `Text`, `String`
 - `ByteString` can contain both `human-readable` or `binary` data that mustn't be mixed
@@ -192,7 +193,7 @@ main = undefined
 - `stdout` and `stdin` are files
 - Can set buffering mode on a handle: `hSetBuffering stdout NoBuffering`
 
-### Debugging
+## Debugging
 
 - `Debug.Trace`
 - `breakpoint` - [src](https://github.com/aaronallen8455/breakpoint)
@@ -200,7 +201,7 @@ main = undefined
   - inspect variables visible at a breakpoint
   - freeze other threads (`GHC 9.2.x+`)
 
-### Monoid
+## Monoid
 
 - [List comprehension](https://wiki.haskell.org/List_comprehension)
   - Skip elements
@@ -209,6 +210,7 @@ main = undefined
         <!-- i 8 -->
 
         ```haskell
+        _deepClone :: Bool
         _deepClone = True
         
         s1 :: [String]
@@ -224,7 +226,7 @@ main = undefined
         catMaybes ls = [x | Just x <- ls]
         ```
 
-### Template Haskell
+## Template Haskell
 
 - [capture haddocks](https://github.com/codedownio/aeson-typescript/blob/671347e3739b63bf04d5412330dc9a4748c7832e/src/Data/Aeson/TypeScript/Util.hs#L224)
   - [getDoc](https://hackage.haskell.org/package/template-haskell-2.19.0.0/docs/Language-Haskell-TH-Syntax.html#v:getDoc)
@@ -241,7 +243,7 @@ main = undefined
   -- [SigD decl_0 (ConT GHC.Types.Int),ValD (VarP decl_0) (NormalB (InfixE (Just (LitE (IntegerL 1))) (VarE GHC.Num.+) (Just (LitE (IntegerL 2))))) []]
   ```
 
-### Higher-Kinded Data
+## Higher-Kinded Data
 
 - Defaulting fields in a record (via HKD) - [GH](https://gist.github.com/chrisdone/7dddadd089e6a5d2e3e9445c4692d2c2)
 - [Higher-Kinded Data](https://reasonablypolymorphic.com/blog/higher-kinded-data/)
@@ -249,13 +251,13 @@ main = undefined
   - [HKD: Less Terrible than You Might Expect](https://reasonablypolymorphic.com/blog/hkd-not-terrible/index.html)
   - and [others](https://reasonablypolymorphic.com/)
 
-### Generics
+## Generics
 
 - [Higher-Kinded Data](https://reasonablypolymorphic.com/blog/higher-kinded-data/)
 - `aeson` converts data to generic representation.
   - Its functions for parsing use selector names, modify them via options, then convert to or parse JSON.
 
-### QualifiedDo
+## QualifiedDo
 
 - [Qualified do: rebind your do-notation the right way](https://www.tweag.io/blog/2020-07-13-qualified-do-announcement/)
   - example
@@ -278,9 +280,9 @@ main = undefined
     main = print foo
     ```
 
-### Effects
+## Effects
 
-#### Effectful
+### Effectful
 
 - [effectful](https://hackage.haskell.org/package/effectful)
   - [Talk](https://www.youtube.com/watch?v=BUoYKBLOOrE) at Lambda
@@ -288,20 +290,21 @@ main = undefined
   - News site back-end - [GH](https://github.com/breaking-news-org/back-end)
   - Effects may be pure - `runPureEff`
 
-### String interpolation
+## String interpolation
 - [string-interpolate](https://hackage.haskell.org/package/string-interpolate)
 - [nyan-interpolation](https://hackage.haskell.org/package/nyan-interpolation)
 - [PyF](https://hackage.haskell.org/package/PyF)
 - [typed-interpolation](https://github.com/dmjio/typed-interpolation)
 
-### Optics
+## Optics
 - [Optics are monoids](https://www.haskellforall.com/2021/09/optics-are-monoids.html)
+- [Optics by example](../optics-by-example)
 
-### Monad transformer stack
+## Monad transformer stack
 
 - Determine the type - [SO](https://stackoverflow.com/a/13724465)
 
-### UnliftIO
+## UnliftIO
 
 - [Demystifying MonadBaseControl](https://lexi-lambda.github.io/blog/2019/09/07/demystifying-monadbasecontrol/)
   - Capture the action’s input state and close over it.
@@ -309,12 +312,25 @@ main = undefined
   - Restore the action’s output state into the enclosing transformer.
   - Return the action’s result.
 
-### Handle pattern
+## Handle pattern
 
 - [src](https://www.metalamp.ru/articles/service-handle-pattern)
 
 - Take functions from a **given** environment, e.g. from `ReaderT`
 
+## Data
+
+- [large-records](https://github.com/well-typed/large-records)
+- Avoid quadratic Core size - [advice](https://well-typed.com/blog/2021/10/large-records-part-2/#tldr-advice)
+
+## GHCJS
+
+- [rzk-lang/rzk](https://github.com/rzk-lang/rzk) - see `flake.nix`
+
+## Nix
+
+- To keep completions in [share](https://github.com/NixOS/cabal2nix/issues/433#issuecomment-862557347), need to modify [justStaticExecutables](https://github.com/NixOS/nixpkgs/blob/c032f4a16c1d09533c8af71002d5e7ad2d85af60/pkgs/development/haskell-modules/lib/compose.nix#L288C8-L288C8) 
+so that it doesn't remove `share`.
 
 ## Misc
 

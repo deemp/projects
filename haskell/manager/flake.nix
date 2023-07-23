@@ -23,7 +23,7 @@
           inherit (inputs.haskell.toolsGHCPackage.${system} "manager" ./. {
             inherit runtimeDependencies;
           }) hls ghcid cabal fourmolu hpack haskellPackages;
-          
+
           tools = [ hls ghcid cabal fourmolu hpack ];
 
           inherit (inputs.devshell.lib.${system}) mkCommands mkRunCommands mkShell;
