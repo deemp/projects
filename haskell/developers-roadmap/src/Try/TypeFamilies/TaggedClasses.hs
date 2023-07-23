@@ -10,8 +10,19 @@
 
 module Try.TypeFamilies.TaggedClasses where
 
--- Rewriting instance Chains using Tagged Classes 
--- https://github.com/sigma-andex/purescript-barlow-lens/blob/295c4b32fbeca052ebfd3665a9071012e654b9c0/src/Data/Lens/Barlow/Parser.purs#L11
+{-
+# Tagged classes
+
+- [tagged-aeson](https://github.com/monadfix/tagged-aeson)
+
+## Instance Chains
+
+PureScript provides [Instance Chains](https://github.com/purescript/documentation/blob/master/language/Type-Classes.md#instance-chains).
+
+Here's how they can be rewritten using Tagged Classes
+
+source - [purescript-barlow-lens](https://github.com/sigma-andex/purescript-barlow-lens/blob/295c4b32fbeca052ebfd3665a9071012e654b9c0/src/Data/Lens/Barlow/Parser.purs#L11)
+-}
 
 import Data.Kind (Constraint)
 import GHC.TypeLits (AppendSymbol, Symbol)
