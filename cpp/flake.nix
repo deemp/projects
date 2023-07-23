@@ -16,7 +16,11 @@
             codium = mkCodium { extensions = extensionsCommon // { inherit (extensions) cpp; }; };
 
             # a script to write `.vscode/settings.json`
-            writeSettings = writeSettingsJSON settingsCommonNix;
+            writeSettings = writeSettingsJSON (settingsCommonNix // {
+              extra = {
+                "C_Cpp.default.compilerPath" = "clang++";
+              };
+            });
           };
 
           tools = [ pkgs.clang ];
