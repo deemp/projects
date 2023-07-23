@@ -12,13 +12,9 @@
           inherit (inputs.devshell.lib.${system}) mkShell mkCommands mkRunCommands;
 
           packages = {
-            writeSettings = writeSettingsJSON (settingsCommonNix // {
-              inherit (settingsNix) python kubernetes;
-            });
+            writeSettings = writeSettingsJSON (settingsCommonNix // { inherit (settingsNix) python; });
             createVenvs = inputs.python-tools.lib.${system}.createVenvs [ "lab5" "lab6" ];
-            codium = mkCodium {
-              extensions = extensionsCommon // { inherit (extensions) docker python kubernetes; };
-            };
+            codium = mkCodium { extensions = extensionsCommon // { inherit (extensions) docker python kubernetes; }; };
           };
 
           tools = [
