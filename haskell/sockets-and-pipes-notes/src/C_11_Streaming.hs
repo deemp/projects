@@ -4,10 +4,10 @@
 
 module C_11_Streaming () where
 
-import C_1_Handles (getDataDir)
-import C_3_Bytes (binaryFileResource)
-import C_6_HTTP_types (MessageBody (MessageBody), Response (..))
-import C_8_Responding (ok, sendResponse, status)
+import C_01_Handles (getDataDir)
+import C_03_Bytes (binaryFileResource)
+import C_06_HTTP_types (MessageBody (MessageBody), Response (..))
+import C_08_Responding (ok, sendResponse, status)
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Trans.Resource (runResourceT)
 import Data.ByteString.Lazy qualified as LBS
@@ -16,7 +16,6 @@ import GHC.IO.IOMode (IOMode (..))
 import Network.Simple.TCP (HostPreference (..), serve)
 import System.FilePath ((</>))
 import Text.Blaze.Html5 as Html ()
-
 
 hContentsResponse :: Handle -> IO Response
 hContentsResponse h = do

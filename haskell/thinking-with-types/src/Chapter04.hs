@@ -16,7 +16,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Unused LANGUAGE pragma" #-}
 
-module Chapter4 where
+module Chapter04 where
 
 import Data.Typeable (Proxy (..), typeRep)
 

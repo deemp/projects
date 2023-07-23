@@ -2,12 +2,12 @@
 # Chapter 3
 -}
 
-module C_3_Bytes (binaryFileResource) where
+module C_03_Bytes (binaryFileResource) where
 
 import Data.Word (Word8)
 
-import C_1_Handles (getDataDir, greetingTxt)
-import C_2_Chunks (repeatUntil)
+import C_01_Handles (getDataDir, greetingTxt)
+import C_02_Chunks (repeatUntil)
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Trans.Resource (ReleaseKey, ResourceT, allocate, runResourceT)
 import Data.ByteString as BS (ByteString, hGetSome, hPut, hPutStr, map, null, pack)

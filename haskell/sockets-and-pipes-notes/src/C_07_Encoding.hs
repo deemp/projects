@@ -2,7 +2,7 @@
 # Chapter 7
 -}
 
-module C_7_Encoding (
+module C_07_Encoding (
   encodeLineEnd,
   encodeStatusLine,
   encodeResponse,
@@ -17,9 +17,9 @@ module C_7_Encoding (
 import ASCII (DigitStringSuperset (fromDigitList), fromCharList)
 import ASCII qualified as A
 import ASCII.Char qualified as AC
-import C_1_Handles (getDataDir)
-import C_5_HTTP (crlf, helloRequestString, helloResponseString)
-import C_6_HTTP_types (
+import C_01_Handles (getDataDir)
+import C_05_HTTP (crlf, helloRequestString, helloResponseString)
+import C_06_HTTP_types (
   FieldName (FieldName),
   FieldValue (FieldValue),
   HeaderField (HeaderField),

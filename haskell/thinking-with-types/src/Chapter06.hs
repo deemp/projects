@@ -14,7 +14,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Chapter6 () where
+module Chapter06 () where
 
 import Data.Void (absurd)
 

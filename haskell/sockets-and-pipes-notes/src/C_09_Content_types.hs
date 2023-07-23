@@ -1,15 +1,19 @@
-module C_9_Content_types (textOk, countHelloText, countHelloHtml, htmlOk) where
+{-
+# Chapter 9
+-}
+
+module C_09_Content_types (textOk, countHelloText, countHelloHtml, htmlOk) where
 
 import ASCII qualified as A
-import C_6_HTTP_types (
+import C_06_HTTP_types (
   FieldValue (FieldValue),
   HeaderField (HeaderField),
   MessageBody (MessageBody),
   Request,
   Response (..),
  )
-import C_7_Encoding (encodeRequest, encodeResponse)
-import C_8_Responding (
+import C_07_Encoding (encodeRequest, encodeResponse)
+import C_08_Responding (
   contentLengthField,
   contentType,
   ok,

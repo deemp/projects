@@ -23,13 +23,13 @@ source-repository head
 
 library
   exposed-modules:
+      Chapter02
+      Chapter03
+      Chapter04
+      Chapter05
+      Chapter05_1
+      Chapter06
       Chapter13
-      Chapter2
-      Chapter3
-      Chapter4
-      Chapter5
-      Chapter5_1
-      Chapter6
   other-modules:
       Paths_thinking_with_types
   hs-source-dirs:

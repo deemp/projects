@@ -2,13 +2,13 @@
 # Chapter 5
 -}
 
-module C_5_HTTP (crlf, helloRequestString, helloResponseString) where
+module C_05_HTTP (crlf, helloRequestString, helloResponseString) where
 
 import ASCII (ASCII, fromCharList)
 import ASCII qualified as A
 import ASCII.Char qualified as A
 import ASCII.Superset (FromString)
-import C_4_Sockets (openAndConnect, resolve)
+import C_04_Sockets (openAndConnect, resolve)
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Trans.Resource (runResourceT)
 import Data.ByteString qualified as BS

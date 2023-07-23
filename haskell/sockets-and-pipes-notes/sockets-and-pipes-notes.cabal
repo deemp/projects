@@ -21,17 +21,17 @@ source-repository head
 
 library
   exposed-modules:
+      C_01_Handles
+      C_02_Chunks
+      C_03_Bytes
+      C_04_Sockets
+      C_05_HTTP
+      C_06_HTTP_types
+      C_07_Encoding
+      C_08_Responding
+      C_09_Content_types
       C_10_Change
       C_11_Streaming
-      C_1_Handles
-      C_2_Chunks
-      C_3_Bytes
-      C_4_Sockets
-      C_5_HTTP
-      C_6_HTTP_types
-      C_7_Encoding
-      C_8_Responding
-      C_9_Content_types
   other-modules:
       Paths_sockets_and_pipes_notes
   hs-source-dirs:

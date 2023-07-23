@@ -7,7 +7,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unused-imports #-}
 
-module Chapter2 where
+module Chapter02 where
 
 import Control.Monad.Trans.Class (MonadTrans)
 import GHC.TypeLits

@@ -19,7 +19,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 
-module Chapter5() where 
+module Chapter05() where 
 
 
 import Control.Monad.Trans.Class (MonadTrans)

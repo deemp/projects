@@ -1,4 +1,4 @@
-module C_6_HTTP_types (
+module C_06_HTTP_types (
   FieldName (..),
   FieldValue (..),
   HeaderField (..),

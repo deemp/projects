@@ -3,8 +3,8 @@
 -}
 module C_10_Change () where
 
-import C_8_Responding (sendResponse)
-import C_9_Content_types (countHelloHtml, htmlOk, textOk)
+import C_08_Responding (sendResponse)
+import C_09_Content_types (countHelloHtml, htmlOk, textOk)
 import Control.Concurrent.Async as Async (replicateConcurrently_)
 import Control.Concurrent.STM (
   TVar,

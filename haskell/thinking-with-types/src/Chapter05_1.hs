@@ -16,7 +16,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Chapter5_1 () where
+module Chapter05_1 () where
 
 import Data.Kind (Constraint, Type)
 

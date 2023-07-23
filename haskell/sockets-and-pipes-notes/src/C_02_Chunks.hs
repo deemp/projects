@@ -2,9 +2,9 @@
 # Chapter 2
 -}
 
-module C_2_Chunks (repeatUntil) where
+module C_02_Chunks (repeatUntil) where
 
-import C_1_Handles (fileResource, getDataDir, greetingTxt)
+import C_01_Handles (fileResource, getDataDir, greetingTxt)
 import Control.Monad ()
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Trans.Resource (runResourceT)

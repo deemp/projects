@@ -2,7 +2,7 @@
 # Chapter 1
 -}
 
-module C_1_Handles (fileResource, getDataDir, greetingTxt) where
+module C_01_Handles (fileResource, getDataDir, greetingTxt) where
 
 import Control.Exception (Exception (..))
 import Control.Exception.Safe qualified as Ex

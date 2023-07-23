@@ -1,6 +1,10 @@
-module C_4_Sockets (openAndConnect, resolve) where
+{-
+# Chapter 4
+-}
 
-import C_2_Chunks (repeatUntil)
+module C_04_Sockets (openAndConnect, resolve) where
+
+import C_02_Chunks (repeatUntil)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Control.Monad.Trans.Resource (
   ReleaseKey,

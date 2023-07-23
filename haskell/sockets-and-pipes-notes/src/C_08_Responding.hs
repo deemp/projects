@@ -2,7 +2,7 @@
 # Chapter 8
 -}
 
-module C_8_Responding (
+module C_08_Responding (
   contentLength,
   contentType,
   status,
@@ -14,7 +14,7 @@ module C_8_Responding (
 
 import ASCII qualified as A
 import ASCII.Decimal qualified as A
-import C_6_HTTP_types (
+import C_06_HTTP_types (
   FieldName (FieldName),
   FieldValue (FieldValue),
   HeaderField (HeaderField),
@@ -25,7 +25,7 @@ import C_6_HTTP_types (
   StatusCode (..),
   StatusLine (..),
  )
-import C_7_Encoding (encodeLineEnd, encodeResponse, encodeStatusLine)
+import C_07_Encoding (encodeLineEnd, encodeResponse, encodeStatusLine)
 import Data.ByteString.Builder qualified as BSB
 import Data.ByteString.Lazy qualified as LBS
 import Data.Word (Word8)
