@@ -317,6 +317,10 @@ ex2 = runQ [d|decl :: Int; decl = 1 + 2|]
 - [large-records](https://github.com/well-typed/large-records)
 - Avoid quadratic Core size - [advice](https://well-typed.com/blog/2021/10/large-records-part-2/#tldr-advice)
 
+## GHCJS
+
+- [rzk-lang/rzk](https://github.com/rzk-lang/rzk) - see `flake.nix`
+
 ## Misc
 
 - [Радости и горести побед над C: делаем конфетку из прототипа wc на хаскеле](https://habr.com/ru/articles/496370/)
