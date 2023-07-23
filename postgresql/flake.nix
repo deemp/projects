@@ -10,6 +10,7 @@
           inherit (inputs.codium.lib.${system}) mkCodium writeSettingsJSON;
           inherit (inputs.codium.lib.${system}) extensions extensionsCommon settingsNix settingsCommonNix;
           inherit (inputs.devshell.lib.${system}) mkCommands mkRunCommands mkShell;
+          inherit (pkgs.lib.attrsets) mapAttrsToList;
 
           tools = [
             pkgs.postgresql_15
@@ -21,15 +22,15 @@
             codium = mkCodium { extensions = extensionsCommon // { inherit (extensions) postgresql; }; };
 
             # a script to write `.vscode/settings.json`
-            writeSettings = writeSettingsJSON (settingsCommonNix // { inherit (extensions) prettier-sql-vscode; });
+            writeSettings = writeSettingsJSON (settingsCommonNix // { inherit (settingsNix) prettier-sql-vscode; });
           };
 
           devShells.default = mkShell {
             packages = tools;
-            bash.extra = ''source ${./microk8s.sh}'';
             commands =
               mkCommands "tools" tools
-              ++ mkRunCommands "ide" { "codium ." = packages.codium; inherit (packages) writeSettings; };
+              ++ mkRunCommands "ide" { "codium ." = packages.codium; inherit (packages) writeSettings; }
+              ++ [{ name = "source microk8s.sh"; category = "env"; help = "set up environment"; }];
           };
         in
         {
