@@ -1,6 +1,4 @@
 {
-  inputs = { };
-
   outputs = inputs:
     let
       inputs_ =

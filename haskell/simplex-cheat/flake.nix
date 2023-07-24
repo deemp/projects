@@ -1,5 +1,4 @@
 {
-  inputs = { };
   outputs = inputs:
     let flakes = (import ../../.).outputs.inputs.flakes; in
     flakes.makeFlake {
