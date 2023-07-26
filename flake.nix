@@ -48,7 +48,6 @@
                   "blockchain"
                   "F22/total-virtualization"
                   "haskell"
-                  "postgresql"
                   "prolog/maze"
                   "rescript"
                   "scala"
@@ -59,6 +58,7 @@
                 subDirs = [
                   "F22/total-virtualization"
                   "haskell"
+                  "sql"
                 ];
               }) updateLocks saveFlakes format;
 
