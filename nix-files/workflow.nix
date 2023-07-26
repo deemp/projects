@@ -11,9 +11,9 @@ let
         jobArgs = {
           cacheNixArgs = {
             linuxGCEnabled = true;
-            linuxMaxStoreSize = 0;
+            linuxMaxStoreSize = 6000000000;
             macosGCEnabled = true;
-            macosMaxStoreSize = 0;
+            macosMaxStoreSize = 6000000000;
           };
           doCommit = false;
           doSaveFlakes = false;
