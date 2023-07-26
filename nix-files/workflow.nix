@@ -11,11 +11,12 @@ let
         jobArgs = {
           cacheNixArgs = {
             linuxGCEnabled = true;
-            linuxMaxStoreSize = 15000000000;
+            linuxMaxStoreSize = 0;
             macosGCEnabled = true;
-            macosMaxStoreSize = 15000000000;
+            macosMaxStoreSize = 0;
           };
           doCommit = false;
+          doSaveFlakes = false;
           steps = { stepsAttrs, ... }:
             stepsIf "${names.matrix.os} == '${os.ubuntu-22}'" [
               {

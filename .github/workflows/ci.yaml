@@ -21,9 +21,9 @@ jobs:
         with:
           key: nix-${{ matrix.os }}-job-${{ hashfiles('**/flake.nix', '**/flake.lock') }}
           linux-gc-enabled: true
-          linux-max-store-size: 15000000000
+          linux-max-store-size: 0
           macos-gc-enabled: true
-          macos-max-store-size: 15000000000
+          macos-max-store-size: 0
           restore-keys: |
             nix-${{ matrix.os }}-job-
       - name: Remove old cache profiles
@@ -73,10 +73,6 @@ jobs:
           force_orphan: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/dist
-      - name: Save flakes
-        run: |-
-          nix profile install .#saveFlakes
-          nix run .#saveFlakes
       - name: Purge cache
         uses: deemp/purge-cache@v1
         with:
