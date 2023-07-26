@@ -1,6 +1,6 @@
 {
   outputs = inputs:
-    let flakes = (import ../.).outputs.inputs.flakes; in
+    let flakes = (import ../../.).outputs.inputs.flakes; in
     flakes.makeFlake {
       inputs = { inherit (flakes.all) nixpkgs drv-tools flakes-tools devshell codium; };
       perSystem = { inputs, system }:
