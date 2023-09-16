@@ -42,6 +42,8 @@
   - [FunctionalDependencies](haskell/developers-roadmap/Monads/FunctionalDependencies.md)
   - [MonadBaseControl](haskell/developers-roadmap/Monads/MonadBaseControl.md)
   - [Monads](haskell/developers-roadmap/Monads/Monads.md)
+- [Monoids]()
+  - [FizzBuzz](haskell/developers-roadmap/Monoids/FizzBuzz.md)
 - [ParallelAndConcurrentHaskell]()
   - [Exceptions](haskell/developers-roadmap/ParallelAndConcurrentHaskell/Exceptions.md)
   - [MVar](haskell/developers-roadmap/ParallelAndConcurrentHaskell/MVar.md)
