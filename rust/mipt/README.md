@@ -1,6 +1,6 @@
-# VSCodium generic
+# Programming in Rust
 
-This flake provides a devshell with `VSCodium` a `hello` executable on `PATH` and with a couple of extensions.
+Based on [this MIPT course](https://www.youtube.com/playlist?list=PL4_hYwCyhAvbeLzi699gqMUA4UaPkcdmJ).
 
 ## Prerequisites
 
