@@ -765,11 +765,188 @@ pub mod lecture1 {
         }
     }
 
-    fn _extra(){
+    fn _extra() {
         // https://saghm.github.io/five-rust-things/
     }
 
+    fn _116() {
+        fn problem() {
+            let mut v = vec![1, 2, 3];
+            // x is a reference to v
+            // hence, v becomes immutable
+            let x = &v[0];
+
+            // cannot borrow `v` as mutable because it is also borrowed as immutable
+            // v.push(4);
+
+            // if comment this out and not use x,
+            // x will be dead code => removed => v will continue being mutable
+            println!("{x}")
+        }
+
+        fn solution() {
+            let mut v = vec![1, 2, 3];
+            v.push(4);
+            let x = &v[0];
+            println!("{x}")
+        }
+    }
+
+    fn _118() {
+        fn problem() {
+            // rust has move-semantics by default
+            // vector is moved here
+            fn sum(v: Vec<i32>) -> i32 {
+                let mut result = 0;
+                for i in v {
+                    result += i
+                }
+                result
+            }
+
+            fn main() {
+                let mut v = vec![1, 2, 3];
+                println!("first sum: {a}", a = sum(v));
+
+                // borrow of moved value: `v`
+                // move occurs because `v` has type `std::vec::Vec<i32>`, which does not implement the `Copy` trait
+                // v.push(4);
+
+                // use of moved value: `v`
+                // println!("second sum: {a}", a = sum(v))
+            }
+        }
+
+        pub fn solution() {
+            // rust has move-semantics by default
+            // vector is moved here
+            fn sum(v: &Vec<i32>) -> i32 {
+                let mut result = 0;
+                for i in v {
+                    result += i
+                }
+                result
+            }
+
+            fn main() {
+                let mut v = vec![1, 2, 3];
+                println!("first sum: {a}", a = sum(&v));
+
+                // borrow of moved value: `v`
+                // move occurs because `v` has type `std::vec::Vec<i32>`, which does not implement the `Copy` trait
+                v.push(4);
+
+                // use of moved value: `v`
+                println!("second sum: {a}", a = sum(&v))
+            }
+
+            main()
+        }
+
+        fn extra() {
+            // Copy is a marker trait - copy this structure byte by byte
+            // There's no default Copy and Clone for struct
+            // because Rust doesn't know how you use them
+
+            // e.g., a struct contains an identifier that should be unique among structs,
+            // so copying the struct is unsafe
+        }
+
+        solution()
+    }
+
+    fn _120() {
+        // - Each value in Rust has a variable that’s called it’s owner.
+        // - There can be only one owner at a time.
+        // - When the owner goes out of scope, the value will be dropped.
+    }
+
+    fn _121() {
+        let s = vec![1, 4, 8, 8];
+        let u = s;
+        println!("{:?}", u);
+
+        // borrow of moved value: `s`
+        // value borrowed here after move
+        // println!("{:?}", s);
+    }
+
+    fn _123() {
+        // primitive types have Copy implemented
+
+        fn om_nom_nom(n: u32) {
+            println!("{n} is a very nice number")
+        }
+
+        let n: u32 = 110;
+        let m = n;
+        om_nom_nom(n);
+        om_nom_nom(m);
+        println!("{a}", a = m + n)
+    }
+
+    fn _124_128() {
+        // At any given time, you can have either one mutable reference or any number of immutable references.
+        // lifetime of a value starts when it's `created` and ends the `last time` it's used
+        // rust forbids situations when reference lifetime is more than the value lifetime (no dangling references)
+        // rust calls the "drop" on a value when its lifetime ends
+    }
+
+    fn _132() {
+        let x = Box::new(92);
+        let y;
+        let z;
+
+        if rand::random() {
+            y = x;
+        } else {
+            z = x;
+        }
+    }
+
+    fn _133() {
+        // rust checks program flow
+
+        let mut x: i32;
+
+        // used binding `x` isn't initialized
+        // assert_eq!(x, 42)
+
+        // first mutable flow starts
+        x = 42;
+
+        // first immutable flow starts
+        let y = &x;
+
+        // second mutable flow starts - illegal
+        // cannot assign to `x` because it is borrowed
+        // borrowed by y
+        // x = 43;
+
+        assert_eq!(*y, 42);
+    }
+
+    fn _134() {
+        // has Copy
+        let x1 = 42;
+        // doesn't have Copy
+        let y1 = Box::new(84);
+        {
+            // x1 is copied into z
+            // y1 is moved into z
+            let z = (x1, y1);
+            // lifetime of z ends
+            // copy of x1 is dropped
+            // y1 is dropped
+        }
+
+        let x2 = x1;
+
+        // y1 was dropped and can't be accessed
+        // let y2 = y1
+    }
+
     pub fn main() {
-        _111()
+        _133()
     }
 }
