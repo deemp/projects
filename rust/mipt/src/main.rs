@@ -9,17 +9,16 @@ pub mod lecture1 {
 
     // slide 50
     fn _50() {
-        let idx: usize = 92;
-        let y = 92_000_000i64;
-        let hex_octal_bin: i64 = 0xffff_ffff + 0o777 + 0b1;
-        let mut idx: usize = 0x1022022;
+        let _idx: usize = 92;
+        let _y = 92_000_000i64;
+        let _hex_octal_bin: i64 = 0xffff_ffff + 0o777 + 0b1;
+        let mut _idx: usize = 0x1022022;
     }
 
     fn _51() {
         // bool - 1 byte in memory
-        let mut x = true;
-        x = false;
-        // x = 1;
+        let mut _x = true;
+        _x = false;
     }
 
     fn _52() {
@@ -54,11 +53,11 @@ pub mod lecture1 {
         let y: u32 = x.into();
 
         // filling leading bits with zeros
-        let z: u16 = y as u16;
+        let _z: u16 = y as u16;
 
         // cutting leading zeros
-        let to_usize = 92u64 as usize;
-        let from_usize = 92usize as u64;
+        let _to_usize = 92u64 as usize;
+        let _from_usize = 92usize as u64;
     }
 
     fn _54() {
@@ -81,26 +80,26 @@ pub mod lecture1 {
         let y = x.saturating_add(1);
         assert_eq!(y, i32::MAX);
 
-        let (y, overflowed) = x.overflowing_add(1);
+        let (_y, overflowed) = x.overflowing_add(1);
         assert!(overflowed);
         // assert_eq!(y, i32::MAX);
 
         match x.checked_add(1) {
-            Some(y) => unreachable!(),
+            Some(_y) => unreachable!(),
             None => println!("overflowed"),
         }
     }
 
     fn _57() {
-        let y = 0.0f32;
-        let x = 0.0;
+        let _y = 0.0f32;
+        let _x = 0.0;
 
         // point necessary for floats
-        let z = 0.0f32;
+        let _z = 0.0f32;
 
         let not_a_number = std::f32::NAN;
         assert!(not_a_number != not_a_number);
-        let inf = std::f32::INFINITY;
+        let _inf = std::f32::INFINITY;
 
         println!("{a}", a = 8.5f32.ceil().sin().ceil().sqrt())
     }
@@ -117,16 +116,16 @@ pub mod lecture1 {
 
     fn _59() {
         let pair: (f32, i32) = (0.0, 92);
-        let (x, y) = pair;
+        let (_x, _y) = pair;
 
         // note shadowing
-        let x = pair.0;
-        let y = pair.1;
+        let _x = pair.0;
+        let _y = pair.1;
 
         let void_result = println!("hello");
         assert_eq!(void_result, ());
 
-        let trailing_comma = ("a", "b");
+        let _trailing_comma = ("a", "b");
     }
 
     fn _61() {
@@ -140,8 +139,8 @@ pub mod lecture1 {
     }
 
     fn _62() {
-        fn shadowing(num: i32) -> i32 {
-            let vec = vec![0, 1, 2, 3];
+        fn shadowing(_num: i32) -> i32 {
+            let _vec = vec![0, 1, 2, 3];
             let vec = vec![4, 5, 6, 7];
             vec[0]
         }
@@ -176,14 +175,14 @@ pub mod lecture1 {
         assert_eq!(xs.len(), 3);
 
         // let mut buf = [0u8, 1024];
-        let mut buf = [0u8, 124];
+        let mut _buf = [0u8, 124];
     }
 
     fn _68() {
         let mut x = 92;
 
         // reference to a mutable i32
-        let r: &mut i32 = &mut 92;
+        let _r: &mut i32 = &mut 92;
 
         let r: &mut i32 = &mut x;
         *r += 1;
@@ -195,17 +194,17 @@ pub mod lecture1 {
         // to be used with unsafe
 
         // constant pointer to a constant i32
-        let x: *const i32 = std::ptr::null();
+        let _x: *const i32 = std::ptr::null();
         // mutable pointer to a constant i32
-        let mut y: *const i32 = std::ptr::null();
+        let mut _y: *const i32 = std::ptr::null();
         //
-        let z: *mut i32 = std::ptr::null_mut();
-        let mut t: *mut i32 = std::ptr::null_mut();
+        let _z: *mut i32 = std::ptr::null_mut();
+        let mut _t: *mut i32 = std::ptr::null_mut();
     }
 
     fn _71() {
         // pointer to data on heap
-        let x: Box<i32> = Box::new(92);
+        let _x: Box<i32> = Box::new(92);
     }
 
     fn _72() {
@@ -221,7 +220,7 @@ pub mod lecture1 {
             y = x as u64 + 10;
             return y;
         }
-        fn func6(x: u32, mut y: u64) -> u32 {
+        fn func6(x: u32, mut _y: u64) -> u32 {
             x + 10
         }
     }
@@ -229,7 +228,7 @@ pub mod lecture1 {
     fn _73() {
         // expressions and statements
         let y = 42;
-        let x = if y < 42 { 345 } else { y + 534 };
+        let _x = if y < 42 { 345 } else { y + 534 };
     }
 
     pub mod _74 {
@@ -291,7 +290,7 @@ pub mod lecture1 {
             data: Vec::new(),
         };
 
-        let y = Example::new();
+        let _y = Example::new();
         x.push(10);
         assert_eq!(x.oper_count(), 1);
     }
@@ -335,13 +334,13 @@ pub mod lecture1 {
                 data: Vec::new(),
             };
 
-            let y = Example::<i32>::new();
+            let _y = Example::<i32>::new();
             let z: Example<i32> = Example {
                 oper_count: 0,
                 data: Vec::new(),
             };
 
-            let z: Example<i32> = z;
+            let _z: Example<i32> = z;
 
             x.push(10);
             assert_eq!(x.oper_count(), 1);
@@ -389,7 +388,7 @@ pub mod lecture1 {
     fn _84() {
         'outer: loop {
             println!("Entered the outer loop");
-            'inner: for _ in 0..10 {
+            '_inner: for _ in 0..10 {
                 println!("Entered the inner loop");
 
                 // This breaks the inner loop
@@ -453,9 +452,9 @@ pub mod lecture1 {
         }
 
         pub fn main() {
-            let x = MyEnum::First;
-            let y: MyEnum = MyEnum::First;
-            let z = OneMoreEnum::Zwei(42, Example::<usize>::new());
+            let _x = MyEnum::First;
+            let _y: MyEnum = MyEnum::First;
+            let _z = OneMoreEnum::Zwei(42, Example::<usize>::new());
         }
     }
 
@@ -507,7 +506,7 @@ pub mod lecture1 {
         let x = OneMoreEnum::<i32>::Eins(2);
         let y = MyEnum::First;
         match (x, y) {
-            (OneMoreEnum::Eins(x), MyEnum::First) => {
+            (OneMoreEnum::Eins(_x), MyEnum::First) => {
                 println!("Hello")
             }
             (OneMoreEnum::Zwei(a, _), _) => println!("{a}"),
@@ -548,7 +547,7 @@ pub mod lecture1 {
             false
         }
 
-        let x = match boolean {
+        let _x = match boolean {
             13 if foo() => 0,
             13 => 1,
             _ => 2,
@@ -895,13 +894,13 @@ pub mod lecture1 {
 
     fn _132() {
         let x = Box::new(92);
-        let y;
-        let z;
+        let _y;
+        let _z;
 
         if rand::random() {
-            y = x;
+            _y = x;
         } else {
-            z = x;
+            _z = x;
         }
     }
 
@@ -935,13 +934,13 @@ pub mod lecture1 {
         {
             // x1 is copied into z
             // y1 is moved into z
-            let z = (x1, y1);
+            let _z = (x1, y1);
             // lifetime of z ends
             // copy of x1 is dropped
             // y1 is dropped
         }
 
-        let x2 = x1;
+        let _x2 = x1;
 
         // y1 was dropped and can't be accessed
         // let y2 = y1
@@ -957,8 +956,7 @@ pub mod lecture2 {
 
     use std::{
         collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque},
-        fmt::{format, Binary, Debug, Display},
-        hash::Hash,
+        fmt::Debug,
         io::Write,
         rc::Rc,
     };
@@ -981,12 +979,12 @@ pub mod lecture2 {
 
         // unwrap consumes `self`
         // number is Copy
-        let x = opt.unwrap();
+        let _x = opt.unwrap();
 
         // can unwrap second time
-        let x = opt.unwrap();
+        let _x = opt.unwrap();
 
-        let newest_opt: Option<i32> = None;
+        let _newest_opt: Option<i32> = None;
         // newest_opt.expect("I'll panic");
 
         let new_opt = Some(Vec::<i32>::new());
@@ -1010,7 +1008,7 @@ pub mod lecture2 {
 
         let new_opt = Some(Vec::<i32>::new());
         assert_eq!(new_opt.as_ref().unwrap(), &Vec::<i32>::new());
-        let x = new_opt.unwrap();
+        let _x = new_opt.unwrap();
 
         // cannot mutate immutable variable `new_opt`
         // let y = new_opt.as_mut();
@@ -1046,15 +1044,15 @@ pub mod lecture2 {
 
         let mut x = Some(42);
         // `y` takes ownership from `x`, `x` becomes `None`
-        let y = x.take();
+        let _y = x.take();
 
         let mut x = Some(42);
 
         // `x` has `Some(43)`, `y` has `Some(42)`
-        let y = x.replace(43);
+        let _y = x.replace(43);
 
         // `x` now has a mutable reference to `43`
-        let x = Some(42).insert(43);
+        let _x = Some(42).insert(43);
     }
 
     fn _12() {
@@ -1128,7 +1126,7 @@ pub mod lecture2 {
         let version: Result<&str, &str> = Ok("1.1.14");
         match version {
             Ok(v) => println!("working with version: {a:?}", a = v),
-            Err(e) => println!("error: version empty"),
+            Err(_e) => println!("error: version empty"),
         }
     }
 
@@ -1192,9 +1190,9 @@ pub mod lecture2 {
     }
 
     fn _20() {
-        let x: Result<Option<i32>, String> = Some(Ok(42)).transpose();
+        let _x: Result<Option<i32>, String> = Some(Ok(42)).transpose();
 
-        let x: Option<Result<i32, String>> = Ok(Some(42)).transpose();
+        let _x: Option<Result<i32, String>> = Ok(Some(42)).transpose();
     }
 
     fn _21_22() {
@@ -1215,7 +1213,7 @@ pub mod lecture2 {
             Ok(output)
         }
 
-        read_until_empty();
+        let _ = read_until_empty();
     }
 
     fn _24() {
@@ -1284,7 +1282,7 @@ pub mod lecture2 {
         // contains a vector of bytes
 
         // consumes a vector to avoid allocations
-        let p = String::from_utf8(vec![3; 5]);
+        let _p = String::from_utf8(vec![3; 5]);
     }
 
     fn _42() {
@@ -1325,12 +1323,12 @@ pub mod lecture2 {
         let vec = vec![1, 2, 3, 4];
 
         // &[2,3]
-        let vec_slice = &vec[1..3];
+        let _vec_slice = &vec[1..3];
 
         let s = String::from("hello");
 
         // "el"
-        let s_slice = &s[1..3];
+        let _s_slice = &s[1..3];
     }
 
     fn _48_49() {
@@ -1339,7 +1337,7 @@ pub mod lecture2 {
         // &str checks at runtime
 
         // thread 'main' panicked at 'byte index 1 is not a char boundary; it is inside 'п' (bytes 0..2) of `привет`'
-        let s_slice = &s[1..3];
+        let _s_slice = &s[1..3];
     }
 
     fn _52() {
