@@ -1,5 +1,6 @@
 fn main() {
-    lecture1::main()
+    // lecture1::main()
+    lecture2::main()
 }
 
 pub mod lecture1 {
@@ -948,5 +949,520 @@ pub mod lecture1 {
 
     pub fn main() {
         _133()
+    }
+}
+
+pub mod lecture2 {
+    // https://www.youtube.com/watch?v=WM0St1vX_JM&list=PL4_hYwCyhAvbeLzi699gqMUA4UaPkcdmJ&index=2
+
+    use std::{
+        collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque},
+        fmt::{format, Binary, Debug, Display},
+        hash::Hash,
+        io::Write,
+        rc::Rc,
+    };
+
+    fn _5() {
+        let result = Some("string");
+        match result {
+            Some(s) => println!("String inside: {s}"),
+            None => println!("Oops, no value"),
+        }
+    }
+
+    fn _7() {
+        // unwrap returns the contained Some value, consuming the self value.
+
+        let opt = Some(22022022);
+        assert!(opt.is_some());
+        assert!(!opt.is_none());
+        assert_eq!(opt.unwrap(), 22022022);
+
+        // unwrap consumes `self`
+        // number is Copy
+        let x = opt.unwrap();
+
+        // can unwrap second time
+        let x = opt.unwrap();
+
+        let newest_opt: Option<i32> = None;
+        // newest_opt.expect("I'll panic");
+
+        let new_opt = Some(Vec::<i32>::new());
+
+        assert_eq!(new_opt.unwrap(), Vec::<i32>::new());
+
+        // vector is Clone, not Copy
+        // can't unwrap second time
+        // error[E0382]: use of moved value: `new_opt`
+        // let x = new_opt.unwrap();
+    }
+
+    fn _8() {
+        // as_ref Converts from &Option<T> to Option<&T>
+
+        let new_opt = Some(Vec::<i32>::new());
+        assert_eq!(new_opt.unwrap(), Vec::<i32>::new());
+
+        // Clone => value already moved in the previous unwrap
+        // let x = new_opt.unwrap();
+
+        let new_opt = Some(Vec::<i32>::new());
+        assert_eq!(new_opt.as_ref().unwrap(), &Vec::<i32>::new());
+        let x = new_opt.unwrap();
+
+        // cannot mutate immutable variable `new_opt`
+        // let y = new_opt.as_mut();
+    }
+
+    fn _9() {
+        // map maps an Option<T> to Option<U> by applying a function to a contained value (if Some) or returns None (if None).
+        // consumes self
+
+        let maybe_some_string = Some(String::from("Hello, world"));
+        let maybe_some_len = maybe_some_string.map(|s| s.len());
+        assert_eq!(maybe_some_len, Some(13));
+    }
+
+    fn _10() {
+        // Use Option methods to write functional code
+        // https://doc.rust-lang.org/std/option/enum.Option.html#implementations
+
+        // fn map_or<U, F>(self, default: U, f: F) -> U;
+        // fn map_or_else<U, D, F>(self, default: D, f: F) -> U;
+        // fn unwrap_or(self, default: T) -> T;
+        // fn unwrap_or_else<F>(self, f: F) -> T;
+        // fn and<U>(self, optb: Option<U>) -> Option<U>;
+        // fn and_then<U, F>(self, f: F) -> Option<U>;
+        // fn or(self, optb: Option<T>) -> Option<T>;
+        // fn or_else<F>(self, f: F) -> Option<T>;
+        // fn xor(self, optb: Option<T>) -> Option<T>;
+        // fn zip<U>(self, other: Option<U>) -> Option<(T, U)>;
+    }
+
+    fn _11() {
+        // Controlling ownership inside Option
+
+        let mut x = Some(42);
+        // `y` takes ownership from `x`, `x` becomes `None`
+        let y = x.take();
+
+        let mut x = Some(42);
+
+        // `x` has `Some(43)`, `y` has `Some(42)`
+        let y = x.replace(43);
+
+        // `x` now has a mutable reference to `43`
+        let x = Some(42).insert(43);
+    }
+
+    fn _12() {
+        struct Node<T> {
+            elem: T,
+            next: Option<Box<Node<T>>>,
+        }
+
+        pub struct List<T> {
+            head: Option<Box<Node<T>>>,
+        }
+
+        impl<T: Debug> List<T> {
+            pub fn pop(&mut self) -> Option<T> {
+                self.head.take().map(|node| {
+                    self.head = node.next;
+                    node.elem
+                })
+            }
+            pub fn push(&mut self, elem: T) -> () {
+                self.head = Some(Box::new(Node {
+                    elem,
+                    next: self.head.take(),
+                }));
+            }
+            pub fn push_(mut self, elem: T) -> List<T> {
+                self.head = Some(Box::new(Node {
+                    elem,
+                    next: self.head,
+                }));
+                self
+            }
+            pub fn new() -> List<T> {
+                List { head: None }
+            }
+            pub fn display(&mut self) -> () {
+                print!("[");
+                let mut i = &self.head;
+                while let Some(x) = i {
+                    print!("{:?}, ", x.elem);
+                    i = &x.next;
+                }
+                print!("]\n");
+            }
+        }
+
+        let mut t = List::<i32>::new().push_(2);
+        t.push(4);
+
+        t.display();
+
+        let p1 = t.pop();
+        let p2 = t.pop();
+        let p3 = t.pop();
+
+        println!("{p1:?} {p2:?} {p3:?}")
+    }
+
+    fn _13() {
+        // Rust guarantees size(T) = size(F), where F:
+        // Box<T>, &T, &mut T, fn, extern "C" fn, #[repr(transparent)], num::NonZero*, ptr::NonNull<T>
+    }
+
+    fn _14() {
+        // Results must be used
+        // errors must be handled
+        // result is annotated with the #[must_use] attribute
+    }
+
+    fn _15() {
+        let version: Result<&str, &str> = Ok("1.1.14");
+        match version {
+            Ok(v) => println!("working with version: {a:?}", a = v),
+            Err(e) => println!("error: version empty"),
+        }
+    }
+
+    fn _16() {
+        // Use Result methods to write functional code
+        // https://doc.rust-lang.org/std/result/enum.Result.html#implementations
+
+        // fn is_ok(&self) -> bool;
+        // fn is_err(&self) -> bool;
+        // fn unwrap(self) -> T;
+        // fn unwrap_err(self) -> E;
+        // fn expect_err(self, msg: &str) -> E;
+        // fn expect(self, msg: &str) -> T;
+        // fn as_ref(&self) -> Result<&T, &E>;
+        // fn as_mut(&mut self) -> Result<&mut T, &mut E>;
+        // fn map<U, F>(self, op: F) -> Result<U, E>;
+        // fn map_err<F, O>(self, op: O) -> Result<T, F>;
+    }
+
+    pub mod _17 {
+        pub struct Info {
+            pub name: String,
+            pub age: i32,
+        }
+    }
+
+    fn _17_18() {
+        use std::{fs, io};
+        use _17::*;
+
+        fn write_info(info: &Info) -> io::Result<()> {
+            let mut file = match fs::File::create("my_best_friends.txt") {
+                Err(e) => return Err(e),
+                Ok(f) => f,
+            };
+            if let Err(e) = file.write_all(format!("name: {}\n", info.name).as_bytes()) {
+                // can't use just Err(e) since it's not the last statement in the function `write_info`
+                return Err(e);
+            }
+            if let Err(e) = file.write_all(format!("age: {}\n", info.age).as_bytes()) {
+                return Err(e);
+            }
+            Ok(())
+        }
+    }
+
+    fn _19() {
+        // Refactored
+
+        use std::{fs, io};
+        use _17::*;
+
+        fn write_info(info: &Info) -> io::Result<()> {
+            // if error, ? returns an error, otherwise the value from Ok(value)
+            // ? also works for option
+            let mut file = fs::File::create("my_best_friends.txt")?;
+            file.write_all(format!("name: {}\n", info.name).as_bytes())?;
+            file.write_all(format!("age: {}\n", info.age).as_bytes())?;
+            Ok(())
+        }
+    }
+
+    fn _20() {
+        let x: Result<Option<i32>, String> = Some(Ok(42)).transpose();
+
+        let x: Option<Result<i32, String>> = Ok(Some(42)).transpose();
+    }
+
+    fn _21_22() {
+        use std::{io, io::*};
+        fn read_until_empty() -> io::Result<String> {
+            let mut input = stdin().lines();
+            let mut output = String::new();
+
+            while let Some(line) = input.next().transpose()? {
+                if line.is_empty() {
+                    break;
+                }
+                output.push_str(&line);
+            }
+
+            println!("{output}");
+
+            Ok(output)
+        }
+
+        read_until_empty();
+    }
+
+    fn _24() {
+        // Containers
+
+        // - don't allocate until necessary
+        // - safe methods return Option and Result
+        // - some methods panic! on failed allocation, out-of-bounds
+        // - references to elements, no iterators like in C++
+
+        // these properties affect algorithms and data structures used in the standard library
+    }
+
+    fn _26() {
+        // Vec
+
+        // implementation of default dynamic array
+
+        // `sort` - O(NlogN)
+        // `sort_unstable` - pdqsort, worst-case O(NlogN) and best O(N)
+        // `binary_search`
+        // `select_nth_unstable` - quick select with pdqsort, worst-case O(N)
+        // `_by` and `_by_key` variants for customizing comparator
+    }
+
+    fn _27() {
+        // VecDeque
+
+        // circular deque
+        // same functions as in Vec
+        // stored in memory contiguously
+        let mut t: VecDeque<i32> = VecDeque::new();
+        t.push_back(2);
+        t.push_front(4);
+        println!("{t:?}");
+    }
+
+    fn _32() {
+        // BTreeMap, BTreeSet - O (log_{B}{N}) for most operations
+        let _x = BTreeMap::<i32, i32>::new();
+        let _x = BTreeSet::<i32>::new();
+    }
+
+    fn _34() {
+        // HashMap, HashSet
+
+        let _x = HashMap::<i32, i32>::new();
+        let _x = HashSet::<i32>::new();
+        // it's a logic error to modify a map key such that it's hash or equality changes
+        // behavior from such an error is unspecified, but not undefined
+    }
+
+    fn _36() {
+        // BinaryHeap
+        let _x = BinaryHeap::<i32>::new();
+    }
+
+    fn _37() {
+        let _x = LinkedList::<i32>::new();
+    }
+
+    fn _38() {
+        // String
+
+        // UTF-8
+        // contains a vector of bytes
+
+        // consumes a vector to avoid allocations
+        let p = String::from_utf8(vec![3; 5]);
+    }
+
+    fn _42() {
+        let s = String::from("привет");
+        // length in bytes
+        println!("{}", s.len())
+    }
+
+    fn _43() {
+        let s = String::from("привет");
+        let t = s.chars().collect::<Vec<_>>();
+        println!("{:?}", t);
+    }
+
+    fn _44() {
+        // char is a single character
+        // char is a Unicode code point
+        // https://codepoints.net
+    }
+
+    fn _45() {
+        let mut chars = "é".chars();
+
+        // https://codepoints.net/U+00E9
+        // U+00E9 Latin Small Letter E with Acute
+        assert_eq!(Some('\u{00E9}'), chars.next());
+        assert_eq!(None, chars.next());
+    }
+
+    fn _46() {
+        // char takes 4 bytes
+        assert_eq!(std::mem::size_of::<char>(), 4);
+    }
+
+    fn _47() {
+        // &str - slice of a string
+
+        let vec = vec![1, 2, 3, 4];
+
+        // &[2,3]
+        let vec_slice = &vec[1..3];
+
+        let s = String::from("hello");
+
+        // "el"
+        let s_slice = &s[1..3];
+    }
+
+    fn _48_49() {
+        let s = String::from("привет");
+
+        // &str checks at runtime
+
+        // thread 'main' panicked at 'byte index 1 is not a char boundary; it is inside 'п' (bytes 0..2) of `привет`'
+        let s_slice = &s[1..3];
+    }
+
+    fn _52() {
+        let s: &str = "Hello world!";
+        let t1 = s.to_string();
+
+        // same as t1
+        let t2 = t1.to_owned();
+
+        println!("{t1}\n{t2}")
+    }
+
+    fn _54() {
+        // Box
+
+        // fn leak<'a>(b: Box<T, A>) -> &'a mut T;
+        // fn into_raw(b: Box<T, A>) -> *mut T;
+
+        let x = Box::new(41);
+
+        // static lifetime - leaves the whole program
+        let static_ref: &'static mut usize = Box::leak(x);
+        *static_ref += 1;
+        assert_eq!(*static_ref, 42);
+    }
+
+    fn _55() {
+        // it's safe to leak memory
+        // e.g., allocate it for other programs
+    }
+
+    fn _56() {
+        // single-threaded reference-counting pointer
+
+        let rc = Rc::new(());
+
+        // clones Rc, not content
+        let _rc2 = rc.clone();
+
+        // same
+        let _rc3 = Rc::clone(&rc);
+
+        // Rc is dropped when all instances of Rc are dropped
+
+        // returns a mutable reference if there's only one pointer
+
+        // fn get_mut(this: &mut Rc<T>) -> Option<&mut T>;
+        // fn downgrade(this: &Rc<T>) -> Weak<T>;
+        // fn weak_count(this: &Rc<T>) -> usize;
+        // fn strong_count(this: &Rc<T>) -> usize;
+    }
+
+    fn _57() {
+        let mut rc = Rc::new(42);
+        println!("{}", *rc);
+
+        *Rc::get_mut(&mut rc).unwrap() -= 41;
+        println!("{}", *rc);
+
+        let mut rc1 = rc.clone();
+        println!("{}", rc1);
+
+        // can't get a mutable reference because there's a pointer rc1
+        // thread 'main' panicked at 'called `Option::unwrap()` on a `None` value'
+        *Rc::get_mut(&mut rc1).unwrap() -= 1;
+    }
+
+    fn _58() {
+        // Rc is a strong pointer
+        // Weak is a weak pointer
+        // Both of them have ownership over `allocation`
+        // Only Rc has ownership over the `value` inside
+        
+        // If there are Rc and Weak and all Rc are dropped, the value is dropped, but allocation lives
+        // If all Weak are dropped, there happens deallocation
+
+        // Can upgrade Weak to Rc:
+        // fn upgrade(&self) -> Option<Rc<T>>;
+    }
+
+    fn _59() {
+        let rc1 = Rc::new(String::from("string"));
+        
+        // create another Rc
+        let rc2 = rc1.clone();
+
+        // make a weak pointer to allocation
+        let weak1 = Rc::downgrade(&rc1);
+        // make another weak pointer to allocation
+        let weak2 = Rc::downgrade(&rc1);
+
+        // rc2 remains => the string isn't dropped
+        drop(rc1);
+
+        // check that there's a value
+        assert!(weak1.upgrade().is_some());
+        
+        drop(weak1);
+
+        // the string is dropped
+        drop(rc2);
+
+        assert_eq!(weak2.strong_count(), 0);
+
+        // If no strong pointers remain, this will return zero.
+        // https://github.com/rust-lang/rust/pull/65778#issuecomment-549212322
+        assert_eq!(weak2.weak_count(), 0);
+
+        assert!(weak2.upgrade().is_none());
+
+        drop(weak2);
+    }
+
+    fn _60() {
+        // Arc - a thread-safe reference-counting pointer
+
+        // sharing data safely across threads
+
+        // It's possible to make a cycle on Rc and get a memory leak
+        // memory won't be deallocated
+    }
+
+    pub fn main() {
+        _59()
     }
 }
