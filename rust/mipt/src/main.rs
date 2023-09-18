@@ -1,7 +1,8 @@
 fn main() {
     // lecture1::main()
     // lecture2::main()
-    lecture3::main()
+    // lecture3::main()
+    lecture6::main()
 }
 
 pub mod lecture1 {
@@ -224,6 +225,8 @@ pub mod lecture1 {
         fn func6(x: u32, mut _y: u64) -> u32 {
             x + 10
         }
+
+        
     }
 
     fn _73() {
@@ -1725,5 +1728,589 @@ pub mod lecture3 {
     }
     pub fn main() {
         _8()
+    }
+}
+
+pub mod lecture6 {
+    // https://www.youtube.com/watch?v=WzsQfs5P4Dc&list=PL4_hYwCyhAvbeLzi699gqMUA4UaPkcdmJ
+
+    use std::hash::Hash;
+
+    fn _6_7_8() {
+        // aliasing - when multiple pointers point to the same memory region
+
+        fn compute(input: &u32, output: &mut u32) {
+            // suppose output and input point to the same memory region
+
+            if *input > 10 {
+                // after this, input becomes 1
+                *output = 1;
+            }
+            // and this condition doesn't hold
+            if *input > 5 {
+                *output *= 2;
+            }
+
+            // where's the catch?
+
+            // &mut can't be aliased
+
+            // rust allows
+            // either multiple immutable pointers or
+            // a single mutable pointer to a memory region
+
+            // aliasing XOR mutability
+            // AXM
+        }
+
+        fn compute_optimized(input: &u32, output: &mut u32) {
+            // then, rust can optimize the code like this
+
+            let cached_input = *input;
+            if cached_input > 10 {
+                *output = 1;
+            }
+            if cached_input > 5 {
+                *output *= 2;
+            }
+        }
+    }
+
+    fn _12() {
+        // Main problems
+
+        // Invalid memory access
+        // Use after free
+    }
+
+    fn _13() {
+        // Lifetimes
+
+        // a lifetime is like a named region of code
+
+        // rust limits lifetimes of references by giving them a special type
+        // this type includes the region and type of reference
+
+        // lifetime of a variable can branch and have holes
+    }
+
+    fn _14() {
+        pub struct Person<'a, T> {
+            pub first_name: &'a str,
+            pub last_name: &'a str,
+            pub age: usize,
+            pub private_property: T,
+        }
+    }
+
+    fn _15() {
+        // lifetimes are part of a type and behave like a type
+
+        // they're erased after borrow check
+    }
+
+    fn _16() {
+        let x = 0;
+        let y = &x;
+        let _z = &y;
+
+        // Desugared
+        // 'a: {
+        //     let x: i32 = 0;
+        //     'b: {
+        //         let y: &'b i32 = &'b x;
+        //         'c: {
+        //             let _z: &'c &'b i32 = &'c y;
+        //         }
+        //     }
+        // }
+    }
+
+    fn _17_18() {
+        let x = 0;
+        let _z;
+        let y = &x;
+        _z = y;
+
+        // Desugared
+        // 'a: {
+        //     let x: i32 = 0;
+        //     'b: {
+        //         let z: &'b i32;
+        //         'c: {
+        //             // Must use 'b here because this reference is
+        //             // being passed to that scope.
+        //             let y: &'b i32 = &'b x;
+        //             z = y;
+        //         }
+        //     }
+        // }
+    }
+
+    fn _19() {
+        // https://doc.rust-lang.org/nomicon/lifetimes.html?#example-references-that-outlive-referents
+
+        // fn as_str(data: &u32) -> &str {
+        //     let s = format!("{}", data);
+
+        // cannot return reference to local variable `s`
+        // returns a reference to data owned by the current function
+        // &s
+        // }
+
+        // Desugared
+
+        // fn as_str<'a>(data: &'a u32) -> &'a str {
+        //     'b: {
+        //         let s = format!("{}", data);
+        //         return &'a s;
+        //     }
+        // }
+    }
+
+    fn _20() {
+        // https://doc.rust-lang.org/nomicon/lifetimes.html#example-aliasing-a-mutable-reference
+    }
+
+    fn _21() {
+        // https://doc.rust-lang.org/nomicon/lifetimes.html#the-area-covered-by-a-lifetime
+
+        // a lifetime exists from creation to the last usage
+        // destruction is usage
+        // if a value has a destructor, it's run at the end of scope
+    }
+
+    fn _22() {
+        let mut data = vec![1, 2, 3];
+
+        // This mut allows us to change where the reference points to
+        let mut x = &data[0];
+
+        // Last use of this borrow
+        println!("{}", x);
+        data.push(4);
+
+        // We start a new borrow here
+        x = &data[3];
+        println!("{}", x);
+    }
+
+    fn _23() {
+        // https://doc.rust-lang.org/nomicon/lifetime-mismatch.html#improperly-reduced-borrows
+
+        // use core::hash::*;
+
+        // fn get_default<K, V>(map: &mut HashMap<K, V>, key: K) -> &mut V
+        // where
+        //     K: Clone + Eq + Hash,
+        //     V: Default,
+        // {
+        //     match map.get_mut(&key) {
+        //         Some(value) => value,
+        //         None => {
+        //             map.insert(key.clone(), V::default());
+        //             map.get_mut(&key).unwrap()
+        //         }
+        //     }
+        // }
+    }
+
+    fn _27_28() {
+        // https://doc.rust-lang.org/nomicon/lifetime-elision.html#lifetime-elision
+
+        // When you don't write lifetimes explicitly
+    }
+
+    fn _30() {
+        // Iterator over byte slice
+        // compiles, but not semantically correct
+
+        struct ByteIter<'a> {
+            remainder: &'a [u8],
+        }
+        impl<'a> ByteIter<'a> {
+            fn next(&mut self) -> Option<&u8> {
+                if self.remainder.is_empty() {
+                    None
+                } else {
+                    let byte = &self.remainder[0];
+                    self.remainder = &self.remainder[1..];
+                    Some(byte)
+                }
+            }
+        }
+    }
+
+    fn _38() {
+        struct ByteIter<'outer> {
+            remainder: &'outer [u8],
+        }
+
+        impl<'remainder> ByteIter<'remainder> {
+            // https://stackoverflow.com/a/70674633
+
+            // with lifetime elision:
+
+            // fn next(&mut self) -> Option<&u8>
+            // desugared
+            // fn next<'rself>(&'rself mut self) -> Option<&'rself u8>
+            // compiler thinks we borrow ByteIter in Option
+
+            // We need to borrow a byte
+
+            fn next(&mut self) -> Option<&'remainder u8> {
+                if self.remainder.is_empty() {
+                    None
+                } else {
+                    let byte = &self.remainder[0];
+                    self.remainder = &self.remainder[1..];
+                    Some(byte)
+                }
+            }
+        }
+
+        let mut bytes = ByteIter { remainder: b"1123" };
+        let byte1 = bytes.next();
+        let byte2 = bytes.next();
+        assert_eq!(byte1, byte2);
+    }
+
+    fn _48_49() {
+        // function lifetimes come from an external context
+
+        // matching function signature is sufficient to declare it's usage safe
+    }
+
+    fn _50() {
+        // Higher-rank Trait Bounds
+        // https://doc.rust-lang.org/nomicon/hrtb.html
+
+        enum MyOption<T> {
+            MySome(T),
+            MyNone,
+        }
+
+        use MyOption::*;
+
+        impl<T> MyOption<T> {
+            fn filter<F>(self, f: F) -> MyOption<T>
+            where
+                // We need to provide some lifetime there,
+                // but the lifetime we care about can't be named until we enter the body of call!
+
+                // So, we allow any lifetime here
+                F: for<'a> FnOnce(&'a T) -> bool,
+            {
+                if let MySome(value) = self {
+                    if f(&value) {
+                        return MySome(value);
+                    }
+                }
+                MyNone
+            }
+        }
+    }
+
+    fn _52_53() {
+        // T isn't always an owning type
+
+        // matches in generics:
+        // T: i32, &i32, &mut &mut i32
+        // &T: &i32, &mut &mut i32
+        // &mut T: &mut i32, &mut &mut i32
+
+        // T is a superset of &T and &mut T
+        // &T and &mut T are disjoint sets
+    }
+
+    fn _54<'a>() -> &'a str {
+        // Unbounded lifetime
+
+        // 'static
+        // valid throughout the whole program
+
+        let y = "Hello, world!";
+        let static_str: &'static str = y;
+
+        static_str
+    }
+
+    fn _56() {
+        // Lifetime bounds
+
+        // https://doc.rust-lang.org/rust-by-example/scope/lifetime/lifetime_bounds.html
+
+        // All references in Self must outlive lifetime 'a.
+        trait RequireLifetime<'a>
+        where
+            Self: 'a,
+        {
+        }
+
+        // Lifetime of Ref may not exceed 'a
+        struct Ref<'a> {
+            _r: &'a i32,
+        }
+
+        impl<'a> RequireLifetime<'a> for Ref<'a> {}
+        // impl<'a> RequireLifetime<'static> for Ref<'a> {}
+    }
+
+    fn _58() {
+        struct Holder<'a, 'b, T, U> {
+            s: &'a str,
+            t: T,
+            u: U,
+            ur: &'b U,
+        }
+
+        // T has a lifetime 't
+        // U has a lifetime 'u
+
+        // Structure has a lifetime = strictest from 'a, 't, 'u, 'b
+    }
+
+    fn _60() {
+        // T: 'a is a set of all types bounded by the lifetime 'a
+        // T: 'a includes &'a T
+    }
+
+    fn _62_63() {
+        // Subtyping
+        // subtype can be used in place of supertype
+        // subtypes are mostly used for lifetimes
+
+        trait Animal {
+            fn snuggle(&self);
+        }
+
+        trait Cat: Animal {
+            fn meow(&self);
+        }
+
+        trait Dog: Animal {
+            fn bark(&self);
+        }
+
+        fn love(pet: &dyn Animal) {
+            pet.snuggle();
+        }
+
+        struct SomeCat;
+        impl Animal for SomeCat {
+            fn snuggle(&self) {}
+        }
+        impl Cat for SomeCat {
+            fn meow(&self) {}
+        }
+    }
+
+    fn _64() {
+        // static is a subtype of all lifetimes
+
+        // https://doc.rust-lang.org/nomicon/subtyping.html
+
+        // 'a is a region of code
+        // if 'long is a subtype of 'short, then 'long completely contains 'short
+    }
+
+    fn _65() {
+        // 'b is a subtype of 'a
+        // 'b may not strictly outlive 'a
+        fn foo<'a, 'b: 'a>(one: &'b str, two: &'a str) -> &'a str {
+            one
+        }
+
+        fn main() {
+            let string_one = "foo".to_string();
+            {
+                let string_two = "bar".to_string();
+                println!("{}", foo(&string_one, &string_two))
+            }
+        }
+    }
+
+    fn _66() {
+        // https://doc.rust-lang.org/nomicon/subtyping.html?#variance
+
+        // See the table
+        // https://doc.rust-lang.org/reference/subtyping.html#variance
+
+        // F is covariant if F<Sub> is a subtype of F<Super> (the subtype property is passed through)
+        // F is contravariant if F<Super> is a subtype of F<Sub> (the subtype property is "inverted")
+        // F is invariant otherwise (no subtyping relationship exists)
+
+        // `&mut &'static str` isn't a subtype of `&mut &'b str`
+    }
+
+    fn _72() {
+        // Higher-order functions
+        
+        // https://doc.rust-lang.org/rust-by-example/fn/hof.html
+
+        // [Higher-ranked lifetime](https://users.rust-lang.org/t/higher-ranked-lifetime-error-with-no-further-explanation/97898/2)
+        // for<'a> fn(&'a str) -> &'a str
+
+        fn contravariant(f: fn(&'static str)) {}
+    }
+
+    fn _74() {
+        // Check the table
+        // https://doc.rust-lang.org/reference/subtyping.html#variance
+
+        // &'a (dyn Trait<'b> + 'c)
+
+        // Covariant in 'a
+        // Invariant in 'b
+        // Covariant in 'c
+    }
+
+    fn _75() {
+        // `dyn Trait` is a type erasure
+        // Therefore, it's `dyn Trait + 'a`
+
+        trait Trait {}
+        impl Trait for String {}
+        impl Trait for &str {}
+
+        // fn a(my_string: String) -> Box<dyn Trait> {
+        //     let s = my_string.as_str();
+        //     let b: Box<dyn Trait> = Box::new(s);
+        //     // cannot return value referencing function parameter `my_string`
+        //     return b;
+        // }
+    }
+
+    fn _76_77() {
+        fn evil_feeder<T>(input: &mut T, val: T) {
+            *input = val;
+        }
+
+        fn main() {
+            let mut mr_snuggles: &'static str = "meow! :3";
+            {
+                let spike = String::from("bark! >:V");
+
+                // error: `spike` does not live long enough
+                // let spike_str: &str = spike.as_str();
+
+                // evil_feeder(&mut mr_snuggles, spike_str)
+
+                // Desugared
+
+                // fn evil_feeder<T>(input: &mut T, val: T) =>
+                // fn evil_feeder<'a, T>(input: &mut &'a T, val: &'a T)
+
+                // `&mut &'a T` is invariant
+                // hence, `&'a T` is also
+            }
+        }
+    }
+
+    fn _79_80() {
+        // Variance is important for unsafe
+
+        // This is a bad version of Cell
+
+        struct MyCell<T> {
+            value: T,
+        }
+        impl<T: Copy> MyCell<T> {
+            fn set(&self, new_value: T) {
+                unsafe { std::ptr::write(&self.value as *const T as *mut T, new_value) }
+            }
+        }
+
+        fn foo(rcell: &MyCell<&i32>) {
+            let val: i32 = 12;
+            // stored an `&'a i32` reference, while it must be `&'static`
+            rcell.set(&val);
+            println!("foo set value: {}", rcell.value);
+            println!("foo dropped value")
+        }
+
+        fn main() {
+            static X: i32 = 10;
+            let cell = MyCell { value: &X };
+            foo(&cell);
+            println!("end value: {}", cell.value)
+        }
+
+        main()
+    }
+
+    fn _90() {
+        // Drop checker
+
+        // Drop order:
+        // - variables: in the reverse order of their definition
+        // - fields of structs and tuples: in the order of definition
+
+        let tuple: (Vec<i32>, Vec<i32>) = (vec![], vec![]);
+
+        // Borrow checker doesn't know if the right vector strictly outlives the left vector
+    }
+
+    fn _91() {
+        // first drops Inspector, then days
+
+        struct Inspector<'a>(&'a u8);
+        struct World<'a> {
+            inspector: Option<Inspector<'a>>,
+            days: Box<u8>,
+        }
+        fn main() {
+            let mut world = World {
+                inspector: None,
+                days: Box::new(1),
+            };
+            world.inspector = Some(Inspector(&world.days));
+        }
+    }
+
+    fn _92() {
+        // Sound generic drop
+        // https://doc.rust-lang.org/nomicon/dropck.html
+
+        // For a generic type to soundly implement drop, its generics arguments must strictly outlive it.
+        
+        struct Inspector<'a>(&'a u8);
+        impl<'a> Drop for Inspector<'a> {
+            fn drop(&mut self) {
+                println!("I was only {} days from retirement!", self.0)
+            }
+        }
+        struct World<'a> {
+            inspector: Option<Inspector<'a>>,
+            days: Box<u8>,
+        }
+        fn main() {
+            let mut world = World {
+                inspector: None,
+                days: Box::new(1),
+            };
+            // error: `world.days` does not live long enough
+            // world.inspector = Some(Inspector(&world.days));
+
+            // first drops world, then inspector, then days
+            // but world cannot be dropped because it's borrowed by inspector
+
+            // if days is dropped first, inspector will read free'd memory
+        }
+    }
+
+    fn _98() {
+        // PhantomData
+        
+        // PhantomData used to tell drop checker that Vec<T> owned values of <T>
+        
+        // https://doc.rust-lang.org/nomicon/phantom-data.html#generic-parameters-and-drop-checking
+        
+        // But now, `impl<T> Drop for Vec<T>` tells rust that `Vec<T>` may use `T` in its Drop implementation (almost true)
+        // So, Rust won't allow T's to dangle if Vec<T> is dropped
+    }
+
+    pub fn main() {
+        _79_80();
     }
 }
