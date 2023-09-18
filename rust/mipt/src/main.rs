@@ -1,6 +1,7 @@
 fn main() {
     // lecture1::main()
-    lecture2::main()
+    // lecture2::main()
+    lecture3::main()
 }
 
 pub mod lecture1 {
@@ -1410,7 +1411,7 @@ pub mod lecture2 {
         // Weak is a weak pointer
         // Both of them have ownership over `allocation`
         // Only Rc has ownership over the `value` inside
-        
+
         // If there are Rc and Weak and all Rc are dropped, the value is dropped, but allocation lives
         // If all Weak are dropped, there happens deallocation
 
@@ -1420,7 +1421,7 @@ pub mod lecture2 {
 
     fn _59() {
         let rc1 = Rc::new(String::from("string"));
-        
+
         // create another Rc
         let rc2 = rc1.clone();
 
@@ -1434,7 +1435,7 @@ pub mod lecture2 {
 
         // check that there's a value
         assert!(weak1.upgrade().is_some());
-        
+
         drop(weak1);
 
         // the string is dropped
@@ -1462,5 +1463,267 @@ pub mod lecture2 {
 
     pub fn main() {
         _59()
+    }
+}
+
+pub mod lecture3 {
+
+    pub mod _4 {
+        pub trait Animal {
+            fn name(&self) -> String;
+            fn noise(&self) -> String;
+
+            fn talk(&self) {
+                println!("{} says {}", self.name(), self.noise());
+            }
+        }
+    }
+
+    fn _5_6() {
+        use _4::*;
+
+        pub struct Sheep {
+            name: String,
+        }
+
+        impl Animal for Sheep {
+            // no pub
+            fn name(&self) -> String {
+                self.name.clone()
+            }
+
+            fn noise(&self) -> String {
+                "baaaah!".to_string()
+            }
+        }
+
+        let sheep = Sheep {
+            name: "Dolly".to_string(),
+        };
+
+        assert_eq!(sheep.name(), "Dolly");
+        sheep.talk();
+    }
+
+    fn _7() {
+        use _4::*;
+
+        pub struct Dog {
+            name: String,
+        }
+
+        impl Animal for Dog {
+            fn name(&self) -> String {
+                self.name.clone()
+            }
+            fn noise(&self) -> String {
+                "ruff!".to_string()
+            }
+
+            // override default trait method
+            fn talk(&self) {
+                println!("Ruff! Don't call me doggo")
+            }
+        }
+
+        let dog = Dog {
+            name: "Dog".to_string(),
+        };
+
+        dog.talk()
+    }
+
+    fn _8() {
+        use _4::*;
+
+        #[derive(Clone)]
+        pub struct Human {
+            name: String,
+        }
+
+        impl Animal for Human {
+            fn name(&self) -> String {
+                self.name.clone()
+            }
+
+            fn noise(&self) -> String {
+                let cloned = self.clone();
+                cloned.name()
+            }
+
+            fn talk(&self) {
+                println!("My name is {}", self.name())
+            }
+        }
+
+        let human = Human {
+            name: "Aristotle".to_string(),
+        };
+
+        human.talk()
+    }
+
+    fn _9() {
+        pub trait Animal {
+            fn name(&self) -> String;
+            fn noise(&self) -> String;
+            fn talk(&self) {
+                // read-only references have Copy
+                // This clones &Self, not Self!
+                // let cloned = self.clone();
+
+                // We didn't require Clone for Self, so we don't get it
+
+                // error: no method named `clone` found for type aprameter `Self` in the current scope
+                // let cloned = (*self).clone()
+
+                println!("{} says {}", self.name(), self.noise());
+            }
+        }
+    }
+
+    fn _10() {
+        pub trait Animal
+        where
+            Self: Clone,
+        {
+            fn name(&self) -> String;
+            fn noise(&self) -> String;
+            fn talk(&self) {
+                // This clones Self, not &Self!
+                let cloned = self.clone();
+                println!("{} says {}", cloned.name(), cloned.noise());
+            }
+        }
+    }
+
+    fn _12() {
+        // Trait bounds
+
+        use core::hash::Hash;
+
+        trait Strange1<T: Clone + Hash + Iterator>
+        where
+            T::Item: Clone,
+        {
+            fn new() -> Self;
+        }
+
+        trait Strange2<T>
+        where
+            T: Clone + Hash + Iterator,
+            T::Item: Clone,
+        {
+            fn new() -> Self;
+        }
+    }
+
+    fn _13() {
+        // Rust doesn't have "inheritance"
+        // Can make supertrait
+
+        trait Person {
+            fn name(&self) -> String;
+        }
+
+        // Person is a supertrait of Student
+        // Implementing Student requires you to also impl Person
+        trait Student: Person {
+            fn university(&self) -> String;
+        }
+        trait Programmer {
+            fn fav_language(&self) -> String;
+        }
+        trait CompSciStudent: Programmer + Student {
+            fn git_usefname(&self) -> String;
+        }
+    }
+
+    fn _14_15_16_17_18() {
+        // Fully Qualified Syntax
+
+        // Situation:
+        // A type has multiple traits
+        // Traits have methods with the same names
+
+        struct Form {
+            username: String,
+            age: u8,
+        }
+
+        trait UsernameWidget {
+            fn get(&self) -> String;
+        }
+
+        trait AgeWidget {
+            fn get(&self) -> u8;
+        }
+
+        impl UsernameWidget for Form {
+            fn get(&self) -> String {
+                self.username.clone()
+            }
+        }
+
+        impl AgeWidget for Form {
+            fn get(&self) -> u8 {
+                self.age
+            }
+        }
+
+        let form = Form {
+            username: "rustacean".to_string(),
+            age: 28,
+        };
+
+        let username = UsernameWidget::get(&form);
+        assert_eq!("rustacean".to_owned(), username);
+
+        let age = <Form as AgeWidget>::get(&form);
+        assert_eq!(28, age);
+    }
+
+    fn _20() {
+        use core::hash::*;
+
+        fn func<T: Hash + Clone>(_input: T) {}
+    }
+
+    fn _21() {
+        use core::hash::*;
+
+        // Syntax sugar
+        fn func(_input: impl Hash + Clone) {}
+    }
+
+    fn _22_23() {
+        // Methods depending on whether the type has implementations of some traits
+
+        pub enum Option<T> {
+            Dummy(T),
+        }
+
+        impl<T> Option<T> {
+            pub fn unwrap_or_default(self) -> T
+            where
+                T: Default,
+            {
+                T::default()
+            }
+        }
+
+        impl<T> Option<T> where T: Default {}
+    }
+
+    fn _25() {
+        // Exotically sized types
+
+        // "Regular"
+        // Dynamically Sized Types, DST
+        // Zero Sized Types, ZST
+        // Empty Types
+    }
+    pub fn main() {
+        _8()
     }
 }
