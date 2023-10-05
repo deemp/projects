@@ -1,0 +1,3885 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Book - notes</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Outline</li><li class="chapter-item expanded "><a href="../../outline.html"><strong aria-hidden="true">1.</strong> Outline</a></li><li class="chapter-item expanded affix "><li class="part-title">Developers' Roadmap</li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/index.html"><strong aria-hidden="true">2.</strong> README</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Aeson</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Aeson/HKD.html"><strong aria-hidden="true">3.1.</strong> HKD</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Data</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Data/LargeAnon.html"><strong aria-hidden="true">4.1.</strong> LargeAnon</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.</strong> Debug</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Debug/Breakpoint.html"><strong aria-hidden="true">5.1.</strong> Breakpoint</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> Effectful</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Effectful/Dynamic.html"><strong aria-hidden="true">6.1.</strong> Dynamic</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> Exceptions</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Exceptions/Exceptions.html"><strong aria-hidden="true">7.1.</strong> Exceptions</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Exceptions/Theory.html"><strong aria-hidden="true">7.2.</strong> Theory</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Functions</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Functions/Composition.html"><strong aria-hidden="true">8.1.</strong> Composition</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Functions/Folds.html"><strong aria-hidden="true">8.2.</strong> Folds</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Functions/General.html"><strong aria-hidden="true">8.3.</strong> General</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> FusedEffects</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/FusedEffects/ReinterpretingEffects.html"><strong aria-hidden="true">9.1.</strong> ReinterpretingEffects</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/FusedEffects/UndoIO.html"><strong aria-hidden="true">9.2.</strong> UndoIO</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> GADT</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/GADT/GADT.html"><strong aria-hidden="true">10.1.</strong> GADT</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Generics</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Generics/Generics.html"><strong aria-hidden="true">11.1.</strong> Generics</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> IO</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/IO/RandomNumbers.html"><strong aria-hidden="true">12.1.</strong> RandomNumbers</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> ImplicitParams</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/ImplicitParams/ImplicitParams.html"><strong aria-hidden="true">13.1.</strong> ImplicitParams</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> Lens</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Lens/MissingKey.html"><strong aria-hidden="true">14.1.</strong> MissingKey</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Lens/Node.html"><strong aria-hidden="true">14.2.</strong> Node</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> Misc</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Misc/Determinant.html"><strong aria-hidden="true">15.1.</strong> Determinant</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">16.</strong> Monads</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Monads/FunctionalDependencies.html"><strong aria-hidden="true">16.1.</strong> FunctionalDependencies</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Monads/MonadBaseControl.html"><strong aria-hidden="true">16.2.</strong> MonadBaseControl</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Monads/Monads.html"><strong aria-hidden="true">16.3.</strong> Monads</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">17.</strong> Monoids</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Monoids/FizzBuzz.html"><strong aria-hidden="true">17.1.</strong> FizzBuzz</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">18.</strong> ParallelAndConcurrentHaskell</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/ParallelAndConcurrentHaskell/Exceptions.html"><strong aria-hidden="true">18.1.</strong> Exceptions</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/ParallelAndConcurrentHaskell/MVar.html"><strong aria-hidden="true">18.2.</strong> MVar</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/ParallelAndConcurrentHaskell/STM.html"><strong aria-hidden="true">18.3.</strong> STM</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">19.</strong> TemplateHaskell</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">19.1.</strong> ConstructorTags</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/TemplateHaskell/ConstructorTags/Declare.html"><strong aria-hidden="true">19.1.1.</strong> Declare</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/TemplateHaskell/ConstructorTags/Use.html"><strong aria-hidden="true">19.1.2.</strong> Use</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">19.2.</strong> Typed</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/TemplateHaskell/Typed/Declare.html"><strong aria-hidden="true">19.2.1.</strong> Declare</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/TemplateHaskell/Typed/Use.html"><strong aria-hidden="true">19.2.2.</strong> Use</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">20.</strong> Test</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/Test/Theory.html"><strong aria-hidden="true">20.1.</strong> Theory</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">21.</strong> TypeClasses</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/TypeClasses/Monoid.html"><strong aria-hidden="true">21.1.</strong> Monoid</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/TypeClasses/Theory.html"><strong aria-hidden="true">21.2.</strong> Theory</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/TypeClasses/TypeClasses.html"><strong aria-hidden="true">21.3.</strong> TypeClasses</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">22.</strong> TypeFamilies</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/TypeFamilies/StringInterpolate.html"><strong aria-hidden="true">22.1.</strong> StringInterpolate</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/TypeFamilies/TaggedClasses.html"><strong aria-hidden="true">22.2.</strong> TaggedClasses</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/TypeFamilies/Theory.html"><strong aria-hidden="true">22.3.</strong> Theory</a></li><li class="chapter-item expanded "><a href="../../haskell/developers-roadmap/TypeFamilies/TypeFamilies.html"><strong aria-hidden="true">22.4.</strong> TypeFamilies</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Optics By Example</li><li class="chapter-item expanded "><a href="../../haskell/optics-by-example/Book.html" class="active"><strong aria-hidden="true">23.</strong> Book</a></li><li class="chapter-item expanded "><a href="../../haskell/optics-by-example/Extra.html"><strong aria-hidden="true">24.</strong> Extra</a></li><li class="chapter-item expanded affix "><li class="part-title">Thinking with Types</li><li class="chapter-item expanded "><a href="../../haskell/thinking-with-types/Chapter02.html"><strong aria-hidden="true">25.</strong> Chapter02</a></li><li class="chapter-item expanded "><a href="../../haskell/thinking-with-types/Chapter03.html"><strong aria-hidden="true">26.</strong> Chapter03</a></li><li class="chapter-item expanded "><a href="../../haskell/thinking-with-types/Chapter04.html"><strong aria-hidden="true">27.</strong> Chapter04</a></li><li class="chapter-item expanded "><a href="../../haskell/thinking-with-types/Chapter05.html"><strong aria-hidden="true">28.</strong> Chapter05</a></li><li class="chapter-item expanded "><a href="../../haskell/thinking-with-types/Chapter05_1.html"><strong aria-hidden="true">29.</strong> Chapter05_1</a></li><li class="chapter-item expanded "><a href="../../haskell/thinking-with-types/Chapter06.html"><strong aria-hidden="true">30.</strong> Chapter06</a></li><li class="chapter-item expanded "><a href="../../haskell/thinking-with-types/Chapter13.html"><strong aria-hidden="true">31.</strong> Chapter13</a></li><li class="chapter-item expanded affix "><li class="part-title">Sockets and Pipes</li><li class="chapter-item expanded "><a href="../../haskell/sockets-and-pipes-notes/C_01_Handles.html"><strong aria-hidden="true">32.</strong> C_01_Handles</a></li><li class="chapter-item expanded "><a href="../../haskell/sockets-and-pipes-notes/C_02_Chunks.html"><strong aria-hidden="true">33.</strong> C_02_Chunks</a></li><li class="chapter-item expanded "><a href="../../haskell/sockets-and-pipes-notes/C_03_Bytes.html"><strong aria-hidden="true">34.</strong> C_03_Bytes</a></li><li class="chapter-item expanded "><a href="../../haskell/sockets-and-pipes-notes/C_04_Sockets.html"><strong aria-hidden="true">35.</strong> C_04_Sockets</a></li><li class="chapter-item expanded "><a href="../../haskell/sockets-and-pipes-notes/C_05_HTTP.html"><strong aria-hidden="true">36.</strong> C_05_HTTP</a></li><li class="chapter-item expanded "><a href="../../haskell/sockets-and-pipes-notes/C_06_HTTP_types.html"><strong aria-hidden="true">37.</strong> C_06_HTTP_types</a></li><li class="chapter-item expanded "><a href="../../haskell/sockets-and-pipes-notes/C_07_Encoding.html"><strong aria-hidden="true">38.</strong> C_07_Encoding</a></li><li class="chapter-item expanded "><a href="../../haskell/sockets-and-pipes-notes/C_08_Responding.html"><strong aria-hidden="true">39.</strong> C_08_Responding</a></li><li class="chapter-item expanded "><a href="../../haskell/sockets-and-pipes-notes/C_09_Content_types.html"><strong aria-hidden="true">40.</strong> C_09_Content_types</a></li><li class="chapter-item expanded "><a href="../../haskell/sockets-and-pipes-notes/C_10_Change.html"><strong aria-hidden="true">41.</strong> C_10_Change</a></li><li class="chapter-item expanded "><a href="../../haskell/sockets-and-pipes-notes/C_11_Streaming.html"><strong aria-hidden="true">42.</strong> C_11_Streaming</a></li><li class="chapter-item expanded affix "><li class="part-title">Miscellaneous Notes</li><li class="chapter-item expanded "><a href="../../miscNotes/MiscNotes.html"><strong aria-hidden="true">43.</strong> Notes</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">notes</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="additional-resources"><a class="header" href="#additional-resources">Additional resources</a></h2>
+<ul>
+<li><a href="http://oleg.fi/gists/posts/2017-04-18-glassery.html#lens">Glassery</a></li>
+<li><a href="https://github.com/Elvecent/notebooks/blob/master/lens-aeson/Main.ipynb">lens ipynb</a></li>
+<li><a href="https://github.com/ekmett/lens/wiki/Operators">operators</a></li>
+<li><a href="https://github.com/ekmett/lens/wiki/Derivation#traversals">optics derivation</a></li>
+<li><a href="https://hackage.haskell.org/package/lens-5.2.2/docs/Control-Lens-Combinators.html#t:Plated">Plated</a> - for recursive data structures</li>
+<li><a href="https://www.haskellforall.com/2021/09/optics-are-monoids.html">Optics are monoids</a> - just <code>cosmos</code>!
+<ul>
+<li><code>adjoin</code> - a union of disjoint traversals</li>
+</ul>
+</li>
+<li><a href="https://www.youtube.com/watch?v=QZy4Yml3LTY">Putting Lenses to Work</a></li>
+<li><a href="https://gist.github.com/lgastako/8da651c012c4e341e3ca12f22f08833c">Tree numbering</a> - <code>unsafePartsOf</code></li>
+<li>package <a href="https://hackage.haskell.org/package/generic-lens">generic-lens</a>
+<ul>
+<li>Uses <code>OverloadedLabels</code> to generate lenses and prisms for instances of <code>Generic</code>.</li>
+<li>Allows to avoid <code>TemplateHaskell</code> and have more flexible order of expressions in a module.</li>
+<li>The disadvantage is runtime costs connected with the usage of generics.</li>
+</ul>
+</li>
+</ul>
+<h2 id="optics-by-example"><a class="header" href="#optics-by-example">Optics by example</a></h2>
+<p>Notes on <a href="https://leanpub.com/optics-by-example">Optics by example</a>.</p>
+<!-- FOURMOLU_DISABLE -->
+<pre><code class="language-haskell">{-# LANGUAGE ImportQualifiedPost #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE OverloadedRecordDot #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE DeriveFoldable #-}
+</code></pre>
+<!-- D
+
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
+{-# OPTIONS_GHC -Wno-unused-imports #-}
+
+E -->
+<!-- FOURMOLU_ENABLE -->
+<pre><code class="language-haskell">module Book (main) where
+
+import Control.Applicative (Applicative (..))
+import Control.Lens
+import Control.Lens.Unsound (adjoin, lensProduct)
+import Control.Monad.Reader (ReaderT (runReaderT))
+import Control.Monad.State ( MonadIO(liftIO), StateT, modify, runState, MonadState(get) )
+import Control.Monad.Writer (Writer, WriterT, execWriter, tell)
+import Data.Bitraversable (Bitraversable)
+import Data.ByteString qualified as BS
+import Data.Char (chr, isUpper, ord, toLower, toUpper)
+import Data.Either.Validation ( Validation(..) )
+import Data.Foldable (Foldable (..))
+import Data.Foldable qualified as Foldable
+import Data.Generics.Labels ()
+import Data.List ( intercalate )
+import Data.List qualified as L
+import Data.List.NonEmpty (NonEmpty ((:|)), nonEmpty, toList)
+import Data.Map (fromList)
+import Data.Map qualified as M
+import Data.Maybe (fromMaybe, listToMaybe)
+import Data.Monoid (Sum (..))
+import Data.Ord (comparing)
+import Data.Set qualified as S (Set, fromList)
+import Data.Text qualified as T
+import Data.Text.Lens (unpacked)
+import Data.Tree (Tree (..))
+import GHC.Word qualified
+import Numeric.Lens (adding, multiplying, negated)
+import Text.Read (readMaybe)
+import Data.Kind (Type)
+import qualified Data.Text as Text
+import qualified Data.Map as Map
+
+main :: IO ()
+main = print &quot;hello&quot;
+</code></pre>
+<h2 id="3-lenses"><a class="header" href="#3-lenses">3. Lenses</a></h2>
+<ul>
+<li>A Lens must focus ONE thing inside a structure.</li>
+<li>A Lens must never fail to get or set that focus.</li>
+</ul>
+<h3 id="31-introduction-to-lenses"><a class="header" href="#31-introduction-to-lenses">3.1 Introduction to Lenses</a></h3>
+<h4 id="exercises---optic-anatomy"><a class="header" href="#exercises---optic-anatomy">Exercises - Optic Anatomy</a></h4>
+<p>Find: action, path, structure, focus</p>
+<pre><code class="language-haskell">-- This will be evaluated by HLS
+-- &gt;&gt;&gt; view (_1 . _2) ((1, 2), 3)
+-- 2
+
+-- This will be evaluated by ghcid
+
+-- $&gt; print &quot;Hello&quot;
+</code></pre>
+<ul>
+<li>action: 'view'</li>
+<li>path: <code>(_1 . _2)</code></li>
+<li>structure: <code>((1, 2), 3)</code></li>
+<li>focus: <code>2</code></li>
+</ul>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; set (_2 . _Left) &quot;new&quot; (False, Left &quot;old&quot;)
+-- (False,Left &quot;new&quot;)
+</code></pre>
+<ul>
+<li>action: <code>set</code></li>
+<li>path: <code>(_2 . _Left)</code></li>
+<li>structure: <code>(False, Left &quot;old&quot;)</code></li>
+<li>focus: <code>&quot;old&quot;</code></li>
+</ul>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; over (taking 2 worded . traversed) toUpper &quot;testing one two three&quot;
+-- &quot;TESTING ONE two three&quot;
+</code></pre>
+<ul>
+<li>action: <code>over</code></li>
+<li>path: <code>(taking 2 worded . traversed)</code></li>
+<li>structure: <code>&quot;testing one two three&quot;</code></li>
+<li>focus: <code>&quot;testing one&quot;</code></li>
+</ul>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;foldOf (both . each) ([&quot;super&quot;, &quot;cali&quot;],[&quot;fragilistic&quot;, &quot;expialidocious&quot;])
+-- &quot;supercalifragilisticexpialidocious&quot;
+</code></pre>
+<ul>
+<li>action: <code>foldOf</code></li>
+<li>path: <code>(both . each)</code></li>
+<li>structure: <code>([&quot;super&quot;, &quot;cali&quot;],[&quot;fragilistic&quot;, &quot;expialidocious&quot;])</code></li>
+<li>focus: <code>[&quot;super&quot;, &quot;cali&quot;, &quot;fragilistic&quot;, &quot;expilidocious&quot;]</code></li>
+</ul>
+<h3 id="32-lens-actions"><a class="header" href="#32-lens-actions">3.2 Lens Actions</a></h3>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;view _1 ('a', 'b')
+-- 'a'
+
+-- &gt;&gt;&gt; set _1 'x' ('a', 'b')
+-- ('x','b')
+
+-- &gt;&gt;&gt; over _1 (*100) (1, 2)
+-- (100,2)
+</code></pre>
+<h4 id="exercises---lens-actions"><a class="header" href="#exercises---lens-actions">Exercises - Lens Actions</a></h4>
+<ol>
+<li>
+<p>solution:</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">ex1 :: Lens' (Char, Int) Char
+ex1 = undefined
+</code></pre>
+</li>
+<li>
+<p>Lens actions:</p>
+<ul>
+<li>get</li>
+<li>set</li>
+<li>modify</li>
+</ul>
+</li>
+<li>
+<p>focus on <code>c</code></p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;view _3 ('a','b','c')
+-- 'c'
+
+-- &gt;&gt;&gt;s = over _2 (*10) (False, 2)
+-- &gt;&gt;&gt;:t s
+-- s :: Num b =&gt; (Bool, b)
+-- &gt;&gt;&gt;s
+-- (False,20)
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h3 id="33-lenses-and-records"><a class="header" href="#33-lenses-and-records">3.3 Lenses and records</a></h3>
+<pre><code class="language-haskell">data Ship = Ship {_name :: String, _numCrew :: Int} deriving (Show)
+
+name_ :: Lens' Ship String
+name_ = lens getName setName
+ where
+  getName :: Ship -&gt; String
+  getName = _name
+  setName :: Ship -&gt; String -&gt; Ship
+  setName ship _name = ship{_name}
+
+purplePearl :: Ship
+purplePearl = Ship{_name = &quot;Purple Pearl&quot;, _numCrew = 38}
+</code></pre>
+<ol>
+<li>
+<p>apply lens</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">-- &gt;&gt;&gt;view name_ purplePearl
+-- &quot;Purple Pearl&quot;
+
+-- &gt;&gt;&gt;over name_ (const &quot;Purple  Pearl&quot;) purplePearl
+-- Ship {_name = &quot;Purple  Pearl&quot;, _numCrew = 38}
+
+makeLenses ''Ship
+
+-- &gt;&gt;&gt;:t name
+-- name :: Lens' Ship String
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h4 id="exercises---records-part-two"><a class="header" href="#exercises---records-part-two">Exercises - Records Part Two</a></h4>
+<ol>
+<li>
+<p>Rewrite</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">data Spuzz
+data Chumble
+gazork :: Functor f =&gt; (Spuzz -&gt; f Spuzz) -&gt; Chumble -&gt; f Chumble
+gazork = undefined
+
+gazork_ :: Lens' Spuzz Chumble
+gazork_ = undefined
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h2 id="34-limitations"><a class="header" href="#34-limitations">3.4 Limitations</a></h2>
+<p><strong>Lens</strong> - An optic which always accesses <strong>exactly one focus</strong>.</p>
+<h3 id="exercises"><a class="header" href="#exercises">Exercises</a></h3>
+<ol>
+<li>
+<p>Can make both a getter and a setter</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">get1 :: (a, b, c) -&gt; b
+get1 (_, b, _) = b
+
+set1 :: (a, b, c) -&gt; b -&gt; (a, b, c)
+set1 (a, _, c) b_ = (a, b_, c)
+</code></pre>
+</li>
+<li>
+<p>Can't get from <code>Nothing</code>, so, can't have <code>inMaybe :: Lens' (Maybe a) a</code> not fail sometimes</p>
+<pre><code class="language-haskell">get2 :: Maybe a -&gt; a
+get2 (Just a) = a
+get2 _ = undefined
+</code></pre>
+</li>
+<li>
+<p>Similar situation with <code>left :: Lens' (Either a b) a</code></p>
+</li>
+<li>
+<p>No, a list may have &lt; 2 elements</p>
+</li>
+<li>
+<p>Yes, you always can set and get a value, and there'll be only one value focused</p>
+<pre><code class="language-haskell">conditional :: Lens' (Bool, a, a) a
+conditional = undefined
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h2 id="35-lens-laws"><a class="header" href="#35-lens-laws">3.5 Lens Laws</a></h2>
+<p>Allow to reason about a lens' behavior.</p>
+<ol>
+<li>You get back what you set (set-get)
+<ul>
+<li><code>view myLens (set myLens newValue structure) == newValue</code></li>
+</ul>
+</li>
+<li>Setting back what you got doesn't do anything (get-set)
+<ul>
+<li><code>set myLens (view myLens structure) structure == structure</code></li>
+</ul>
+</li>
+<li>Setting twice is the same as setting once (set-set)
+<ul>
+<li><code>set myLens differentValue (set myLens value structure) == set myLens differentValue structure</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="unlawful-lenses"><a class="header" href="#unlawful-lenses">Unlawful lenses</a></h3>
+<p>When using unlawful lenses in a library, should write a note.</p>
+<p><code>lensProduct</code> combines two lenses to get a new one</p>
+<ul>
+<li>these lenses should be <strong>disjoint</strong>. Otherwise, how to set?</li>
+</ul>
+<pre><code class="language-haskell">newtype Ex1 = Ex1 {_unEx1 :: String} deriving (Show, Eq)
+
+makeLenses ''Ex1
+
+alongsideEx1 :: Lens' Ex1 (Ex1, String)
+alongsideEx1 = lensProduct id unEx1
+
+ex3 :: Ex1
+ex3 = Ex1 &quot;c&quot;
+
+ex4 :: (Ex1, String)
+ex4 = (Ex1 &quot;a&quot;, &quot;b&quot;)
+
+-- ex5 :: Bool
+ex5 :: (Ex1, String)
+ex5 = view alongsideEx1 (set alongsideEx1 ex4 ex3)
+</code></pre>
+<p>We don't get back what we set:</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;ex5
+-- (Ex1 {_unEx1 = &quot;b&quot;},&quot;b&quot;)
+
+-- &gt;&gt;&gt;ex4 == ex5
+-- False
+</code></pre>
+<h4 id="exercises---laws"><a class="header" href="#exercises---laws">Exercises - Laws</a></h4>
+<ol>
+<li>
+<p>break <code>get-set</code></p>
+<!-- i 4 -->
+<pre><code class="language-haskell">break2 :: Lens' Ex1 String
+break2 = lens (const &quot;1&quot;) (\_ _ -&gt; Ex1 &quot;2&quot;)
+
+ex6 :: String
+ex6 = view break2 ex3
+
+-- &gt;&gt;&gt;ex6
+-- &quot;1&quot;
+
+ex7 :: Ex1
+ex7 = set break2 ex6 ex3
+
+-- &gt;&gt;&gt;ex7
+-- Ex1 {_unEx1 = &quot;2&quot;}
+</code></pre>
+</li>
+<li>
+<p><code>get-set</code>, <code>set-set</code> work, <code>set-get</code> fails</p>
+<pre><code class="language-haskell">data Err
+  = ReallyBadError {_msg :: String}
+  | ExitCode {_code :: Int}
+  deriving (Show, Eq)
+
+msg :: Lens' Err String
+msg = lens getMsg setMsg
+ where
+  getMsg (ReallyBadError message) = message
+  -- Hrmm, I guess we just return &quot;&quot;?
+  getMsg (ExitCode _) = &quot;&quot;
+  setMsg (ReallyBadError _) newMessage = ReallyBadError newMessage
+  -- Nowhere to set it, I guess we do nothing?
+  setMsg (ExitCode n) _ = ExitCode n
+
+err :: Err
+err = ExitCode 3
+
+msgTest :: Bool
+msgTest =
+  view msg (set msg &quot;a&quot; err) /= &quot;a&quot;
+    &amp;&amp; set msg (view msg err) err == err
+    &amp;&amp; set msg &quot;a&quot; (set msg &quot;a&quot; err) == set msg &quot;a&quot; err
+
+-- &gt;&gt;&gt;msgTest
+-- True
+</code></pre>
+</li>
+<li>
+<p>fail <code>get-set</code>, pass other</p>
+<pre><code class="language-haskell">msg1 :: Lens' Err String
+msg1 = lens getMsg setMsg
+ where
+  getMsg (ReallyBadError message) = message
+  -- Hrmm, I guess we just return &quot;&quot;?
+  getMsg (ExitCode _) = &quot;&quot;
+  setMsg (ReallyBadError _) newMessage = ReallyBadError newMessage
+  -- Nowhere to set it, I guess we do nothing?
+  setMsg (ExitCode _) x = ReallyBadError x
+
+msg1Test :: Bool
+msg1Test =
+  set msg1 (view msg1 err) err /= err
+    &amp;&amp; set msg1 &quot;a&quot; (set msg1 &quot;a&quot; err) == set msg1 &quot;a&quot; err
+    &amp;&amp; view msg1 (set msg1 &quot;a&quot; err) == &quot;a&quot;
+
+-- &gt;&gt;&gt;msg1Test
+-- True
+</code></pre>
+</li>
+<li>
+<p>like <code>msg1</code></p>
+<pre><code class="language-haskell">data Sink = A Int | B String deriving (Show, Eq)
+
+sink :: Lens' Sink String
+sink = lens getSink setSink
+ where
+  getSink (A x) = show x
+  getSink (B x) = x
+  setSink (A _) x = B x
+  setSink (B _) x = B x
+
+sinkEx :: Sink
+sinkEx = A 4
+
+sinkTest :: Bool
+sinkTest =
+  set sink (view sink sinkEx) sinkEx /= sinkEx
+    &amp;&amp; view sink (set sink &quot;a&quot; sinkEx) == &quot;a&quot;
+    &amp;&amp; set sink &quot;a&quot; (set sink &quot;a&quot; sinkEx) == set sink &quot;a&quot; sinkEx
+
+-- &gt;&gt;&gt;sinkTest
+-- True
+</code></pre>
+</li>
+<li>
+<p>break all rules</p>
+<pre><code class="language-haskell">newtype Break = Break String deriving (Show, Eq)
+
+break_ :: Break
+break_ = Break &quot;hey&quot;
+
+breakAll :: Lens' Break String
+breakAll = lens get_ set_
+ where
+  get_ (Break _) = &quot;!&quot;
+  set_ (Break s) x = Break $ s ++ x
+
+breakAllTest :: Bool
+breakAllTest =
+  set breakAll (view breakAll break_) break_ /= break_
+    &amp;&amp; view breakAll (set breakAll &quot;a&quot; break_) /= &quot;a&quot;
+    &amp;&amp; set breakAll &quot;a&quot; (set breakAll &quot;a&quot; break_) /= set breakAll &quot;a&quot; break_
+
+-- &gt;&gt;&gt;breakAllTest
+-- True
+</code></pre>
+</li>
+<li>
+<p>builder</p>
+<pre><code class="language-haskell">data Builder = Builder
+  { _context :: [String]
+  , _build :: [String] -&gt; String
+  }
+
+instance Eq Builder where
+  (==) :: Builder -&gt; Builder -&gt; Bool
+  x == y = x._context == y._context
+
+builderLens :: Lens' Builder String
+builderLens = lens builderGet builderSet
+ where
+  builderGet (Builder{..}) = case _context of [] -&gt; &quot;&quot;; s -&gt; head s
+  builderSet (Builder{..}) s = Builder{_context = case s of &quot;&quot; -&gt; []; _ -&gt; [s], ..}
+
+builder1 :: Builder
+builder1 = Builder{_context = [], _build = fold}
+
+builderTest :: Bool
+builderTest =
+  set builderLens (view builderLens builder1) builder1 == builder1
+    &amp;&amp; view builderLens (set builderLens &quot;a&quot; builder1) == &quot;a&quot;
+    &amp;&amp; view builderLens (set builderLens &quot;&quot; builder1) == &quot;&quot;
+    &amp;&amp; set builderLens &quot;a&quot; (set builderLens &quot;a&quot; builder1) == set builderLens &quot;a&quot; builder1
+    &amp;&amp; set builderLens &quot;&quot; (set builderLens &quot;&quot; builder1) == set builderLens &quot;&quot; builder1
+
+-- &gt;&gt;&gt;builderTest
+-- True
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h3 id="36-virtual-fields"><a class="header" href="#36-virtual-fields">3.6 Virtual Fields</a></h3>
+<p>Export only lenses, not constructors. This is to make importing modules independent of a type's inner representation.</p>
+<p>For a data type, we can make lenses that hide some computations on the existing type's fields and lenses.</p>
+<pre><code class="language-haskell">data Temperature = Temperature
+  { _location :: String
+  , _celsius :: Float
+  }
+  deriving (Show)
+
+makeLenses ''Temperature
+
+celsiusToFahrenheit :: Float -&gt; Float
+celsiusToFahrenheit c = (c * (9 / 5)) + 32
+fahrenheitToCelsius :: Float -&gt; Float
+fahrenheitToCelsius f = (f - 32) * (5 / 9)
+
+fahrenheit :: Lens' Temperature Float
+fahrenheit = lens getter setter
+ where
+  getter = celsiusToFahrenheit . view celsius
+  setter temp_ f = set celsius (fahrenheitToCelsius f) temp_
+
+temp :: Temperature
+temp = Temperature &quot;Berlin&quot; 7.0
+
+-- &gt;&gt;&gt;over fahrenheit (+18) temp
+-- Temperature {_location = &quot;Berlin&quot;, _celsius = 17.0}
+</code></pre>
+<p>When changing a field's name in the original data type,
+we can separately export a lens for the old field.
+This lens is calculated based on the updated type's fields and lenses.</p>
+<pre><code class="language-haskell">data Temperature_ = Temperature_
+  { _location_ :: String
+  , _kelvin_ :: Float
+  }
+  deriving (Show)
+
+makeLenses ''Temperature_
+
+celsius_ :: Lens' Temperature_ Float
+celsius_ = lens getter setter
+ where
+  getter = subtract 273.15 . view kelvin_
+  setter temp_ c = set kelvin_ (c + 273.15) temp_
+</code></pre>
+<h4 id="exercises---virtual-fields"><a class="header" href="#exercises---virtual-fields">Exercises - Virtual Fields</a></h4>
+<ol>
+<li>
+<p>substitute lens</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">data User = User
+  { _firstName :: String
+  , _lastName :: String
+  , _userEmail :: String
+  }
+  deriving (Show)
+
+makeLenses ''User
+
+username :: Lens' User String
+username = lens getter setter
+ where
+  getter = view userEmail
+  setter user_ s = set userEmail s user_
+</code></pre>
+</li>
+<li>
+<p>unlawful <code>fullName</code> lens</p>
+<pre><code class="language-haskell">fullName :: Lens' User String
+fullName = lens getter setter
+ where
+  getter user_ = view firstName user_ ++ &quot; &quot; ++ view lastName user_
+  setter user_ f =
+    let fname : (unwords -&gt; lname) = words f
+     in set firstName fname (set lastName lname user_)
+
+user :: User
+user = User &quot;John&quot; &quot;Cena&quot; &quot;invisible@example.com&quot;
+
+-- &gt;&gt;&gt;view fullName user
+-- &quot;John Cena&quot;
+
+-- &gt;&gt;&gt;set fullName &quot;Doctor of Thuganomics&quot; user
+-- User {_firstName = &quot;Doctor&quot;, _lastName = &quot;of Thuganomics&quot;, _email = &quot;invisible@example.com&quot;}
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h3 id="37--data-correction-and-maintaining-invariants"><a class="header" href="#37--data-correction-and-maintaining-invariants">3.7  Data correction and maintaining invariants</a></h3>
+<p>We can provide some advanced logic in our setters and getters.
+E.g., saturate a number to a value between a pair of given values.</p>
+<h4 id="exercises---self-correcting-lenses"><a class="header" href="#exercises---self-correcting-lenses">Exercises - Self-Correcting Lenses</a></h4>
+<ol>
+<li>
+<p>and 2.</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">data ProducePrices = ProducePrices
+  { _limePrice :: Float
+  , _lemonPrice :: Float
+  }
+  deriving (Show)
+
+limePrice :: Lens' ProducePrices Float
+limePrice = lens getter setter
+ where
+  getter = _limePrice
+  setter ProducePrices{..} p =
+    ProducePrices
+      { _limePrice = newLimePrice
+      , _lemonPrice =
+          if abs (_lemonPrice - newLimePrice) &lt;= 0.5
+            then _lemonPrice
+            else max (newLimePrice + signum (_lemonPrice - newLimePrice) * 0.5) 0
+      }
+   where
+    newLimePrice = max p 0
+
+prices :: ProducePrices
+prices = ProducePrices 1.50 1.48
+
+-- &gt;&gt;&gt;set limePrice 2 prices
+-- ProducePrices {_limePrice = 2.0, _lemonPrice = 1.5}
+
+-- &gt;&gt;&gt;set limePrice 1.8 prices
+-- ProducePrices {_limePrice = 1.8, _lemonPrice = 1.48}
+
+-- &gt;&gt;&gt; set limePrice 1.63 prices
+-- ProducePrices {_limePrice = 1.63, _lemonPrice = 1.48}
+
+-- &gt;&gt;&gt;  set limePrice (-1.00) prices
+-- ProducePrices {_limePrice = 0.0, _lemonPrice = 0.5}
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h2 id="4-polymorphic-optics"><a class="header" href="#4-polymorphic-optics">4 Polymorphic Optics</a></h2>
+<pre><code class="language-hssss">type Lens s t a b = forall f. Functor f =&gt; (a -&gt; f b) -&gt; s -&gt; f t
+</code></pre>
+<ul>
+<li><code>s</code>: structure before action</li>
+<li><code>t</code>: structure after action</li>
+<li><code>a</code>: focus before action</li>
+<li><code>b</code>: focus after action</li>
+</ul>
+<p><strong>We need polymorphic lenses whenever an action might want to change the type of the focus.</strong></p>
+<pre><code class="language-haskell">ex8 :: ([Char], Int)
+ex8 = over _1 show (1 :: Int, 1)
+
+-- &gt;&gt;&gt;ex8
+-- (&quot;1&quot;,1)
+
+data Promotion a = Promotion
+  { _item :: a
+  , _discountPercentage :: Double
+  }
+  deriving (Show)
+</code></pre>
+<h3 id="42-when-do-we-need-polymorphic-lenses"><a class="header" href="#42-when-do-we-need-polymorphic-lenses">4.2 When do we need polymorphic lenses</a></h3>
+<p><code>over :: Lens' s a -&gt; (a -&gt; a) -&gt; s -&gt; s</code></p>
+<h4 id="changing-type-variables-with-polymorphic-lenses"><a class="header" href="#changing-type-variables-with-polymorphic-lenses">Changing type variables with polymorphic lenses</a></h4>
+<pre><code class="language-haskell">item :: Lens (a, b) (c, b) a c
+item = lens getter setter
+ where
+  getter :: (a, b) -&gt; a
+  getter = fst
+  setter :: (a, b) -&gt; c -&gt; (c, b)
+  setter (_, b) c = (c, b)
+</code></pre>
+<h4 id="exercises---polymorphic-lenses"><a class="header" href="#exercises---polymorphic-lenses">Exercises - Polymorphic Lenses</a></h4>
+<ol>
+<li>
+<p><code>Vorpal</code></p>
+<!-- i 4 -->
+<pre><code class="language-haskell">data Vorpal a
+
+vorpal :: Lens (Vorpal a) (Vorpal b) a b
+vorpal = undefined
+</code></pre>
+</li>
+<li>
+<p>Polymorphic unlawful</p>
+<pre><code class="language-haskell">data Preferences a = Preferences {_best :: a, _worst :: a} deriving (Show)
+
+best :: Lens (Preferences a) (Preferences b) a b
+best = lens getter setter
+ where
+  getter (Preferences a _) = a
+  setter (Preferences _ _) c = Preferences{_best = c, _worst = c}
+</code></pre>
+</li>
+<li>
+<p>Result</p>
+<pre><code class="language-haskell">data Result e = Result {_lineNumber :: Int, _result :: Either e String}
+
+result :: Lens (Result a) (Result b) a b
+result = undefined
+</code></pre>
+</li>
+<li>
+<p>Multiple</p>
+<pre><code class="language-haskell">data Multi a b
+
+multi :: Lens (Multi a b) (Multi c d) (a, b) (c, d)
+multi = undefined
+</code></pre>
+</li>
+<li>
+<p>Predicate</p>
+<pre><code class="language-haskell">newtype Predicate a = Predicate (a -&gt; Bool)
+
+predicate :: Lens (Predicate a) (Predicate b) (a -&gt; Bool) (b -&gt; Bool)
+predicate = lens getter setter
+ where
+  getter (Predicate x) = x
+  setter (Predicate _) = Predicate
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h4 id="how-do-lens-types-compose"><a class="header" href="#how-do-lens-types-compose">How do Lens Types Compose?</a></h4>
+<p>We compose <code>Lens' a b</code> and <code>Lens' b c</code>.</p>
+<p>Inside, they are <code>b -&gt; a</code> and <code>c -&gt; b</code> so that we can compose them like <code>(b -&gt; a) . (c -&gt; b)</code></p>
+<pre><code class="language-haskell">ex9 :: forall (a :: Type) (b :: Type) (c :: Type) (d :: Type) e f. (e -&gt; f)
+ex9 = (d . s) m
+ where
+  m :: a -&gt; b
+  m = undefined
+  s :: (a -&gt; b) -&gt; (c -&gt; d)
+  s = undefined
+  d :: (c -&gt; d) -&gt; (e -&gt; f)
+  d = undefined
+</code></pre>
+<h5 id="example"><a class="header" href="#example">Example</a></h5>
+<pre><code class="language-haskell">data Person
+data Address
+data StreetAddress
+
+personAddressLens :: forall f. Functor f =&gt; (Address -&gt; f Address) -&gt; Person -&gt; f Person
+personAddressLens = undefined
+
+personAddressLens_ :: Lens Person Person Address Address
+personAddressLens_ = undefined
+
+addressStreetLens :: forall f. Functor f =&gt; (StreetAddress -&gt; f StreetAddress) -&gt; Address -&gt; f Address
+addressStreetLens = undefined
+
+addressStreetLens_ :: Lens Address Address StreetAddress StreetAddress
+addressStreetLens_ = undefined
+
+personStreetLens :: Functor f =&gt; (StreetAddress -&gt; f StreetAddress) -&gt; Person -&gt; f Person
+personStreetLens = personAddressLens . addressStreetLens
+
+personStreet :: StreetAddress
+personStreet = view personStreetLens (undefined :: Person)
+</code></pre>
+<h4 id="exercises---lens-composition"><a class="header" href="#exercises---lens-composition">Exercises - Lens Composition</a></h4>
+<ol>
+<li>
+<p>Pairs</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">-- &gt;&gt;&gt; view (_2 . _1 . _2) (&quot;Ginerva&quot;, ((&quot;Galileo&quot;, &quot;Waldo&quot;), &quot;Malfoy&quot;))
+-- &quot;Waldo&quot;
+</code></pre>
+</li>
+<li>
+<p>Domino</p>
+<pre><code class="language-haskell">data Five
+data Eight
+data Two
+data Three
+
+fiveEightDomino :: Lens' Five Eight
+fiveEightDomino = undefined
+twoThreeDomino :: Lens' Two Three
+twoThreeDomino = undefined
+dominoTrain :: Lens' Five Three
+dominoTrain = fiveEightDomino . mysteryDomino . twoThreeDomino
+
+mysteryDomino :: Lens' Eight Two
+mysteryDomino = undefined
+</code></pre>
+</li>
+<li>
+<p>Rewrite</p>
+<pre><code class="language-haskell">data Armadillo
+data Hedgehog
+data Platypus
+data BabySloth
+
+g :: Functor f =&gt; (Armadillo -&gt; f Hedgehog) -&gt; (Platypus -&gt; f BabySloth)
+g = undefined
+
+h :: Lens Platypus BabySloth Armadillo Hedgehog
+h = undefined
+</code></pre>
+</li>
+<li>
+<p>Compose</p>
+<pre><code class="language-haskell">data Gazork
+data Trowlg
+data Bandersnatch
+data Yakka
+data Zink
+data Wattoom
+data Grug
+data Pubbawup
+data Foob
+data Mog
+data Boojum
+data Jabberwock
+data Snark
+data JubJub
+
+snajubjumwock :: Lens Snark JubJub Boojum Jabberwock
+snajubjumwock = undefined
+boowockugwup :: Lens Boojum Jabberwock Grug Pubbawup
+boowockugwup = undefined
+gruggazinkoom :: Lens Grug Pubbawup Zink Wattoom
+gruggazinkoom = undefined
+zinkattumblezz :: Lens Zink Wattoom Chumble Spuzz
+zinkattumblezz = undefined
+spuzorktrowmble :: Lens Chumble Spuzz Gazork Trowlg
+spuzorktrowmble = undefined
+gazorlglesnatchka :: Lens Gazork Trowlg Bandersnatch Yakka
+gazorlglesnatchka = undefined
+banderyakoobog :: Lens Bandersnatch Yakka Foob Mog
+banderyakoobog = undefined
+
+ex10 :: (Foob -&gt; [Mog]) -&gt; Snark -&gt; [JubJub]
+ex10 = snajubjumwock @[] . boowockugwup . gruggazinkoom . zinkattumblezz . spuzorktrowmble . gazorlglesnatchka . banderyakoobog
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h2 id="5-operators"><a class="header" href="#5-operators">5. Operators</a></h2>
+<p><strong>Fixity</strong> - operator precedence</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;:t _1 . _2 .~ 3
+-- _1 . _2 .~ 3 :: (Field1 s t a1 b1, Field2 a1 b1 a2 b2, Num b2) =&gt; s -&gt; t
+</code></pre>
+<p>is equivalent to</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;:t (_1 . _2) .~ 3
+-- (_1 . _2) .~ 3 :: (Field1 s t a1 b1, Field2 a1 b1 a2 b2, Num b2) =&gt; s -&gt; t
+</code></pre>
+<p>We can use <code>&amp;</code> to make a convenient-to-read chain</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;((2,3),4) &amp; (_1 . _2) .~ 5
+-- ((2,5),4)
+
+-- &gt;&gt;&gt; :{
+-- unknown command '{'
+multiline :: Integer
+multiline = 3
+</code></pre>
+<p>Or even</p>
+<pre><code class="language-haskell">ex11 :: ((Integer, Integer), (Integer, Integer))
+ex11 =
+  ((2, 3), (4, 6))
+    &amp; (_1 . _2) .~ 5
+    &amp; (_2 . _1) .~ 5
+
+-- &gt;&gt;&gt;ex9
+-- ((2,5),(5,6))
+</code></pre>
+<p>Optics operators - <a href="https://github.com/Zelenya/chrome-annotation-extension-optics/blob/6d9d4459fefc80b36b5e2fc2271fbaaee2923911/src/content.js#L11-L138">src</a></p>
+<ul>
+<li><code>&lt;|</code> <code>cons</code></li>
+<li><code>|&gt;</code> <code>snoc</code></li>
+<li><code>^..</code> <code>toListOf</code></li>
+<li><code>^?</code> <code>preview</code>/<code>head</code></li>
+<li><code>^?!</code> <strong>UNSAFE</strong> <code>preview</code>/<code>head</code></li>
+<li><code>^@..</code> <code>itoListOf</code></li>
+<li><code>^@?</code> <strong>SAFE</strong> <code>head</code> (with index)</li>
+<li><code>^@?!</code> <strong>UNSAFE</strong> <code>head</code> (with index)</li>
+<li><code>^.</code> <code>view</code></li>
+<li><code>^@.</code> <code>iview</code></li>
+<li><code>&lt;.</code> a function composition (<code>Indexed</code> with non-indexed)</li>
+<li><code>.&gt;</code> a function composition (non-indexed with <code>Indexed</code>)</li>
+<li><code>&lt;.&gt;</code> a composition of Indexed functions</li>
+<li><code>%%~</code> modify target; extract functorial/applicative result</li>
+<li><code>%%=</code> modify target in state; return extra information</li>
+<li><code>&amp;~</code> used to chain lens operations</li>
+<li><code>&lt;&amp;&gt;</code> a flipped version of <code>&lt;$&gt;</code></li>
+<li><code>??</code> used to flip argument order of composite functions</li>
+<li><code>&lt;%~</code> <code>modify</code> lens target; return result</li>
+<li><code>&lt;+~</code> increment lens target; return result</li>
+<li><code>&lt;-~</code> decrement lens target; return result</li>
+<li><code>&lt;*~</code> multiply lens target; return result</li>
+<li><code>&lt;//~</code> divide lens target; return result</li>
+<li><code>&lt;^~</code> raise lens target; return result</li>
+<li><code>&lt;^^~</code> raise lens target; return result</li>
+<li><code>&lt;__~</code> raise lens target; return result</li>
+<li><code>&lt;||~</code> logically-or lens target; return result</li>
+<li><code>&lt;&amp;&amp;~</code> logically-and lens target; return result</li>
+<li><code>&lt;&lt;%~</code> <code>modify</code> lens target, return old value</li>
+<li><code>&lt;&lt;.~</code> replace lens target, return old value</li>
+<li><code>&lt;&lt;?~</code> replace lens target (with <code>Just value</code>), return old value</li>
+<li><code>&lt;&lt;+~</code> increment lens target; return old value</li>
+<li><code>&lt;&lt;-~</code> decrement lens target; return old value</li>
+<li><code>&lt;&lt;*~</code> multiply lens target; return old value</li>
+<li><code>&lt;&lt;//~</code> divide lens target; return old value</li>
+<li><code>&lt;&lt;^~</code> raise lens target; return old value</li>
+<li><code>&lt;&lt;^^~</code> raise lens target; return old value</li>
+<li><code>&lt;&lt;__~</code> raise lens target; return old value</li>
+<li><code>&lt;||~</code> logically-or lens target; return old value</li>
+<li><code>&lt;&amp;&amp;~</code> logically-and lens target; return old value</li>
+<li><code>&lt;&lt;&lt;&gt;~</code> <code>modify</code> lens target with (<code>&lt;&gt;</code>); return old value</li>
+<li><code>&lt;%=</code> <code>modify</code> target in state; return result</li>
+<li><code>&lt;+=</code> add to target in state; return result</li>
+<li><code>&lt;-=</code> subtract from target in state; return result</li>
+<li><code>&lt;*=</code> multiple the target in state; return result</li>
+<li><code>&lt;//=</code> divide the target in state; return result</li>
+<li><code>&lt;^=</code> raise lens target in state; return result</li>
+<li><code>&lt;^^=</code> raise lens target in state; return result</li>
+<li><code>&lt;__=</code> raise lens target in state; return result</li>
+<li><code>&lt;||=</code> logically-or lens target in state; return result</li>
+<li><code>&lt;&amp;&amp;=</code> logically-and lens target in state; return result</li>
+<li><code>&lt;&lt;%=</code> <code>modify</code> lens target in state; return old value</li>
+<li><code>&lt;&lt;.=</code> replace lens target in state; return old value</li>
+<li><code>&lt;&lt;?=</code> replace target (with Just value) in state, return old value</li>
+<li><code>&lt;&lt;+=</code> add to target in state; return old value</li>
+<li><code>&lt;&lt;-=</code> subtract from target in state; return old value</li>
+<li><code>&lt;&lt;*=</code> multiple the target in state; return old value</li>
+<li><code>&lt;&lt;//=</code> divide the target in state; return old value</li>
+<li><code>&lt;&lt;^=</code> raise lens target in state; return old value</li>
+<li><code>&lt;&lt;^^=</code> raise lens target in state; return old value</li>
+<li><code>&lt;&lt;__=</code> raise lens target in state; return old value</li>
+<li><code>&lt;&lt;||=</code> logically-or lens target in state; return old value</li>
+<li><code>&lt;&lt;&amp;&amp;=</code> logically-and lens target in state; return old value</li>
+<li><code>&lt;&lt;&lt;&gt;=</code> <code>modify</code> target with (<code>&lt;&gt;</code>) in state; return old value</li>
+<li><code>&lt;&lt;~</code> run monadic action, set lens target</li>
+<li><code>&lt;&lt;&gt;~</code> (<code>&lt;&gt;</code>) onto the end of lens target; return result</li>
+<li><code>&lt;&lt;&gt;=</code> (<code>&lt;&gt;</code>) onto the end of lens target in state; return result</li>
+<li><code>&lt;%@~</code> <code>modify</code> <code>IndexedLens</code> target; return intermediate result</li>
+<li><code>&lt;&lt;%@~</code> modify <code>IndexedLens</code> target; return old value</li>
+<li><code>%%@~</code> modify <code>IndexedLens</code> target; return supplementary result</li>
+<li><code>%%@=</code> modify <code>IndexedLens</code> target in state; return supplementary result</li>
+<li><code>&lt;%@=</code> modify <code>IndexedLens</code> target in state; return intermediate result</li>
+<li><code>&lt;&lt;%@=</code> modify <code>IndexedLens</code> target in state; return old value</li>
+<li><code>^#</code> <code>view</code> (<code>ALens</code> version)</li>
+<li><code>#~</code> <code>set</code> (<code>ALens</code> version)</li>
+<li><code>#%~</code> <code>over</code> (<code>ALens</code> version)</li>
+<li><code>#%%~</code> <code>modify</code> <code>ALens</code> target; extract functorial/applicative result</li>
+<li><code>%%=</code> <code>modify</code> target in state; return extra information</li>
+<li><code>#=</code> <code>assign</code> (<code>ALens</code> version)</li>
+<li><code>#%=</code> <code>map</code> over <code>ALens</code> target(s) in state</li>
+<li><code>&lt;#%~</code> <code>modify</code> <code>ALens</code> target; return result</li>
+<li><code>&lt;#%=</code> <code>modify</code> <code>ALens</code> target in state; return result</li>
+<li><code>#%%=</code> <code>modify</code> <code>ALens</code> target in state; return extra information</li>
+<li><code>&lt;#~</code> <code>set</code> with pass-through (<code>ALens</code> version)</li>
+<li><code>&lt;#=</code> <code>set</code> with pass-through in state (<code>ALens</code> version)</li>
+<li><code>%~</code> <code>over</code> / <code>modify</code> target(s)</li>
+<li><code>.~</code> <code>set</code></li>
+<li><code>?~</code> <code>set</code> to <code>Just value</code></li>
+<li><code>&lt;.~</code> <code>set</code> with pass-through</li>
+<li><code>&lt;?~</code> <code>set</code> to <code>Just value</code> with pass-through</li>
+<li><code>+~</code> increment target(s)</li>
+<li><code>*~</code> multiply target(s)</li>
+<li><code>-~</code> decrement target(s)</li>
+<li><code>//~</code> divide target(s)</li>
+<li><code>^~</code> raise target(s)</li>
+<li><code>^~</code> raise target(s)</li>
+<li><code>^^~</code> raise target(s)</li>
+<li><code>__~</code> raise target(s)</li>
+<li><code>||~</code> logically-or target(s)</li>
+<li><code>&amp;&amp;~</code> logically-and target(s)</li>
+<li><code>.=</code> assign in state</li>
+<li><code>%=</code> map over target(s) in state</li>
+<li><code>?=</code> <code>set</code> target(s) to <code>Just value</code> in state</li>
+<li><code>+=</code> add to target(s) in state</li>
+<li><code>*=</code> multiply target(s) in state</li>
+<li><code>-=</code> decrement from target(s) in state</li>
+<li><code>//=</code> divide target(s) in state</li>
+<li><code>^=</code> raise target(s) in state</li>
+<li><code>^=</code> raise target(s) in state</li>
+<li><code>^^=</code> raise target(s) in state</li>
+<li><code>__=</code> raise target(s) in state</li>
+<li><code>||=</code> logically-or target(s) in state</li>
+<li><code>&amp;&amp;=</code> logically-and target(s) in state</li>
+<li><code>&lt;~</code> run monadic action, <code>set</code> target(s) in state</li>
+<li><code>&lt;.=</code> <code>set</code> with pass-through in state</li>
+<li><code>&lt;?=</code> <code>set</code> <code>Just value</code> with pass-through in state</li>
+<li><code>&lt;&gt;~</code> <code>modify</code> target with (<code>&lt;&gt;</code>)</li>
+<li><code>&lt;&gt;=</code> <code>modify</code> target with (<code>&lt;&gt;</code>) in state</li>
+<li><code>.@~</code> <code>iset</code> / set target(s) with index</li>
+<li><code>.@=</code> set target(s) in state with index</li>
+<li><code>%@~</code> <code>iover</code> / <code>modify</code> target(s) with index</li>
+<li><code>%@=</code> <code>modify</code> target(s) in state with index</li>
+<li><code>&amp;</code> a reverse application operator</li>
+<li><code>#</code> review</li>
+<li><code>id</code> focus the <code>full</code> structure</li>
+</ul>
+<h3 id="59-exercises---operators"><a class="header" href="#59-exercises---operators">5.9 Exercises - Operators</a></h3>
+<ol>
+<li>
+<p>Get to</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">data Gate = Gate {_open :: Bool, _oilTemp :: Float} deriving (Show)
+makeLenses ''Gate
+data Army = Army {_archers :: Int, _knights :: Int} deriving (Show)
+makeLenses ''Army
+data Kingdom = Kingdom {_name1 :: String, _army :: Army, _gate :: Gate} deriving (Show)
+makeLenses ''Kingdom
+duloc :: Kingdom
+duloc = Kingdom{_name1 = &quot;Duloc&quot;, _army = Army{_archers = 22, _knights = 14}, _gate = Gate{_open = True, _oilTemp = 10.0}}
+
+goalA :: Kingdom
+goalA = duloc &amp; name1 &lt;&gt;~ &quot;: a perfect place&quot; &amp; army . knights *~ 3 &amp; gate . open &amp;&amp;~ False
+
+-- &gt;&gt;&gt;goalA
+-- Kingdom {_name1 = &quot;Duloc: a perfect place&quot;, _army = Army {_archers = 22, _knights = 42}, _gate = Gate {_open = False, _oilTemp = 10.0}}
+
+goalB :: Kingdom
+goalB = duloc &amp; name1 &lt;&gt;~ &quot;cinstein&quot; &amp; army . archers -~ 5 &amp; army . knights +~ 12 &amp; gate . oilTemp *~ 10
+
+-- &gt;&gt;&gt;goalB
+-- Kingdom {_name1 = &quot;Duloccinstein&quot;, _army = Army {_archers = 17, _knights = 26}, _gate = Gate {_open = True, _oilTemp = 100.0}}
+
+goalB_ :: Kingdom
+goalB_ = duloc &amp; name1 &lt;&gt;~ &quot;cinstein&quot; &amp; army %~ (\x -&gt; x &amp; archers -~ 5 &amp; knights +~ 12) &amp; gate . oilTemp *~ 10
+
+-- &gt;&gt;&gt;goalB_
+-- Kingdom {_name1 = &quot;Duloccinstein&quot;, _army = Army {_archers = 17, _knights = 26}, _gate = Gate {_open = True, _oilTemp = 100.0}}
+
+goalC :: (String, Kingdom)
+goalC = duloc &amp; gate . oilTemp //~ 2 &amp; name1 &lt;&gt;~ &quot;: Home&quot; &amp; name1 &lt;&lt;%~ (&lt;&gt; &quot;of the talking Donkeys&quot;)
+
+-- &gt;&gt;&gt;goalC
+-- (&quot;Duloc: Home&quot;,Kingdom {_name1 = &quot;Duloc: Homeof the talking Donkeys&quot;, _army = Army {_archers = 22, _knights = 14}, _gate = Gate {_open = True, _oilTemp = 5.0}})
+</code></pre>
+</li>
+<li>
+<p>Enter code</p>
+<pre><code class="language-haskell">ex12 :: (Bool, [Char])
+ex12 = (False, &quot;opossums&quot;) &amp; _1 ||~ True
+
+-- &gt;&gt;&gt;ex10
+-- (True,&quot;opossums&quot;)
+
+ex13 :: Integer
+ex13 = 2 &amp; id *~ 3
+
+-- &gt;&gt;&gt;ex11
+-- 6
+
+ex14 :: ((Bool, [Char]), Double)
+ex14 =
+  ((True, &quot;Dudley&quot;), 55.0)
+    &amp; (_1 . _2 &lt;&gt;~ &quot; - the worst&quot;)
+    &amp; (_2 -~ 15)
+    &amp; (_2 //~ 2)
+    &amp; (_1 . _2 %~ map toUpper)
+    &amp; (_1 . _1 .~ False)
+
+-- &gt;&gt;&gt;ex12
+-- ((False,&quot;DUDLEY - THE WORST&quot;),20.0)
+</code></pre>
+</li>
+<li>
+<p><code>&amp;</code></p>
+</li>
+<li>
+<p><code>(%~) :: Lens s t a b -&gt; (a -&gt; b) -&gt; s -&gt; t</code></p>
+</li>
+</ol>
+<!-- d -->
+<h2 id="6-folds"><a class="header" href="#6-folds">6. Folds</a></h2>
+<ul>
+<li>have no laws!</li>
+<li>focus on several elements</li>
+<li>composition makes successive folds focus on the elements of previous focuses, forming a tree</li>
+<li>the result of a composite fold is a <code>Foldable</code> of leaves of such a tree</li>
+<li>combinators can work with a set of focuses (leaves) at a necessary level of such a tree</li>
+</ul>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [[1, 2, 3], [10, 20, 30], [100, 200, 300]] ^.. folded . taking 2 folded
+-- [1,2,10,20,100,200]
+</code></pre>
+<h3 id="61-introduction-to-folds"><a class="header" href="#61-introduction-to-folds">6.1 Introduction to Folds</a></h3>
+<ul>
+<li>Folds can focus <strong>MANY</strong> things, Lenses must focus <strong>ONE</strong> thing</li>
+<li>Folds can only <strong>get</strong> zero or more things, Lenses must always be able to <strong>get</strong> and <strong>set</strong></li>
+<li>Folds aren't polymorphic</li>
+</ul>
+<h4 id="focusing-all-elements-of-a-container"><a class="header" href="#focusing-all-elements-of-a-container">Focusing all elements of a container</a></h4>
+<pre><code class="language-hs">type Fold s a = forall m. Monoid m =&gt; Getting m s a
+type Getting r s a = (a -&gt; Const r a) -&gt; s -&gt; Const r s
+newtype Const a (b :: k) = Const { getConst :: a }
+</code></pre>
+<ul>
+<li><code>s</code>: structure</li>
+<li><code>a</code>: focus</li>
+</ul>
+<h4 id="collapsing-the-set"><a class="header" href="#collapsing-the-set">Collapsing the Set</a></h4>
+<pre><code class="language-hs">folded :: Foldable f =&gt; Fold (f a) a
+</code></pre>
+<pre><code class="language-haskell">ex15 :: [Integer]
+ex15 = [Just 3, Nothing, Nothing] ^.. folded . _Just
+
+-- &gt;&gt;&gt;ex15
+-- [3]
+</code></pre>
+<h4 id="using-lenses-as-folds"><a class="header" href="#using-lenses-as-folds">Using lenses as folds</a></h4>
+<p>We have</p>
+<pre><code class="language-hs">type Lens s t a b = forall f. Functor f =&gt; (a -&gt; f b) -&gt; s -&gt; f t
+type Fold s a = forall m. Monoid m =&gt; Getting m s a
+type Getting r s a = (a -&gt; Const r a) -&gt; s -&gt; Const r s
+</code></pre>
+<p>So, we can use a <code>Lens' s a</code> as a <code>Fold s a</code></p>
+<ul>
+<li><code>^..</code> first applies the folds, and returns them in a list</li>
+</ul>
+<pre><code class="language-haskell">getPair2 :: Fold (a, b) b
+getPair2 = _2
+
+-- &gt;&gt;&gt;(3,4) ^.. getPair2
+-- [4]
+</code></pre>
+<h4 id="foundational-fold-combinators"><a class="header" href="#foundational-fold-combinators">Foundational fold combinators</a></h4>
+<ul>
+<li><code>both</code> - Traverse both parts of a Bitraversable container with matching types</li>
+<li><code>each</code> - generalizes <code>both</code> for tuples</li>
+</ul>
+<pre><code class="language-haskell">ex16 :: [Integer]
+ex16 = (1, 2) ^.. both
+
+-- &gt;&gt;&gt;ex16
+-- [1,2]
+
+ex17 :: [Integer]
+ex17 = (1, 2, 4, 5, 6) ^.. each
+
+-- &gt;&gt;&gt;ex17
+-- [1,2,4,5,6]
+
+ex18 :: [GHC.Word.Word8]
+ex18 = (&quot;Do or do not&quot; :: BS.ByteString) ^.. each
+</code></pre>
+<h4 id="exercises---simple-folds"><a class="header" href="#exercises---simple-folds">Exercises - Simple Folds</a></h4>
+<ol>
+<li>beasts</li>
+</ol>
+<pre><code class="language-haskell">beastSizes :: [(Int, String)]
+beastSizes = [(3, &quot;Sirens&quot;), (882, &quot;Kraken&quot;), (92, &quot;Ogopogo&quot;)]
+
+-- &gt;&gt;&gt; beastSizes ^.. folded
+-- [(3,&quot;Sirens&quot;),(882,&quot;Kraken&quot;),(92,&quot;Ogopogo&quot;)]
+
+-- &gt;&gt;&gt; beastSizes ^.. folded . folded
+-- [&quot;Sirens&quot;,&quot;Kraken&quot;,&quot;Ogopogo&quot;]
+
+-- &gt;&gt;&gt; beastSizes ^.. folded . folded . folded
+-- &quot;SirensKrakenOgopogo&quot;
+
+-- &gt;&gt;&gt; beastSizes ^.. folded . _2
+-- [&quot;Sirens&quot;,&quot;Kraken&quot;,&quot;Ogopogo&quot;]
+
+-- &gt;&gt;&gt; toListOf (folded . folded) [[1, 2, 3], [4, 5, 6]]
+-- [1,2,3,4,5,6]
+
+ex19 :: [Char]
+ex19 = toListOf (folded . folded) (M.fromList [(&quot;Jack&quot; :: String, &quot;Captain&quot; :: String), (&quot;Will&quot;, &quot;First Mate&quot;)])
+
+-- &gt;&gt;&gt; ex19
+-- &quot;CaptainFirst Mate&quot;
+
+-- &gt;&gt;&gt; (&quot;Hello&quot; :: String, &quot;It's me&quot;) ^.. both . folded
+-- &quot;HelloIt's me&quot;
+
+-- &gt;&gt;&gt; (&quot;Why&quot;, &quot;So&quot;, &quot;Serious?&quot;) ^.. each
+-- [&quot;Why&quot;,&quot;So&quot;,&quot;Serious?&quot;]
+
+quotes :: [(T.Text, T.Text, T.Text)]
+quotes = [(&quot;Why&quot;, &quot;So&quot;, &quot;Serious?&quot;), (&quot;This&quot;, &quot;is&quot;, &quot;SPARTA&quot;)]
+
+ex20 :: [Char]
+ex20 = quotes ^.. each . each . each
+
+-- &gt;&gt;&gt; ex20
+-- &quot;WhySoSerious?ThisisSPARTA&quot;
+</code></pre>
+<ol>
+<li>Blank</li>
+</ol>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;[1, 2, 3] ^.. folded
+-- [1,2,3]
+
+-- &gt;&gt;&gt; (&quot;Light&quot;, &quot;Dark&quot;) ^.. _1
+-- [&quot;Light&quot;]
+
+-- &gt;&gt;&gt; [(&quot;Light&quot;, &quot;Dark&quot;), (&quot;Happy&quot;, &quot;Sad&quot;)] ^.. each . each
+-- [&quot;Light&quot;,&quot;Dark&quot;,&quot;Happy&quot;,&quot;Sad&quot;]
+
+-- &gt;&gt;&gt; [(&quot;Light&quot;, &quot;Dark&quot;), (&quot;Happy&quot;, &quot;Sad&quot;)] ^.. each . _1
+-- [&quot;Light&quot;,&quot;Happy&quot;]
+
+ex21 :: String
+ex21 = ([(&quot;Light&quot;, &quot;Dark&quot; :: String), (&quot;Happy&quot;, &quot;Sad&quot;)] ^.. each . _2) ^.. each . each
+
+-- &gt;&gt;&gt; ex21
+-- &quot;DarkSad&quot;
+
+-- &gt;&gt;&gt; (&quot;Bond&quot;, &quot;James&quot;, &quot;Bond&quot;) ^.. each
+-- [&quot;Bond&quot;,&quot;James&quot;,&quot;Bond&quot;]
+</code></pre>
+<h3 id="62-custom-folds"><a class="header" href="#62-custom-folds">6.2 Custom Folds</a></h3>
+<p>We should project the pieces of a structure into something <code>Foldable</code>. Then, we can construct a <code>Fold</code>.</p>
+<pre><code class="language-hs">folding :: Foldable f =&gt; (s -&gt; f a) -&gt; Fold s a
+</code></pre>
+<pre><code class="language-haskell">newtype Name = Name
+  { getName :: String
+  }
+  deriving (Show)
+data ShipCrew = ShipCrew
+  { _shipName :: Name
+  , _captain :: Name
+  , _firstMate :: Name
+  , _conscripts :: [Name]
+  }
+  deriving (Show)
+makeLenses ''ShipCrew
+
+myCrew :: ShipCrew
+myCrew =
+  ShipCrew
+    { _shipName = Name &quot;Purple Pearl&quot;
+    , _captain = Name &quot;Grumpy Roger&quot;
+    , _firstMate = Name &quot;Long-John Bronze&quot;
+    , _conscripts = [Name &quot;One-eyed Jack&quot;, Name &quot;Filthy Frank&quot;]
+    }
+
+collectCrewMembers :: ShipCrew -&gt; [Name]
+collectCrewMembers sc = [sc ^. captain, sc ^. firstMate] ++ sc ^. conscripts
+
+crewMembers :: Fold ShipCrew Name
+crewMembers = folding collectCrewMembers
+
+-- &gt;&gt;&gt;myCrew ^.. crewMembers
+-- [Name {getName = &quot;Grumpy Roger&quot;},Name {getName = &quot;Long-John Bronze&quot;},Name {getName = &quot;One-eyed Jack&quot;},Name {getName = &quot;Filthy Frank&quot;}]
+</code></pre>
+<h4 id="mapping-over-folds"><a class="header" href="#mapping-over-folds">Mapping over folds</a></h4>
+<p><code>to</code></p>
+<ul>
+<li>
+<p>converts a function into a <code>Getter</code>.</p>
+</li>
+<li>
+<p>that's why, should never fail to get something from a structure.</p>
+</li>
+<li>
+<p>Book:</p>
+<pre><code class="language-hs">to :: (s -&gt; a) -&gt; Fold s a
+</code></pre>
+</li>
+<li>
+<p>Real:</p>
+</li>
+</ul>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;:t to
+-- to :: (Profunctor p, Contravariant f) =&gt; (s -&gt; a) -&gt; Optic' p f s a
+</code></pre>
+<pre><code class="language-hs">class Profunctor (p :: Type -&gt; Type -&gt; Type) where
+  dimap :: (a -&gt; b) -&gt; (c -&gt; d) -&gt; p b c -&gt; p a d
+</code></pre>
+<ul>
+<li><a href="https://github.com/ocharles/blog/blob/master/guest-posts/2013-12-22-24-days-of-hackage-profunctors.md">Profunctors</a></li>
+</ul>
+<p>Example</p>
+<pre><code class="language-haskell">ex22 :: [Char]
+ex22 = &quot;Two-faced Tony&quot; ^. to (take 2)
+
+-- &gt;&gt;&gt; ex22
+-- &quot;Tw&quot;
+</code></pre>
+<p>Composition</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; Name &quot;Two-faced Tony&quot; ^. to getName . to (fmap toUpper)
+-- &quot;TWO-FACED TONY&quot;
+
+-- &gt;&gt;&gt; Name &quot;Two-faced Tony&quot; ^. to (fmap toUpper . getName)
+-- &quot;TWO-FACED TONY&quot;
+
+-- &gt;&gt;&gt; myCrew ^.. crewMembers . to getName
+-- [&quot;Grumpy Roger&quot;,&quot;Long-John Bronze&quot;,&quot;One-eyed Jack&quot;,&quot;Filthy Frank&quot;]
+</code></pre>
+<h4 id="combining-multiple-folds-on-the-same-structure"><a class="header" href="#combining-multiple-folds-on-the-same-structure">Combining multiple folds on the same structure</a></h4>
+<pre><code class="language-haskell">crewNames1 :: ShipCrew -&gt; [Name]
+crewNames1 sc = [captain, firstMate] ^.. folded . to (sc ^.) &lt;&gt; sc ^. conscripts
+
+crewNames2 :: Fold ShipCrew Name
+crewNames2 = folding (\s -&gt; foldMap (s ^..) [captain, firstMate, conscripts . folded])
+
+crewNames3 :: Fold ShipCrew Name
+crewNames3 = folding (\s -&gt; [captain, firstMate, conscripts . folded] ^.. folded . to (s ^..) . folded)
+
+-- &gt;&gt;&gt; myCrew ^.. crewNames2 . to getName
+-- [&quot;Grumpy Roger&quot;,&quot;Long-John Bronze&quot;,&quot;One-eyed Jack&quot;,&quot;Filthy Frank&quot;]
+</code></pre>
+<h4 id="exercises---custom-folds"><a class="header" href="#exercises---custom-folds">Exercises - Custom Folds</a></h4>
+<ol>
+<li>
+<p>blanks</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">ex23 :: [Char]
+ex23 = [&quot;Yer&quot; :: String, &quot;a&quot;, &quot;wizard&quot;, &quot;Harry&quot;] ^.. folded . folded
+
+-- &gt;&gt;&gt; ex23
+-- &quot;YerawizardHarry&quot;
+
+-- &gt;&gt;&gt; [[1, 2, 3], [4, 5, 6]] ^.. folded . folding (take 2)
+-- [1,2,4,5]
+
+-- &gt;&gt;&gt; [[1, 2, 3], [4, 5, 6]] ^.. folded . to (take 2)
+-- [[1,2],[4,5]]
+
+-- &gt;&gt;&gt; [&quot;bob&quot;, &quot;otto&quot;, &quot;hannah&quot;] ^.. folded . to reverse
+-- [&quot;bob&quot;,&quot;otto&quot;,&quot;hannah&quot;]
+
+-- &gt;&gt;&gt; (&quot;abc&quot;, &quot;def&quot;) ^.. folding (\(a, b) -&gt; [a, b]). to reverse . folded
+-- &quot;cbafed&quot;
+</code></pre>
+</li>
+<li>
+<p>fold paths</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [1..5] ^.. folded . folding (\x -&gt; [x * 100])
+-- [100,200,300,400,500]
+
+-- &gt;&gt;&gt; (1, 2) ^.. folding (\(a,b) -&gt; [a, b])
+-- [1,2]
+
+-- &gt;&gt;&gt; [(1, &quot;one&quot;), (2, &quot;two&quot;)] ^.. folded . folding (\(_,x) -&gt; [x])
+-- [&quot;one&quot;,&quot;two&quot;]
+
+ex24 :: [Int]
+ex24 = (Just 1, Just 2, Just 3) ^.. folding (\(a, b, c) -&gt; [a, b, c]) . folded
+
+-- &gt;&gt;&gt; ex24
+-- [1,2,3]
+
+ex25 :: [Int]
+ex25 = [Left 1, Right 2, Left 3] ^.. folded . folded
+
+-- &gt;&gt;&gt; ex25
+-- [2]
+
+ex26 :: [Int]
+ex26 = [([1, 2], [3, 4]), ([5, 6], [7, 8])] ^.. folded . folding (uncurry (&lt;&gt;))
+
+-- &gt;&gt;&gt; ex26
+-- [1,2,3,4,5,6,7,8]
+
+-- &gt;&gt;&gt; [1, 2, 3, 4] ^.. folded . to (\x -&gt; (if odd x then Left else Right) x)
+-- [Left 1,Right 2,Left 3,Right 4]
+
+-- &gt;&gt;&gt; [(1, (2, 3)), (4, (5, 6))] ^.. folded . folding (\(a, (b,c)) -&gt; [a,b,c])
+-- [1,2,3,4,5,6]
+
+ex27 :: [Integer]
+ex27 = [(Just 1, Left &quot;one&quot;), (Nothing, Right 2)] ^.. folded . folding (\(x, y) -&gt; x ^.. folded &lt;&gt; y ^.. folded)
+
+-- &gt;&gt;&gt; ex27
+-- [1,2]
+
+ex28 :: [Either Integer String]
+ex28 = [(1, &quot;one&quot;), (2, &quot;two&quot;)] ^.. folded . folding (\(x, y) -&gt; [Left x, Right y])
+
+-- &gt;&gt;&gt; ex28
+-- [Left 1,Right &quot;one&quot;,Left 2,Right &quot;two&quot;]
+
+-- &gt;&gt;&gt; S.fromList [&quot;apricots&quot;, &quot;apples&quot;] ^.. folded . to reverse . folded
+-- &quot;selppastocirpa&quot;
+</code></pre>
+</li>
+<li>
+<p>outside of the box</p>
+<pre><code class="language-haskell">ex29 :: [Char]
+ex29 = [(12, 45, 66), (91, 123, 87)] ^.. folded . folding (\(_, x, _) -&gt; reverse (show x))
+
+-- &gt;&gt;&gt; ex29
+-- &quot;54321&quot;
+
+-- &gt;&gt;&gt; [(1, &quot;a&quot;), (2, &quot;b&quot;), (3, &quot;c&quot;), (4, &quot;d&quot;)] ^.. folded . folding (\(x,y) -&gt; if odd x then [] else [y])
+-- [&quot;b&quot;,&quot;d&quot;]
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h3 id="63-fold-actions"><a class="header" href="#63-fold-actions">6.3 Fold Actions</a></h3>
+<p>Fold queries</p>
+<ul>
+<li>Which focuses match this <strong>predicate</strong>?</li>
+<li>What's the <strong>largest</strong> element in my structure</li>
+<li>What's the result of running this <strong>side-effect</strong> on every focus?</li>
+<li>What's the <strong>sum</strong> of these numeric focuses?</li>
+<li>Does this fold focus <strong>any</strong> elements?</li>
+<li>Does this <strong>specific value</strong> exist in my structure?</li>
+</ul>
+<h4 id="writing-queries-with-folds"><a class="header" href="#writing-queries-with-folds">Writing queries with folds</a></h4>
+<p>There are folds for common functions like</p>
+<ul>
+<li><code>minimumOf</code></li>
+<li><code>sumOf</code></li>
+</ul>
+<pre><code class="language-hs">sumOf :: Num a =&gt; Getting (Endo (Endo a)) s a -&gt; s -&gt; a
+</code></pre>
+<p>Instead of <code>Getting (Some type) s a</code>, can put many optics, e.g., <code>Fold s a</code>.</p>
+<ul>
+<li><code>elemOf :: Eq a =&gt; Fold s a -&gt; a -&gt; s -&gt; Bool</code> - does a fold contain an element?</li>
+<li><code>anyOf :: Fold s a -&gt; (a -&gt; Bool) -&gt; s -&gt; Bool</code> - does any focus match a predicate?</li>
+<li><code>allOf :: Fold s a -&gt; (a -&gt; Bool) -&gt; s -&gt; Bool</code> - do all focuses match a predicate?</li>
+<li><code>findOf :: Fold s a -&gt; (a -&gt; Bool) -&gt; s -&gt; Maybe a</code> - find the first elem that matches a predicate</li>
+<li><code>has :: Fold s a -&gt; s -&gt; Bool</code> - does my fold have any elements</li>
+<li><code>hasn't :: Fold s a -&gt; s -&gt; Bool</code> - or not?</li>
+<li><code>lengthOf :: Fold s a -&gt; s -&gt; Int</code> - how many focuses are there?</li>
+<li><code>sumOf :: Num n =&gt; Fold s n -&gt; s -&gt; n</code> - sum of focuses</li>
+<li><code>productOf :: Num n =&gt; Fold s n -&gt; s -&gt; n</code> - their product</li>
+<li><code>firstOf :: Fold s a -&gt; s -&gt; Maybe a</code> - get the first focus</li>
+<li><code>preview :: Fold s a -&gt; s -&gt; Maybe a</code> - like <code>firstOf</code></li>
+<li><code>(^?) :: s -&gt; Fold s a -&gt; Maybe a</code> - like <code>firstOf</code></li>
+<li><code>worded :: Fold String String</code> - like words</li>
+<li><code>lastOf :: Fold s a -&gt; s -&gt; Maybe a</code> - get the last focus</li>
+<li><code>minimumOf :: Ord a =&gt; Fold s a -&gt; s -&gt; Maybe a</code> - minimum</li>
+<li><code>maximumOf :: Ord a =&gt; Fold s a -&gt; s -&gt; Maybe a</code> - maximum</li>
+<li><code>maximumByOf :: Fold s a -&gt; (a -&gt; a -&gt; Ordering) -&gt; s -&gt; Maybe a</code> - max element by a comparison func</li>
+<li><code>folding :: Foldable f =&gt; (s -&gt; f a) -&gt; Fold s a</code> - convert structure to a <code>Foldable</code></li>
+<li><code>foldrOf :: Fold s a -&gt; (a -&gt; r -&gt; r) -&gt; r -&gt; s -&gt; r</code> - like foldr</li>
+<li><code>foldlOf :: Fold s a -&gt; (a -&gt; r -&gt; r) -&gt; r -&gt; s -&gt; r</code> - like foldl</li>
+<li><code>foldMapOf :: Monoid r =&gt; Fold s a -&gt; (a -&gt; r) -&gt; s -&gt; r</code> - like foldMap</li>
+<li><code>foldByOf :: Fold s a -&gt; (a -&gt; a -&gt; a) -&gt; a -&gt; s -&gt; a</code> - lets use a custom <code>(&lt;&gt;) :: a -&gt; a -&gt; a</code></li>
+<li><code>foldMapByOf :: Fold s a -&gt; (r -&gt; r -&gt; r) -&gt; r -&gt; (a -&gt; r) -&gt; s -&gt; r</code> - same, but also lets map to a <code>Monoid</code></li>
+</ul>
+<pre><code class="language-haskell">data Actor = Actor
+  { _actorName :: String
+  , _birthYear :: Int
+  }
+  deriving (Show, Eq)
+makeLenses ''Actor
+
+data TVShow = TVShow
+  { _title :: String
+  , _numEpisodes :: Int
+  , _numSeasons :: Int
+  , _criticScore :: Double
+  , _actors :: [Actor]
+  }
+  deriving (Show, Eq)
+makeLenses ''TVShow
+
+howIMetYourMother :: TVShow
+howIMetYourMother =
+  TVShow
+    { _title = &quot;How I Met Your Mother&quot;
+    , _numEpisodes = 208
+    , _numSeasons = 9
+    , _criticScore = 83
+    , _actors =
+        [ Actor &quot;Josh Radnor&quot; 1974
+        , Actor &quot;Cobie Smulders&quot; 1982
+        , Actor &quot;Neil Patrick Harris&quot; 1973
+        , Actor &quot;Alyson Hannigan&quot; 1974
+        , Actor &quot;Jason Segel&quot; 1980
+        ]
+    }
+buffy :: TVShow
+buffy =
+  TVShow
+    { _title = &quot;Buffy the Vampire Slayer&quot;
+    , _numEpisodes = 144
+    , _numSeasons = 7
+    , _criticScore = 81
+    , _actors =
+        [ Actor &quot;Sarah Michelle Gellar&quot; 1977
+        , Actor &quot;Alyson Hannigan&quot; 1974
+        , Actor &quot;Nicholas Brendon&quot; 1971
+        , Actor &quot;David Boreanaz&quot; 1969
+        , Actor &quot;Anthony Head&quot; 1954
+        ]
+    }
+
+tvShows :: [TVShow]
+tvShows =
+  [ howIMetYourMother
+  , buffy
+  ]
+
+-- &gt;&gt;&gt; sumOf (folded . numEpisodes) tvShows
+-- 352
+
+comparingOf :: Ord a =&gt; Getting a s a -&gt; s -&gt; s -&gt; Ordering
+comparingOf l = comparing (view l)
+
+ex30 :: Maybe Actor
+ex30 = maximumByOf (folded . actors . folded) (comparingOf birthYear) tvShows
+
+-- &gt;&gt;&gt; ex30
+-- Just (Actor {_actorName = &quot;Cobie Smulders&quot;, _birthYear = 1982})
+</code></pre>
+<h4 id="folding-with-effects"><a class="header" href="#folding-with-effects">Folding with effects</a></h4>
+<p>Effectful folding</p>
+<ul>
+<li><code>traverse_ :: (Foldable t, Applicative f) =&gt; (a -&gt; f b) -&gt; t a -&gt; f ()</code> - fold with effects</li>
+</ul>
+<p>Similar to ordinary <code>Foldable</code> functions:</p>
+<ul>
+<li><code>traverseOf_ :: Functor f =&gt; Fold s a -&gt; (a -&gt; f r) -&gt; s -&gt; f ()</code></li>
+<li><code>forOf_ :: Functor f =&gt; Fold s a -&gt; s -&gt; (a -&gt; f r) -&gt; f ()</code></li>
+</ul>
+<p>Uses just <code>Functor</code> (not <code>Applicative</code>) as <code>Lens</code> focuses a single element.</p>
+<pre><code class="language-haskell">calcAge :: Actor -&gt; Int
+calcAge actor = 2030 - actor ^. birthYear
+
+showActor :: Actor -&gt; String
+showActor actor = actor ^. actorName &lt;&gt; &quot;: &quot; &lt;&gt; show (calcAge actor)
+
+-- $&gt; traverseOf_ (folded . actors . folded . to showActor) putStrLn tvShows
+
+-- &gt;&gt;&gt; import Control.Monad.State
+-- &gt;&gt;&gt; execState (traverseOf_ (folded . actors . folded) (modify . const (+1)) tvShows) 0
+-- 10
+</code></pre>
+<h4 id="combining-fold-results"><a class="header" href="#combining-fold-results">Combining fold results</a></h4>
+<p><code>Fold</code>s are all about collecting pieces of things and <code>Monoid</code>s are all about combining
+things together. We can find many focuses within a structure,
+then combine the pieces together using a <code>Monoid</code>.</p>
+<pre><code class="language-hs">foldOf :: Getting a s a -&gt; s -&gt; a
+foldMapOf :: Getting r s a -&gt; (a -&gt; r) -&gt; s -&gt; r
+</code></pre>
+<p>Implement an average fold</p>
+<pre><code class="language-haskell">ageSummary :: Actor -&gt; (Sum Int, Sum Int)
+ageSummary actor = (Sum 1, Sum (calcAge actor))
+
+ex31 :: Double
+ex31 = fromIntegral age / fromIntegral n
+ where
+  sums = foldMapOf (folded . actors . folded) ageSummary tvShows
+  n = getSum (fst sums)
+  age = getSum (snd sums)
+
+-- &gt;&gt;&gt; ex31
+-- 57.2
+</code></pre>
+<h4 id="using-view-on-folds"><a class="header" href="#using-view-on-folds">Using <code>view on folds</code></a></h4>
+<p>Don't use <code>view</code> or <code>^.</code> on folds. It works only if focuses are <code>Monoid</code>s. Use <code>foldOf</code></p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; Just (42 :: Int) ^. folded
+-- No instance for (Monoid Int) arising from a use of `folded'
+-- In the second argument of `(^.)', namely `folded'
+-- In the expression: Just (42 :: Int) ^. folded
+-- In an equation for `it_a2Cc0O':
+--     it_a2Cc0O = Just (42 :: Int) ^. folded
+</code></pre>
+<h4 id="customizing-monoidal-folds"><a class="header" href="#customizing-monoidal-folds">Customizing monoidal folds</a></h4>
+<p>These functions allow customizing the (&lt;&gt;) operation on <code>Monoid</code>s</p>
+<pre><code class="language-hs">folding :: Foldable f =&gt; (s -&gt; f a) -&gt; Fold s a
+foldByOf :: Fold s a -&gt; (a -&gt; a -&gt; a) -&gt; a -&gt; s -&gt; a
+foldMapByOf :: Fold s a -&gt; (r -&gt; r -&gt; r) -&gt; r -&gt; (a -&gt; r) -&gt; s -&gt; r
+foldrOf :: Fold s a -&gt; (a -&gt; r -&gt; r) -&gt; r -&gt; s -&gt; r
+foldlOf :: Fold s a -&gt; (r -&gt; a -&gt; r) -&gt; r -&gt; s -&gt; r
+</code></pre>
+<pre><code class="language-haskell">ex32 :: M.Map String Int
+ex32 =
+  foldMapByOf
+    -- Focus each actor's name
+    (folded . actors . folded . actorName)
+    -- Combine duplicate keys with addition
+    (M.unionWith (+))
+    -- start with the empty Map
+    mempty
+    -- inject names into Maps with a count of 1
+    (`M.singleton` 1)
+    tvShows
+
+-- &gt;&gt;&gt; ex32
+-- fromList [(&quot;Alyson Hannigan&quot;,2),(&quot;Anthony Head&quot;,1),(&quot;Cobie Smulders&quot;,1),(&quot;David Boreanaz&quot;,1),(&quot;Jason Segel&quot;,1),(&quot;Josh Radnor&quot;,1),(&quot;Neil Patrick Harris&quot;,1),(&quot;Nicholas Brendon&quot;,1),(&quot;Sarah Michelle Gellar&quot;,1)]
+</code></pre>
+<h4 id="exercises---fold-actions"><a class="header" href="#exercises---fold-actions">Exercises - Fold Actions</a></h4>
+<ol>
+<li>
+<p>pick action</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">-- &gt;&gt;&gt; has folded []
+-- False
+
+-- &gt;&gt;&gt; foldOf both (&quot;Yo&quot;, &quot;Adrian!&quot;)
+-- &quot;YoAdrian!&quot;
+
+-- &gt;&gt;&gt; elemOf each &quot;phone&quot; (&quot;E.T.&quot;, &quot;phone&quot;, &quot;home&quot;)
+-- True
+
+-- &gt;&gt;&gt; minimumOf folded [5, 7, 2, 3, 13, 17, 11]
+-- Just 2
+
+-- &gt;&gt;&gt; maximumOf folded [5, 7, 2, 3, 13, 17, 11]
+-- Just 17
+
+-- &gt;&gt;&gt; anyOf folded ((&gt; 9) . length) [&quot;Bulbasaur&quot;, &quot;Charmander&quot;, &quot;Squirtle&quot;]
+-- True
+
+-- &gt;&gt;&gt; findOf folded even [11, 22, 3, 5, 6]
+-- Just 22
+</code></pre>
+</li>
+<li>
+<p>devise folds</p>
+<pre><code class="language-haskell">ex33 :: Maybe String
+ex33 = findOf folded (\x -&gt; x == reverse x) [&quot;umbrella&quot;, &quot;olives&quot;, &quot;racecar&quot;, &quot;hammer&quot;]
+
+-- &gt;&gt;&gt;ex33
+-- Just &quot;racecar&quot;
+
+-- &gt;&gt;&gt;allOf each even (2,4,6)
+-- True
+
+ex34 :: Maybe (Int, String)
+ex34 = maximumByOf folded (\x y -&gt; compare (x ^. _1) (y ^. _1)) [(2 :: Int, &quot;I'll&quot; :: String), (3, &quot;Be&quot;), (1, &quot;Back&quot;)]
+
+-- &gt;&gt;&gt; ex34
+-- Just (3,&quot;Be&quot;)
+
+-- &gt;&gt;&gt; sumOf each (1,2)
+-- 3
+</code></pre>
+</li>
+<li>
+<p>bonus</p>
+<pre><code class="language-haskell">isVowel :: Char -&gt; Bool
+isVowel x = x `elem` (&quot;aouiey&quot; :: String)
+
+ex35 :: Maybe String
+ex35 =
+  maximumByOf
+    worded
+    (\x y -&gt; let s = (length . filter isVowel) in compare (s x) (s y))
+    (&quot;Do or do not, there is no try.&quot; :: String)
+
+-- &gt;&gt;&gt; ex35
+-- Just &quot;there&quot;
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h3 id="64-higher-order-folds"><a class="header" href="#64-higher-order-folds">6.4 Higher Order Folds</a></h3>
+<p>There're optics combinators that <strong>alter other optics</strong>. They accept an optic and return a new one.</p>
+<p>(with simplified types)</p>
+<ul>
+<li><code>taking :: Int -&gt; Fold s a -&gt; Fold s a</code> - like <code>take</code></li>
+<li><code>dropping :: Int -&gt; Fold s a -&gt; Fold s a</code> - like <code>drop</code></li>
+<li><code>takingWhile :: (a -&gt; Bool) -&gt; Fold s a -&gt; Fold s a</code> - like <code>takeWhile</code></li>
+<li><code>droppingWhile :: (a -&gt; Bool) -&gt; Fold s a -&gt; Fold s a</code> - like <code>dropWhile</code></li>
+<li><code>backwards :: Fold s a -&gt; Fold s a</code> - reverse the order of focuses of a fold</li>
+</ul>
+<h4 id="taking-dropping"><a class="header" href="#taking-dropping">Taking, Dropping</a></h4>
+<p>(real types are complex)</p>
+<p>take N focuses</p>
+<pre><code class="language-hs">taking :: Int -&gt; Fold s a -&gt; Fold s a
+dropping :: Int -&gt; Fold s a -&gt; Fold s a
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;[3,5,4,6,7] ^.. taking 3 folded
+-- [3,5,4]
+
+-- &gt;&gt;&gt;[3,5,4,6,7] ^.. dropping 3 folded
+-- [6,7]
+</code></pre>
+<p>Since new folds branch on focuses, the next optics are applied on each branch separately.</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [[1, 2, 3], [10, 20, 30], [100, 200, 300]] ^.. folded . taking 2 folded
+-- [1,2,10,20,100,200]
+
+-- &gt;&gt;&gt; (&quot;Albus&quot; :: String, &quot;Dumbledore&quot;) ^.. both . taking 3 folded
+-- &quot;AlbDum&quot;
+</code></pre>
+<p>We can move the combinator to operate on the necessary set of focuses, e.g., the final one.</p>
+<pre><code class="language-haskell">-- No brackets; we're taking '3' from the results of 'both', then folding them
+-- &gt;&gt;&gt; (&quot;Albus&quot; :: String, &quot;Dumbledore&quot;) ^.. taking 3 both . folded
+-- &quot;AlbusDumbledore&quot;
+
+-- &gt;&gt;&gt; (&quot;Albus&quot; :: String, &quot;Dumbledore&quot;) ^.. taking 3 (both . folded)
+-- &quot;Alb&quot;
+
+-- &gt;&gt;&gt; (&quot;Albus&quot; :: String, &quot;Dumbledore&quot;) ^.. dropping 2 (both . folded)
+-- &quot;busDumbledore&quot;
+</code></pre>
+<h4 id="backwards"><a class="header" href="#backwards">Backwards</a></h4>
+<p>Reverses the order of a fold.</p>
+<p>Book:</p>
+<pre><code class="language-hs">backwards :: Fold s a -&gt; Fold s a
+</code></pre>
+<p>Real:</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;:t backwards
+-- backwards
+--   :: (Profunctor p, Profunctor q) =&gt;
+--      Optical p q (Backwards f) s t a b -&gt; Optical p q f s t a b
+</code></pre>
+<p>Examples:</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [1, 2, 3] ^.. backwards folded
+-- [3,2,1]
+</code></pre>
+<h4 id="takingwhile-droppingwhile"><a class="header" href="#takingwhile-droppingwhile">takingWhile, droppingWhile</a></h4>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [1..100] ^.. takingWhile (&lt;10) folded
+-- [1,2,3,4,5,6,7,8,9]
+
+-- &gt;&gt;&gt; [1..100] ^.. droppingWhile (&lt;90) folded
+-- [90,91,92,93,94,95,96,97,98,99,100]
+</code></pre>
+<h4 id="exercises---higher-order-folds"><a class="header" href="#exercises---higher-order-folds">Exercises - Higher Order Folds</a></h4>
+<ol>
+<li>
+<p>blanks</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">-- &gt;&gt;&gt; (&quot;Here's looking at you, kid&quot; :: String) ^.. dropping 7 folded
+-- &quot;looking at you, kid&quot;
+
+-- &gt;&gt;&gt; [&quot;My Precious&quot; :: String, &quot;Hakuna Matata&quot;, &quot;No problemo&quot;] ^.. folded . taking 1 .
+-- &quot;MHN&quot;
+
+-- &gt;&gt;&gt; [&quot;My Precious&quot;, &quot;Hakuna Matata&quot;, &quot;No problemo&quot;] ^.. taking 1 (folded . worded)
+-- [&quot;My&quot;]
+
+-- &gt;&gt;&gt; [&quot;My Precious&quot;, &quot;Hakuna Matata&quot;, &quot;No problemo&quot;] ^.. folded . taking 1 worded . folded
+-- &quot;MyHakunaNo&quot;
+
+-- &gt;&gt;&gt; [&quot;My Precious&quot;, &quot;Hakuna Matata&quot;, &quot;No problemo&quot;] ^.. folded . taking 1 (folding words) . folded
+-- &quot;MyHakunaNo&quot;
+
+ex36 :: Integer
+ex36 = sumOf (taking 2 each) (10, 50, 100)
+
+-- &gt;&gt;&gt; ex36
+-- 60
+
+-- &gt;&gt;&gt; (&quot;stressed&quot;, &quot;guns&quot;, &quot;evil&quot;) ^.. backwards each
+-- [&quot;evil&quot;,&quot;guns&quot;,&quot;stressed&quot;]
+
+-- &gt;&gt;&gt; (&quot;stressed&quot;, &quot;guns&quot;, &quot;evil&quot;) ^.. backwards each . to reverse
+-- [&quot;live&quot;,&quot;snug&quot;,&quot;desserts&quot;]
+
+-- &gt;&gt;&gt; import Data.Char (isAlpha)
+-- &gt;&gt;&gt; &quot;blink182 k9 blazeit420&quot; ^.. folding (filter (\x -&gt; not (isAlpha x || x == ' ')))
+-- &quot;1829420&quot;
+</code></pre>
+</li>
+<li>
+<p>use higher-order folds</p>
+<pre><code class="language-haskell">temperatureSample :: [Int]
+temperatureSample = [-10, -5, 4, 3, 8, 6, -2, 3, -5, -7]
+
+-- &gt;&gt;&gt; length $ temperatureSample ^.. takingWhile (&lt;= 0) folded
+-- 2
+
+-- &gt;&gt;&gt; maximumOf (taking 4 folded) temperatureSample
+-- Just 4
+
+-- &gt;&gt;&gt; temperatureSample ^? dropping 1 (droppingWhile (/= 4) folded)
+-- Just 3
+
+-- &gt;&gt;&gt; length $ temperatureSample ^.. takingWhile (&lt; 0) (backwards folded)
+-- 2
+
+-- &gt;&gt;&gt; temperatureSample ^.. takingWhile (&gt; 0) (droppingWhile (&lt;= 0) folded)
+-- [4,3,8,6]
+
+trimmingWhile :: (a -&gt; Bool) -&gt; Fold s a -&gt; Fold s a
+trimmingWhile c f = backwards (droppingWhile c (backwards (droppingWhile c f)))
+
+-- &gt;&gt;&gt; temperatureSample ^.. trimmingWhile (&lt; 0) folded
+-- [4,3,8,6,-2,3]
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h3 id="65-filtering-folds"><a class="header" href="#65-filtering-folds">6.5 Filtering folds</a></h3>
+<ul>
+<li>Filter focuses (like WHERE in SQL)</li>
+<li>Can run a separate fold to calculate the filter condition</li>
+<li>Can go deeper after filtering</li>
+</ul>
+<p>Book:</p>
+<ul>
+<li><code>filtered :: (s -&gt; Bool) -&gt; Fold s s</code> - filter a fold</li>
+<li><code>filteredBy :: Fold s a -&gt; Fold s s</code> or <code>filteredBy :: Fold s a -&gt; IndexedTraversal' a s s</code> - filter by a condition represented as a fold</li>
+</ul>
+<p>Real:</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;:t filtered
+-- filtered :: (Choice p, Applicative f) =&gt; (a -&gt; Bool) -&gt; Optic' p f a a
+
+-- &gt;&gt;&gt;:t filteredBy
+-- filteredBy
+--   :: (Indexable i p, Applicative f) =&gt;
+--      Getting (First i) a i -&gt; p a (f a) -&gt; a -&gt; f a
+</code></pre>
+<p>Examples:</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [1, 2, 3, 4] ^.. folded . filtered even
+-- [2,4]
+
+-- &gt;&gt;&gt; [&quot;apple&quot;, &quot;passionfruit&quot;, &quot;orange&quot;, &quot;pomegranate&quot;] ^.. folded . filtered ((&gt;6) . length)
+-- [&quot;passionfruit&quot;,&quot;pomegranate&quot;]
+
+-- A data structure to represent a single card
+data Card = Card
+  { _cardName :: String
+  , _aura :: Aura
+  , _holo :: Bool
+  , _moves :: [Move]
+  }
+  deriving (Show, Eq)
+
+-- Each card has an aura-type
+data Aura
+  = Wet
+  | Hot
+  | Spark
+  | Leafy
+  deriving (Show, Eq)
+
+-- Cards have attack moves
+data Move = Move
+  { _moveName :: String
+  , _movePower :: Int
+  }
+  deriving (Show, Eq)
+
+makeLenses ''Card
+makeLenses ''Move
+
+deck :: [Card]
+deck =
+  [ Card &quot;Skwortul&quot; Wet False [Move &quot;Squirt&quot; 20]
+  , Card &quot;Scorchander&quot; Hot False [Move &quot;Scorch&quot; 20]
+  , Card &quot;Seedasaur&quot; Leafy False [Move &quot;Allergize&quot; 20]
+  , Card &quot;Kapichu&quot; Spark False [Move &quot;Poke&quot; 10, Move &quot;Zap&quot; 30]
+  , Card &quot;Elecdude&quot; Spark False [Move &quot;Asplode&quot; 50]
+  , Card &quot;Garydose&quot; Wet True [Move &quot;Gary's move&quot; 40]
+  , Card &quot;Moisteon&quot; Wet False [Move &quot;Soggy&quot; 3]
+  , Card &quot;Grasseon&quot; Leafy False [Move &quot;Leaf Cut&quot; 30]
+  , Card &quot;Spicyeon&quot; Hot False [Move &quot;Capsaicisize&quot; 40]
+  , Card &quot;Sparkeon&quot; Spark True [Move &quot;Shock&quot; 40, Move &quot;Battery&quot; 50]
+  ]
+</code></pre>
+<ul>
+<li>
+<p>How many moves have an attack power above 30?</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">ex38 :: Int
+ex38 =
+  lengthOf
+    ( folded
+        . moves
+        . folded
+        . movePower
+        . filtered (&gt; 30)
+    )
+    deck
+
+-- &gt;&gt;&gt; ex38
+-- 5
+</code></pre>
+</li>
+<li>
+<p>List all cards which have ANY move with an attack power greater than 40</p>
+<pre><code class="language-haskell">ex39 :: [String]
+ex39 =
+  deck
+    ^.. folded
+      . filtered (anyOf (moves . folded . movePower) (&gt; 40))
+      . cardName
+
+-- &gt;&gt;&gt; ex39
+-- [&quot;Elecdude&quot;,&quot;Sparkeon&quot;]
+</code></pre>
+</li>
+<li>
+<p>List all Spark Moves with a power greater than 30</p>
+<pre><code class="language-haskell">-- ex40 :: [Move]
+ex40 :: [String]
+ex40 =
+  deck
+    ^.. folded
+      . filtered (\x -&gt; x ^. aura == Spark)
+      . moves
+      . folded
+      . filtered (\x -&gt; x ^. movePower &gt; 30)
+      . moveName
+
+-- &gt;&gt;&gt;ex40
+-- [&quot;Asplode&quot;,&quot;Shock&quot;,&quot;Battery&quot;]
+</code></pre>
+</li>
+</ul>
+<p>Other helpers</p>
+<ul>
+<li>
+<p><code>filteredBy :: Fold s a -&gt; Fold s s</code> - filter by a condition represented as a fold</p>
+</li>
+<li>
+<p><code>only :: Eq a =&gt; a -&gt; Prism' a ()</code> - return () iff input is equal to a reference value</p>
+</li>
+<li>
+<p><code>nearly :: a -&gt; (a -&gt; Bool) -&gt; Prism' a ()</code> - check condition. As it returns a prism, we have to supply the first argument for re-construction</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; has (only &quot;needle&quot;) &quot;needle&quot;
+-- True
+</code></pre>
+</li>
+<li>
+<p>List all Spark Moves with a power greater than 30</p>
+<pre><code class="language-haskell">ex41 :: [String]
+ex41 =
+  deck
+    ^.. folded
+      . filteredBy (aura . only Spark)
+      . moves
+      . folded
+      . filteredBy (movePower . filtered (&gt; 30))
+      . moveName
+
+-- &gt;&gt;&gt; ex41
+-- [&quot;Asplode&quot;,&quot;Shock&quot;,&quot;Battery&quot;]
+
+ex42 :: Maybe String
+ex42 =
+  maximumByOf
+    -- filter for holo cards
+    (folded . filteredBy holo)
+    -- compare them on number of moves
+    (comparing (lengthOf moves))
+    deck
+    &lt;&amp;&gt; (^. cardName)
+
+-- &gt;&gt;&gt; ex42
+-- Just &quot;Sparkeon&quot;
+</code></pre>
+</li>
+</ul>
+<!-- d -->
+<h4 id="exercises---filtering"><a class="header" href="#exercises---filtering">Exercises - Filtering</a></h4>
+<ul>
+<li>
+<p>List all the cards whose name starts with 'S'</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">ex43 :: [String]
+ex43 = deck ^.. folded . filteredBy (cardName . taking 1 folded . only 'S') . cardName
+
+-- &gt;&gt;&gt; ex43
+-- [&quot;Skwortul&quot;,&quot;Scorchander&quot;,&quot;Seedasaur&quot;,&quot;Spicyeon&quot;,&quot;Sparkeon&quot;]
+</code></pre>
+</li>
+<li>
+<p>What's the lowest attack power of all moves?</p>
+<pre><code class="language-haskell">ex44 :: Maybe Int
+ex44 = minimumOf (folded . moves . folded . movePower) deck
+
+-- &gt;&gt;&gt;ex44
+-- Just 3
+</code></pre>
+</li>
+<li>
+<p>What's the name of the first card which has more than one move?</p>
+<pre><code class="language-haskell">ex45 :: Maybe String
+ex45 = findOf (folded . filtered (\x -&gt; length (x ^. moves) &gt; 1)) (const True) deck &lt;&amp;&gt; (^. cardName)
+
+-- &gt;&gt;&gt;ex45
+-- Just &quot;Kapichu&quot;
+</code></pre>
+</li>
+<li>
+<p>Are there any Hot cards with a move with more than 30 attack power?</p>
+<pre><code class="language-haskell">ex46 :: Bool
+ex46 =
+  not . null $
+    deck
+      ^.. folded
+        . filteredBy (aura . only Hot)
+        . filteredBy (moves . folded . filteredBy (movePower . nearly 0 (&gt; 30)))
+
+-- &gt;&gt;&gt;ex46
+-- [Card {_cardName = &quot;Spicyeon&quot;, _aura = Hot, _holo = False, _moves = [Move {_moveName = &quot;Capsaicisize&quot;, _movePower = 40}]}]
+</code></pre>
+</li>
+<li>
+<p>List the names of all holographic cards with a Wet aura.</p>
+<pre><code class="language-haskell">ex47 :: [String]
+ex47 = deck ^.. folded . filtered (\x -&gt; x ^. holo &amp;&amp; x ^. aura == Wet) . cardName
+
+-- &gt;&gt;&gt;ex47
+-- [&quot;Garydose&quot;]
+</code></pre>
+</li>
+<li>
+<p>What's the sum of all attack power for all moves belonging to non-Leafy cards?</p>
+<pre><code class="language-haskell">ex48 :: Int
+ex48 = sumOf (folded . filtered (\x -&gt; x ^. aura /= Leafy) . moves . folded . movePower) deck
+
+-- &gt;&gt;&gt;ex48
+-- 303
+</code></pre>
+</li>
+</ul>
+<!-- d -->
+<h3 id="7-traversals"><a class="header" href="#7-traversals">7. Traversals</a></h3>
+<p>Have multiple focuses. Can transform them.</p>
+<h4 id="71-introduction-to-traversals"><a class="header" href="#71-introduction-to-traversals">7.1. Introduction to Traversals</a></h4>
+<p>Can get or set many focuses <strong>in-place</strong>.</p>
+<ul>
+<li><strong>rows</strong> - optics that we <strong>have</strong></li>
+<li><strong>columns</strong> - how want to <strong>use</strong> that optics</li>
+</ul>
+<p><img src="README/tableTraversals.png" alt="alt" /></p>
+<h4 id="from-fold-to-traversal"><a class="header" href="#from-fold-to-traversal">From Fold to Traversal</a></h4>
+<pre><code class="language-hs">both :: Bitraversable r =&gt; Traversal (r a a) (r b b) a b
+</code></pre>
+<p>In case of tuples, <code>both</code> focuses both sides of a tuple.</p>
+<p><code>Traversal s t a b</code>:</p>
+<ul>
+<li><code>s</code>: structure before action</li>
+<li><code>t</code>: structure after action</li>
+<li><code>a</code>: focus before action</li>
+<li><code>b</code>: focus after action</li>
+</ul>
+<p>Let's modify both elements of a tuple</p>
+<pre><code class="language-haskell">ex49 :: (String, String)
+ex49 = (&quot;Bubbles&quot;, &quot;Buttercup&quot;) &amp; both %~ (++ &quot;!&quot;)
+
+-- &gt;&gt;&gt; ex49
+-- (&quot;Bubbles!&quot;,&quot;Buttercup!&quot;)
+</code></pre>
+<p>Focuses may change type as long as the type of a structure remains valid. In case of each, we have to change types of all elements of a tuple.</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; (&quot;Bubbles&quot;, &quot;Buttercup&quot;) &amp; each %~ length
+-- (7,9)
+
+-- &gt;&gt;&gt; [1, 2, 3, 4, 5] &amp; dropping 3 traversed %~ show
+-- No instance for (Num String) arising from the literal `1'
+-- In the expression: 1
+-- In the first argument of `(&amp;)', namely `[1, 2, 3, 4, 5]'
+-- In the expression: [1, 2, 3, 4, 5] &amp; dropping 3 traversed %~ show
+</code></pre>
+<p>Some structures disallow changing the type.</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; (&quot;Houston we have a problem&quot; :: T.Text) &amp; each .~ (22 :: Int)
+-- Couldn't match type `Int' with `Char' arising from a use of `each'
+-- In the first argument of `(.~)', namely `each'
+-- In the second argument of `(&amp;)', namely `each .~ (22 :: Int)'
+-- In the expression:
+--   (&quot;Houston we have a problem&quot; :: Text) &amp; each .~ (22 :: Int)
+</code></pre>
+<p>Can use some functions that we used for <code>Fold</code>s, e.g., <code>filtered</code>.</p>
+<pre><code class="language-haskell">-- Reverse only the long strings
+ex50 :: (String, String)
+ex50 =
+  (&quot;short&quot;, &quot;really long&quot;)
+    &amp; both . filtered ((&gt; 5) . length)
+      %~ reverse
+
+-- &gt;&gt;&gt;ex50
+-- (&quot;short&quot;,&quot;gnol yllaer&quot;)
+</code></pre>
+<h3 id="72-traversal-combinators"><a class="header" href="#72-traversal-combinators">7.2 Traversal Combinators</a></h3>
+<h4 id="traversing-each-element-of-a-container"><a class="header" href="#traversing-each-element-of-a-container">Traversing each element of a container</a></h4>
+<p>Some optics are incompatible in types, e.g., <code>folded</code> and <code>%~</code>. That is, you can't modify focuses in a fold</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [1, 2, 3] &amp; folded %~ (*10)
+-- Could not deduce (Contravariant Identity)
+--   arising from a use of `folded'
+-- from the context: Num b_aNbRI[sk:1]
+--   bound by the inferred type of
+--              it_aNbPv :: Num b_aNbRI[sk:1] =&gt; [b_aNbRI[sk:1]]
+--   at /home/eyjafjallajokull/Desktop/projects/optics-by-example/README.hs:2207:2-28
+-- In the first argument of `(%~)', namely `folded'
+-- In the second argument of `(&amp;)', namely `folded %~ (* 10)'
+-- In the expression: [1, 2, 3] &amp; folded %~ (* 10)
+</code></pre>
+<p>That's why there is a specific function for traversing.</p>
+<p>Book:</p>
+<pre><code class="language-hs">traversed :: Traversable f =&gt; Traversal (f a) (f b) a b
+</code></pre>
+<p>Real:</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; :t traversed
+-- traversed :: Traversable f =&gt; IndexedTraversal Int (f a) (f b) a b
+</code></pre>
+<pre><code class="language-hs">class (Functor t, Foldable t) =&gt; Traversable t
+</code></pre>
+<p>If you compose a <code>Traversal</code> and a <code>Fold</code>, you get a <code>Fold</code>.</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;[[3 :: Int, 4]] &amp; traversed . folded %~ (*10)
+-- No instance for (Contravariant Identity)
+--   arising from a use of `folded'
+-- In the second argument of `(.)', namely `folded'
+-- In the first argument of `(%~)', namely `traversed . folded'
+-- In the second argument of `(&amp;)', namely
+--   `traversed . folded %~ (* 10)'
+
+-- &gt;&gt;&gt;[[3 :: Int, 4]] ^.. traversed . folded
+-- [3,4]
+</code></pre>
+<p>Compared to <strong>folded</strong>, <strong>traversed</strong> operates on <strong>less</strong> containers with <strong>more</strong> operations.</p>
+<pre><code class="language-haskell">powerLevels :: M.Map String Integer
+powerLevels =
+  M.fromList
+    [ (&quot;Gohan&quot;, 710)
+    , (&quot;Goku&quot;, 9001)
+    , (&quot;Krillin&quot;, 5000)
+    , (&quot;Piccolo&quot;, 408)
+    ]
+
+-- operate on the values of a map
+ex51 :: M.Map String String
+ex51 =
+  powerLevels
+    &amp; traversed %~ \n -&gt;
+      if n &gt; 9000
+        then &quot;Over 9000&quot;
+        else show n
+
+-- &gt;&gt;&gt;ex51
+-- fromList [(&quot;Gohan&quot;,&quot;710&quot;),(&quot;Goku&quot;,&quot;Over 9000&quot;),(&quot;Krillin&quot;,&quot;5000&quot;),(&quot;Piccolo&quot;,&quot;408&quot;)]
+</code></pre>
+<h4 id="more-combinators"><a class="header" href="#more-combinators">More Combinators</a></h4>
+<p>Book:</p>
+<ul>
+<li><code>worded :: Traversal' String String</code> - focus on words</li>
+<li><code>lined :: Traversal' String String</code> - focus on lines</li>
+</ul>
+<p>Real:</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; :t worded
+-- worded :: Applicative f =&gt; IndexedLensLike' Int f String String
+
+-- &gt;&gt;&gt; :t lined
+-- lined :: Applicative f =&gt; IndexedLensLike' Int f String String
+</code></pre>
+<p>They're unlawful, because they wrongly reconstruct the results. E.g., like <code>unwords . words</code>, they substitute a single space for multiple spaces.</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; &quot;blue \n suede \n \n shoes&quot; &amp; worded %~ \(x:xs) -&gt; toUpper x : xs
+-- &quot;Blue Suede Shoes&quot;
+</code></pre>
+<h4 id="traversing-multiple-paths-at-once"><a class="header" href="#traversing-multiple-paths-at-once">Traversing multiple paths at once</a></h4>
+<p>Focus on all <code>a</code>s from both structures in a tuple.</p>
+<pre><code class="language-hs">beside :: Traversal s t a b -&gt; Traversal s' t' a b -&gt; Traversal (s,s') (t,t') a b
+beside :: Lens s t a b      -&gt; Lens s' t' a b      -&gt; Traversal (s,s') (t,t') a b
+beside :: Fold s a          -&gt; Fold s' a           -&gt; Fold (s,s') a
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; let dinos = (&quot;T-Rex&quot;, (42, &quot;Stegosaurus&quot;))
+-- &gt;&gt;&gt;  dinos ^.. beside id _2
+-- [&quot;T-Rex&quot;,&quot;Stegosaurus&quot;]
+
+ex52 :: (String, [String])
+ex52 =
+  (&quot;Cowabunga&quot;, [&quot;let's&quot;, &quot;order&quot;, &quot;pizza&quot;])
+    -- Each half of the tuple has a different path to focus the characters
+    &amp; beside traversed (traversed . traversed)
+      %~ toUpper
+
+-- &gt;&gt;&gt;ex52
+-- (&quot;COWABUNGA&quot;,[&quot;LET'S&quot;,&quot;ORDER&quot;,&quot;PIZZA&quot;])
+</code></pre>
+<p>There are other <code>Bitraversable</code>s like <code>Either</code>.</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; Left (1, 2) &amp; beside both traversed %~ negate
+-- Left (-1,-2)
+</code></pre>
+<h4 id="focusing-a-specific-traversal-element"><a class="header" href="#focusing-a-specific-traversal-element">Focusing a specific traversal element</a></h4>
+<p>Focuses a single element with a given index.
+Can't change the type of that focus because it can't change the type of other focuses.</p>
+<pre><code class="language-hs">element :: Traversable f =&gt; Int -&gt; Traversal' (f a) a
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [0, 1, 2, 3, 4] &amp; element 2 *~ 100
+-- [0,1,200,3,4]
+</code></pre>
+<p>Focus an element of a traversal or a fold</p>
+<pre><code class="language-hs">elementOf :: Traversal' s a -&gt; Int -&gt; Traversal' s a
+elementOf :: Fold s a       -&gt; Int -&gt; Fold s a
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [[0, 1, 2], [3, 4], [5, 6, 7, 8]] &amp; elementOf (traversed . traversed) 6 *~ 100
+-- [[0,1,2],[3,4],[5,600,7,8]]
+</code></pre>
+<h3 id="73-traversal-composition"><a class="header" href="#73-traversal-composition">7.3 Traversal Composition</a></h3>
+<pre><code class="language-haskell">-- Add &quot;Rich &quot; to the names of people with more than $1000
+ex53 :: ((String, Integer), (String, Integer), (String, Integer))
+ex53 =
+  ((&quot;Ritchie&quot;, 100000), (&quot;Archie&quot;, 32), (&quot;Reggie&quot;, 4350))
+    &amp; each
+      . filtered ((&gt; 1000) . snd)
+      . _1
+      %~ (&quot;Rich &quot; ++)
+
+-- &gt;&gt;&gt;ex53
+-- ((&quot;Rich Ritchie&quot;,100000),(&quot;Archie&quot;,32),(&quot;Rich Reggie&quot;,4350))
+</code></pre>
+<h4 id="exercises---simple-traversals"><a class="header" href="#exercises---simple-traversals">Exercises - Simple Traversals</a></h4>
+<ol>
+<li>
+<p>What type of optic do you get when you compose a traversal with a fold?</p>
+<ul>
+<li>
+<p>fold</p>
+<!-- i 6 -->
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [[3 :: Int, 4]] ^.. traversed . folded
+-- [3,4]
+
+-- &gt;&gt;&gt; [[3 :: Int, 4]] &amp; traversed . folded .~ 2
+-- No instance for (Contravariant Identity)
+--   arising from a use of `folded'
+-- In the second argument of `(.)', namely `folded'
+-- In the first argument of `(.~)', namely `traversed . folded'
+-- In the second argument of `(&amp;)', namely `traversed . folded .~ 2'
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p>Which of the optics we've learned can act as a traversal?</p>
+<ul>
+<li>lens and traversal</li>
+</ul>
+</li>
+<li>
+<p>Which of the optics we've learned can act as a fold?</p>
+<ul>
+<li>lens, traversal, fold</li>
+</ul>
+</li>
+</ol>
+<!-- d -->
+<pre><code class="language-haskell">-- &gt;&gt;&gt;(&quot;Jurassic&quot;, &quot;Park&quot;) &amp; both .~ &quot;N/A&quot;
+-- (&quot;N/A&quot;,&quot;N/A&quot;)
+
+-- &gt;&gt;&gt; (&quot;Jurassic&quot; :: String, &quot;Park&quot;) &amp; both . traversed .~ 'x'
+-- (&quot;xxxxxxxx&quot;,&quot;xxxx&quot;)
+
+-- &gt;&gt;&gt;(&quot;Malcolm&quot;, [&quot;Kaylee&quot;, &quot;Inara&quot;, &quot;Jayne&quot;]) &amp; beside id traversed %~ take 3
+-- (&quot;Mal&quot;,[&quot;Kay&quot;,&quot;Ina&quot;,&quot;Jay&quot;])
+
+-- &gt;&gt;&gt;(&quot;Malcolm&quot;, [&quot;Kaylee&quot;, &quot;Inara&quot;, &quot;Jayne&quot;]) &amp; _2 . elementOf traversed 1 .~ &quot;River&quot;
+-- (&quot;Malcolm&quot;,[&quot;Kaylee&quot;,&quot;River&quot;,&quot;Jayne&quot;])
+
+-- &gt;&gt;&gt; [&quot;Die Another Day&quot;, &quot;Live and Let Die&quot;, &quot;You Only Live Twice&quot;] &amp; traversed . elementOf worded 1 . traversed .~ 'x'
+-- [&quot;Die xxxxxxx Day&quot;,&quot;Live xxx Let Die&quot;,&quot;You xxxx Live Twice&quot;]
+
+-- &gt;&gt;&gt;((1, 2), (3, 4)) &amp; both . both +~ 1
+-- ((2,3),(4,5))
+
+-- &gt;&gt;&gt;(1, (2, [3, 4])) &amp; beside id (beside id traversed) +~ 1
+-- (2,(3,[4,5]))
+
+ex54 = ((True, &quot;Strawberries&quot; :: String), (False, &quot;Blueberries&quot;), (True, &quot;Blackberries&quot;)) &amp; each . filtered fst . _2 . taking 5 traversed %~ toUpper
+
+-- &gt;&gt;&gt; ex54
+-- ((True,&quot;STRAWberries&quot;),(False,&quot;Blueberries&quot;),(True,&quot;BLACKberries&quot;))
+
+ex55 = ((True, &quot;Strawberries&quot;), (False, &quot;Blueberries&quot;), (True, &quot;Blackberries&quot; :: String)) &amp; each %~ snd
+
+-- &gt;&gt;&gt; ex55
+-- (&quot;Strawberries&quot;,&quot;Blueberries&quot;,&quot;Blackberries&quot;)
+</code></pre>
+<h3 id="74-traversal-actions"><a class="header" href="#74-traversal-actions">7.4 Traversal Actions</a></h3>
+<pre><code class="language-hs">sequenceA :: (Traversable t, Applicative f) =&gt; t (f a) -&gt; f (t a)
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;sequenceA $ Just (Left &quot;Whoops&quot;)
+-- Left &quot;Whoops&quot;
+
+-- &gt;&gt;&gt;sequenceA $ Just (Right &quot;Whoops&quot;)
+-- Right (Just &quot;Whoops&quot;)
+
+-- &gt;&gt;&gt; :t readMaybe
+-- readMaybe :: Read a =&gt; String -&gt; Maybe a
+
+-- &gt;&gt;&gt;traverse readMaybe [&quot;1&quot;, &quot;2&quot;, &quot;3&quot;] :: Maybe [Int]
+-- Just [1,2,3]
+
+-- &gt;&gt;&gt;traverse readMaybe [&quot;1&quot;, &quot;snark&quot;, &quot;3&quot;] :: Maybe [Int]
+-- Nothing
+</code></pre>
+<h4 id="traverse-on-traversals"><a class="header" href="#traverse-on-traversals">Traverse on Traversals</a></h4>
+<p>Can run <code>traverse</code> on arbitrary focuses!</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;:t traverseOf
+-- traverseOf :: LensLike f s t a b -&gt; (a -&gt; f b) -&gt; s -&gt; f t
+
+-- &gt;&gt;&gt; :t traverse
+-- traverse :: (Traversable t, Applicative f) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)
+
+-- &gt;&gt;&gt; :t traverseOf traversed
+-- traverseOf traversed
+--   :: (Traversable f1, Applicative f2) =&gt;
+--      (a -&gt; f2 b) -&gt; f1 a -&gt; f2 (f1 b)
+
+-- &gt;&gt;&gt;traverseOf both readMaybe (&quot;1&quot;, &quot;2&quot;) :: Maybe (Int, Int)
+-- Just (1,2)
+
+-- &gt;&gt;&gt; traverseOf both (\c -&gt; [toLower c, toUpper c]) ('a', 'b')
+-- [('a','b'),('a','B'),('A','b'),('A','B')]
+
+-- &gt;&gt;&gt; traverseOf (both . traversed) (\c -&gt; [toLower c, toUpper c]) (&quot;ab&quot;, &quot;c&quot;)
+-- [(&quot;ab&quot;,&quot;c&quot;),(&quot;ab&quot;,&quot;C&quot;),(&quot;aB&quot;,&quot;c&quot;),(&quot;aB&quot;,&quot;C&quot;),(&quot;Ab&quot;,&quot;c&quot;),(&quot;Ab&quot;,&quot;C&quot;),(&quot;AB&quot;,&quot;c&quot;),(&quot;AB&quot;,&quot;C&quot;)]
+
+validateEmail :: String -&gt; Validation [String] String
+validateEmail email
+  | elem '@' email = Success email
+  | otherwise =
+      Failure [&quot;missing '@': &quot; &lt;&gt; email]
+
+-- &gt;&gt;&gt; traverseOf (both . traversed) validateEmail ([&quot;mike@tmnt.io&quot;, &quot;raph@tmnt.io&quot;], [&quot;don@tmnt.io&quot;, &quot;leo@tmnt.io&quot;])
+-- Success ([&quot;mike@tmnt.io&quot;,&quot;raph@tmnt.io&quot;],[&quot;don@tmnt.io&quot;,&quot;leo@tmnt.io&quot;])
+
+-- &gt;&gt;&gt; traverseOf (both . traversed) validateEmail ([&quot;mike@tmnt.io&quot;, &quot;raph.io&quot;], [&quot;don@tmnt.io&quot;, &quot;leo.io&quot;])
+-- Failure [&quot;missing '@': raph.io&quot;,&quot;missing '@': leo.io&quot;]
+</code></pre>
+<p>Other functions:</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;:t forOf
+-- forOf :: LensLike f s t a b -&gt; s -&gt; (a -&gt; f b) -&gt; f t
+
+-- &gt;&gt;&gt;:t sequenceAOf
+-- sequenceAOf :: LensLike f s t (f b) b -&gt; s -&gt; f t
+
+-- &gt;&gt;&gt; sequenceAOf _1 (Just &quot;Garfield&quot;, &quot;Lasagna&quot;)
+-- Just (&quot;Garfield&quot;,&quot;Lasagna&quot;)
+
+-- &gt;&gt;&gt; sequenceAOf (both . traversed) ([Just &quot;apples&quot;], [Just &quot;oranges&quot;])
+-- Just ([&quot;apples&quot;],[&quot;oranges&quot;])
+</code></pre>
+<h4 id="infix-traverseof"><a class="header" href="#infix-traverseof">Infix <code>traverseOf</code></a></h4>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; ((&quot;1&quot;, &quot;2&quot;) &amp; both %%~ readMaybe) :: Maybe (Int, Int)
+-- Just (1,2)
+</code></pre>
+<h4 id="use-traversals-directly"><a class="header" href="#use-traversals-directly">Use Traversals directly</a></h4>
+<p>Actual definitions:</p>
+<pre><code class="language-hs">traverseOf = id
+(%%~) = id
+</code></pre>
+<p>So, we can (but should not!) use <code>Traversal</code>s without <code>traverseOf</code>:</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;both readMaybe (&quot;1&quot;, &quot;2&quot;) :: Maybe (Int, Int)
+-- Just (1,2)
+</code></pre>
+<h4 id="exercises---traversal-actions"><a class="header" href="#exercises---traversal-actions">Exercises - Traversal Actions</a></h4>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; sequenceAOf _1 (Nothing, &quot;Rosebud&quot;)
+-- Nothing
+
+-- &gt;&gt;&gt; sequenceAOf (traversed . _1) [(&quot;ab&quot; :: String,1),(&quot;cd&quot;,2)]
+-- [[('a',1),('c',2)],[('a',1),('d',2)],[('b',1),('c',2)],[('b',1),('d',2)]]
+
+ex56 :: (([Integer], (Integer, Integer)), Integer)
+ex56 = runState result 0
+ where
+  result = traverseOf (beside traversed both) (\n -&gt; modify (+ n) &gt;&gt; get) ([1, 1, 1], (1, 1))
+
+-- &gt;&gt;&gt;ex56
+-- (([1,2,3],(4,5)),5)
+
+ex57 :: [([Char], Bool)]
+ex57 =
+  (&quot;ab&quot; :: String, True)
+    &amp; (_1 . traversed)
+      %%~ (\c -&gt; [toLower c, toUpper c])
+
+ex58 :: [[(Char, Bool)]]
+ex58 =
+  [('a', True), ('b', False)]
+    &amp; (traversed . _1)
+      %%~ (\c -&gt; [toLower c, toUpper c])
+
+data UserWithAge = UserWithAge
+  { _userName :: String
+  , _userAge :: Int
+  }
+  deriving (Show)
+makeLenses ''UserWithAge
+data Account = Account
+  { _accountId :: String
+  , _userWithAge :: UserWithAge
+  }
+  deriving (Show)
+makeLenses ''Account
+
+validateAge :: Account -&gt; Validation String Account
+validateAge acc
+  | age' &lt;= 0 = Failure &quot;Age is below 0&quot;
+  | age' &gt;= 150 = Failure &quot;Age is above 150&quot;
+  | otherwise = Success acc
+ where
+  age' = acc ^. userWithAge . userAge
+</code></pre>
+<h3 id="75-custom-traversals"><a class="header" href="#75-custom-traversals">7.5 Custom traversals</a></h3>
+<p>van Laarhoven optics are</p>
+<pre><code class="language-hs">type LensLike f s t a b = (a -&gt; f b) -&gt; (s -&gt; f t)
+</code></pre>
+<p>plus constraints</p>
+<pre><code class="language-hs">type Lens s t a b = forall f. Functor f =&gt; (a -&gt; f b) -&gt; (s -&gt; f t)
+type Traversal s t a b = forall f. Applicative f =&gt; (a -&gt; f b) -&gt; (s -&gt; f t)
+type Fold s a = forall f. (Contravariant f, Applicative f) =&gt; (a -&gt; f a) -&gt; (s -&gt; f s)
+</code></pre>
+<p>And LensLike is very similar to <code>traverse</code> signature:</p>
+<pre><code class="language-hs">traverse :: (Traversable g, Applicative f) =&gt; (a -&gt; f b) -&gt; (g a -&gt; f (g b))
+myTraversal :: myTraversal :: (Applicative f) =&gt; (a -&gt; f b) -&gt; (s -&gt; f t)
+</code></pre>
+<p><strong>Most optics are really just traverse wearing different pants.</strong></p>
+<h4 id="our-first-custom-traversal"><a class="header" href="#our-first-custom-traversal">Our first custom traversal</a></h4>
+<p><code>traversed</code> for lists</p>
+<pre><code class="language-haskell">-- values :: Traversal [a] [b] a b
+values :: Applicative f =&gt; (a -&gt; f b) -&gt; [a] -&gt; f [b]
+values _ [] = pure []
+values handler (a : as) = liftA2 (:) (handler a) (values handler as)
+
+-- &gt;&gt;&gt; [&quot;one&quot;, &quot;two&quot;, &quot;three&quot;] &amp; values %~ length
+-- [3,3,5]
+</code></pre>
+<h4 id="traversals-with-custom-logic"><a class="header" href="#traversals-with-custom-logic">Traversals with custom logic</a></h4>
+<p>Some bank software</p>
+<pre><code class="language-haskell">data Transaction
+  = Withdrawal {_amount :: Int}
+  | Deposit {_amount :: Int}
+  deriving (Show)
+makeLenses ''Transaction
+
+newtype BankAccount = BankAccount
+  { _transactions :: [Transaction]
+  }
+  deriving (Show)
+makeLenses ''BankAccount
+
+aliceAccount :: BankAccount
+aliceAccount = BankAccount [Deposit 100, Withdrawal 20, Withdrawal 10]
+
+-- &gt;&gt;&gt;aliceAccount ^.. transactions . traversed . amount
+-- [100,20,10]
+</code></pre>
+<h4 id="case-study-transaction-traversal"><a class="header" href="#case-study-transaction-traversal">Case study: Transaction Traversal</a></h4>
+<p>Need a traversal which focuses on only the dollar amounts of <strong>deposits</strong> within a given account.</p>
+<pre><code class="language-haskell">-- deposits :: Traversal' [Transaction] Int
+-- deposits :: Traversal [Transaction] [Transaction] Int Int
+deposits :: Applicative f =&gt; (Int -&gt; f Int) -&gt; [Transaction] -&gt; f [Transaction]
+deposits _ [] = pure []
+deposits handler (Withdrawal amt : rest) = fmap (Withdrawal amt :) (deposits handler rest)
+deposits handler (Deposit amt : rest) = liftA2 (:) (Deposit &lt;$&gt; handler amt) (deposits handler rest)
+
+-- &gt;&gt;&gt;[Deposit 10, Withdrawal 20, Deposit 30] &amp; deposits *~ 10
+-- [Deposit {_amount = 100},Withdrawal {_amount = 20},Deposit {_amount = 300}]
+
+deposits' :: Traversal' [Transaction] Int
+deposits' = traversed . filtered (\case Deposit _ -&gt; True; _ -&gt; False) . amount
+</code></pre>
+<h4 id="exercises---custom-traversals"><a class="header" href="#exercises---custom-traversals">Exercises - Custom traversals</a></h4>
+<ol>
+<li>
+<p>custom traversal</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">-- amountT :: Traversal' Transaction Int
+amountT :: Applicative f =&gt; (Int -&gt; f Int) -&gt; Transaction -&gt; f Transaction
+amountT f = \case Deposit am -&gt; Deposit &lt;$&gt; f am; Withdrawal am -&gt; Withdrawal &lt;$&gt; f am
+</code></pre>
+</li>
+<li>
+<p>custom <code>both</code></p>
+<pre><code class="language-haskell">both' :: Traversal (a, a) (b, b) a b
+both' f (x, y) = liftA2 (,) (f x) (f y)
+</code></pre>
+</li>
+<li>
+<p>delta - Similar to change of coordinates via matrix pre- and post-multiplication</p>
+<pre><code class="language-haskell">transactionDelta :: Traversal' Transaction Int
+transactionDelta f = \case Deposit amt -&gt; Deposit &lt;$&gt; f amt; Withdrawal amt -&gt; Withdrawal . negate &lt;$&gt; f (negate amt)
+
+-- &gt;&gt;&gt; Deposit 10 ^? transactionDelta
+-- Just 10
+
+-- Withdrawal's delta is negative
+-- &gt;&gt;&gt; Withdrawal 10 ^? transactionDelta
+-- Just (-10)
+-- &gt;&gt;&gt; Deposit 10 &amp; transactionDelta .~ 15
+-- Deposit {_amount = 15}
+-- &gt;&gt;&gt; Withdrawal 10 &amp; transactionDelta .~ (-15)
+-- Withdrawal {_amount = 15}
+-- &gt;&gt;&gt; Deposit 10 &amp; transactionDelta +~ 5
+-- Deposit {_amount = 15}
+-- &gt;&gt;&gt; Withdrawal 10 &amp; transactionDelta +~ 5
+-- Withdrawal {_amount = 5}
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<pre><code class="language-haskell">left' :: Traversal (Either a b) (Either a' b) a a'
+left' f = \case Left e -&gt; Left &lt;$&gt; f e; Right x -&gt; pure $ Right x
+
+beside' :: Traversal s t a b -&gt; Traversal s' t' a b -&gt; Traversal (s, s') (t, t') a b
+beside' l r f (l1, r1) = liftA2 (,) (l f l1) (r f r1)
+</code></pre>
+<h3 id="76-traversal-laws"><a class="header" href="#76-traversal-laws">7.6 Traversal Laws</a></h3>
+<h4 id="law-one-respect-purity"><a class="header" href="#law-one-respect-purity">Law One: Respect Purity</a></h4>
+<p>Running the pure handler (which has no effects) using our traversal should be exactly
+the same as running <code>pure</code> on the original structure without using the traversal at all.</p>
+<pre><code class="language-hs">traverseOf myTraversal pure x == pure x
+</code></pre>
+<pre><code class="language-haskell">badTupleSnd :: Traversal (Int, a) (Int, b) a b
+badTupleSnd handler (n, a) = (n + 1,) &lt;$&gt; handler a
+
+-- &gt;&gt;&gt; traverseOf badTupleSnd pure (10, &quot;Yo&quot;)
+-- (11,&quot;Yo&quot;)
+</code></pre>
+<h4 id="law-two-consistent-focuses"><a class="header" href="#law-two-consistent-focuses">Law Two: Consistent Focuses</a></h4>
+<p>Running a traversal twice in a row with <strong>different</strong> handlers should be equivalent
+to running it <strong>once</strong> with the composition of those handlers.</p>
+<pre><code class="language-hs">x &amp; myTraversal %~ f
+  &amp; myTraversal %~ g
+==
+x &amp; myTraversal %~ (g . f)
+</code></pre>
+<p>The traversal should never change which elements it focuses due to
+alterations on those elements.</p>
+<p><code>filtered</code> breaks this law!</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; 2 &amp; filtered even %~ (+1) &amp; filtered even %~ (*10)
+-- 3
+
+-- &gt;&gt;&gt; 2 &amp; filtered even %~ (*10) . (+1)
+-- 30
+</code></pre>
+<h4 id="exercises---traversal-laws"><a class="header" href="#exercises---traversal-laws">Exercises - Traversal Laws</a></h4>
+<ol>
+<li>
+<p><code>worded</code> violates the Law Two</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">-- &gt;&gt;&gt;(&quot;hit the road, jack&quot; :: String) &amp; worded %~ take 3 &amp; worded %~ drop 2
+-- &quot;t e a c&quot;
+
+-- &gt;&gt;&gt;(&quot;hit the road, jack&quot; :: String) &amp; worded %~ (take 3 . drop 2)
+-- &quot;t e ad, ck&quot;
+</code></pre>
+</li>
+<li>
+<p>Break the Law One</p>
+<pre><code class="language-haskell">myTraversal :: Traversal Int Int Int Int
+myTraversal f _ = f 1
+
+-- &gt;&gt;&gt;(traverseOf myTraversal pure 6) :: Identity Int
+-- Identity 1
+
+-- &gt;&gt;&gt;pure 6 :: Identity Int
+-- Identity 6
+</code></pre>
+</li>
+<li>
+<p>Break the Law Two</p>
+<pre><code class="language-haskell">ex60 :: Traversal' [Int] Int
+ex60 = traversed . filtered even
+
+-- &gt;&gt;&gt; [1, 2, 3] &amp; ex60 %~ (+ 1) &amp; ex60 %~ (+ 2)
+-- [1,3,3]
+
+-- &gt;&gt;&gt; [1, 2, 3] &amp; ex60 %~ (+ 1) . (+ 2)
+-- [1,5,3]
+</code></pre>
+</li>
+<li>
+<p>Check lawful</p>
+</li>
+</ol>
+<ul>
+<li>
+<p><code>taking</code> is lawful</p>
+</li>
+<li>
+<p><code>beside</code> is lawful</p>
+</li>
+<li>
+<p><code>each</code> is lawful</p>
+</li>
+<li>
+<p><code>lined</code> is unlawful</p>
+</li>
+<li>
+<p><code>traversed</code> is lawful</p>
+<!-- i 2 -->
+<pre><code class="language-haskell">-- &gt;&gt;&gt;(&quot;hit\nthe\nroad,\njack&quot; :: String) &amp; lined %~ take 3 &amp; lined %~ drop 2
+-- &quot;t\ne\na\nc&quot;
+
+-- &gt;&gt;&gt;(&quot;hit\nthe\nroad,\njack&quot; :: String) &amp; lined %~ (take 3 . drop 2)
+-- &quot;t\ne\nad,\nck&quot;
+</code></pre>
+</li>
+</ul>
+<p>update function can insert newlines</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;(&quot;hit\nthe\nroad,\njack&quot; :: String) &amp; lined %~ (\(x:y:xs) -&gt; (x:y:'\n':xs)) &amp; lined %~ take 2
+-- &quot;hi\nt\nth\ne\nro\nad\nja\nck&quot;
+
+-- &gt;&gt;&gt;(&quot;hit\nthe\nroad,\njack&quot; :: String) &amp; lined %~ (take 2 . \(x:y:xs) -&gt; (x:y:'\n':xs))
+-- &quot;hi\nth\nro\nja&quot;
+</code></pre>
+<!-- d -->
+<h3 id="77-advanced-manipulation"><a class="header" href="#77-advanced-manipulation">7.7 Advanced manipulation</a></h3>
+<h4 id="partsof"><a class="header" href="#partsof">partsOf</a></h4>
+<p>Real:</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;:t partsOf
+-- partsOf :: Functor f =&gt; Traversing (-&gt;) f s t a a -&gt; LensLike f s t [a] [a]
+</code></pre>
+<p>Book:</p>
+<ul>
+<li>
+<p>Make a lens whose focuses are focuses of a provided traversal</p>
+<pre><code class="language-hs">partsOf :: Traversal' s a -&gt; Lens' s [a]
+</code></pre>
+</li>
+</ul>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [('a', 1 :: Int), ('b', 2), ('c', 3)] &amp; partsOf (traversed . _2) .~ [4]
+-- [('a',4),('b',2),('c',3)]
+
+-- &gt;&gt;&gt; [('a', 1 :: Int), ('b', 2), ('c', 3)] &amp; partsOf (traversed . _2) .~ [4,5,6,7,8]
+-- [('a',4),('b',5),('c',6)]
+</code></pre>
+<p>Cool example:</p>
+<ol>
+<li>focus all characters in strings</li>
+<li>concatenate, split into words, sort words, concatenate back</li>
+<li>place on corresponding places</li>
+</ol>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; (&quot;how is a raven &quot;, &quot;like a &quot;, &quot;writing desk&quot;) &amp; partsOf (each . traversed) %~ unwords . sort . words
+-- (&quot;a a desk how is&quot;,&quot; like r&quot;,&quot;aven writing&quot;)
+</code></pre>
+<p>Placement matters</p>
+<pre><code class="language-haskell">-- Collect 'each' tuple element into a list, then traverse that list
+-- &gt;&gt;&gt; (&quot;abc&quot;, &quot;def&quot;) ^.. partsOf each . traversed
+-- [&quot;abc&quot;,&quot;def&quot;]
+
+-- Collect each tuple element, then traverse those strings collecting each character into a list.
+-- &gt;&gt;&gt; ((&quot;abc&quot;, &quot;def&quot;) ^.. partsOf (each . traversed)) :: [String]
+-- [&quot;abcdef&quot;]
+</code></pre>
+<p>Can use other focuses for calculating each</p>
+<pre><code class="language-haskell">ex61 :: [(Char, Double)]
+ex61 =
+  [('a', 1), ('b', 2), ('c', 3)]
+    &amp; partsOf (traversed . _2)
+      %~ \xs -&gt; (/ sum xs) &lt;$&gt; xs
+
+-- &gt;&gt;&gt;ex61
+-- [('a',0.16666666666666666),('b',0.3333333333333333),('c',0.5)]
+</code></pre>
+<h4 id="polymorphic-partsof"><a class="header" href="#polymorphic-partsof">Polymorphic partsOf</a></h4>
+<p>We can change type of focuses if supply enough elements</p>
+<pre><code class="language-hs">unsafePartsOf :: Traversal s t a b -&gt; Lens s t [a] [b]
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;[('a', 1), ('b', 2), ('c', 3)] &amp; unsafePartsOf (traversed . _1) .~ [True, False]
+-- unsafePartsOf': not enough elements were supplied
+
+ex62 :: [((Char, Maybe Char), Integer)]
+ex62 =
+  [('a', 1), ('b', 2), ('c', 3)]
+    &amp; unsafePartsOf (traversed . _1)
+      %~ \xs -&gt; zip xs ((Just &lt;$&gt; tail xs) ++ [Nothing])
+
+-- &gt;&gt;&gt;ex62
+-- [(('a',Just 'b'),1),(('b',Just 'c'),2),(('c',Nothing),3)]
+</code></pre>
+<h4 id="partsof-and-other-data-structures"><a class="header" href="#partsof-and-other-data-structures">partsOf and other data structures</a></h4>
+<p>Replace each ID in a Tree with a User</p>
+<pre><code class="language-hs">userIds :: Tree UserId
+lookupUsers :: [UserId] -&gt; IO [User]
+treeLookup :: Tree UserId -&gt; IO (Tree User)
+treeLookup = traverseOf (unsafePartsOf traversed) lookupUsers
+</code></pre>
+<h4 id="exercises---partsof"><a class="header" href="#exercises---partsof">Exercises - partsOf</a></h4>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [1, 2, 3, 4] ^. partsOf (traversed . filtered even)
+-- [2,4]
+
+-- &gt;&gt;&gt; [&quot;Aardvark&quot; :: String, &quot;Bandicoot&quot;, &quot;Capybara&quot;] ^. traversed . partsOf (taking 3 traversed)
+-- &quot;AarBanCap&quot;
+
+ex63 :: [Int]
+ex63 = ([1, 2], M.fromList [('a', 3), ('b', 4)]) ^. partsOf (beside traversed traversed)
+
+-- &gt;&gt;&gt; ex63
+-- [1,2,3,4]
+
+-- &gt;&gt;&gt; [1, 2, 3, 4] &amp; partsOf (traversed . filtered even) .~ [20, 40]
+-- [1,20,3,40]
+
+-- &gt;&gt;&gt; [&quot;Aardvark&quot;, &quot;Bandicoot&quot;, &quot;Capybara&quot;] &amp; partsOf (traversed . traversed) .~ &quot;Kangaroo&quot;
+-- [&quot;Kangaroo&quot;,&quot;Bandicoot&quot;,&quot;Capybara&quot;]
+
+-- &gt;&gt;&gt; [&quot;Aardvark&quot;, &quot;Bandicoot&quot;, &quot;Capybara&quot;] &amp; partsOf (traversed . traversed) .~ &quot;Ant&quot;
+-- [&quot;Antdvark&quot;,&quot;Bandicoot&quot;,&quot;Capybara&quot;]
+
+-- Modifying
+-- Tip: Map values are traversed in order by KEY
+-- &gt;&gt;&gt; M.fromList [('a', 'a'), ('b', 'b'), ('c', 'c')] &amp; partsOf traversed %~ \(x:xs) -&gt; xs ++ [x]
+-- fromList [('a','b'),('b','c'),('c','a')]
+
+-- &gt;&gt;&gt; ('a', 'b', 'c') &amp; partsOf each %~ reverse
+-- ('c','b','a')
+
+-- &gt;&gt;&gt; [1, 2, 3, 4, 5, 6] &amp; partsOf (taking 3 traversed) %~ reverse
+-- [3,2,1,4,5,6]
+
+-- &gt;&gt;&gt; ('a', 'b', 'c') &amp; unsafePartsOf each %~ \xs -&gt; fmap ((,) xs) xs
+-- ((&quot;abc&quot;,'a'),(&quot;abc&quot;,'b'),(&quot;abc&quot;,'c'))
+</code></pre>
+<h2 id="8-indexable-structures"><a class="header" href="#8-indexable-structures">8. Indexable Structures</a></h2>
+<h3 id="81-whats-an-indexable-structure"><a class="header" href="#81-whats-an-indexable-structure">8.1 What's an &quot;indexable&quot; structure?</a></h3>
+<p><strong>Indexable</strong> structures store values at <strong>named locations</strong> which can be identified by some <strong>index</strong>.
+That is, an <strong>index</strong> represents a <strong>specific location</strong> within a data structure where a value <strong>might</strong> be stored.</p>
+<p>Data structures have different interfaces (lists, dicts)</p>
+<h3 id="82-accessing-and-updating-values-with-ixed"><a class="header" href="#82-accessing-and-updating-values-with-ixed">8.2 Accessing and updating values with 'Ixed'</a></h3>
+<h4 id="the-ixed-class"><a class="header" href="#the-ixed-class">The Ixed Class</a></h4>
+<p>Unifies the interface to all data structures.</p>
+<pre><code class="language-hs">class Ixed m where
+  ix :: Index m -&gt; Traversal' m (IxValue m)
+</code></pre>
+<p>makes a Traversal because an Index at a specified location may be missing.</p>
+<p>These are Type Families that calculate an index an a value types for a data structure.</p>
+<pre><code class="language-hs">type instance Index [a] = Int
+type instance IxValue [a] = a
+
+type instance Index (Map k a) = k
+type instance IxValue (Map k a) = a
+
+type instance Index Text = Int
+type instance IxValue Text = Char
+
+type instance Index ByteString = Int
+type instance IxValue ByteString = Word8
+</code></pre>
+<h4 id="accessing-and-setting-values-with-ix"><a class="header" href="#accessing-and-setting-values-with-ix">Accessing and setting values with ix</a></h4>
+<p>Can't add or remove focuses.</p>
+<p>Lists:</p>
+<pre><code class="language-haskell">humanoids :: [String]
+humanoids = [&quot;Borg&quot;, &quot;Cardassian&quot;, &quot;Talaxian&quot;]
+
+-- &gt;&gt;&gt; -- Get the value at index 1:
+-- &gt;&gt;&gt; humanoids &amp; ix 1 .~ &quot;Vulcan&quot;
+-- [&quot;Borg&quot;,&quot;Vulcan&quot;,&quot;Talaxian&quot;]
+-- &gt;&gt;&gt; -- There's no value at index 10 so the traversal doesn't focus anything
+-- &gt;&gt;&gt; humanoids &amp; ix 10 .~ &quot;Romulan&quot;
+-- [&quot;Borg&quot;,&quot;Cardassian&quot;,&quot;Talaxian&quot;]
+</code></pre>
+<p>Maps:</p>
+<pre><code class="language-haskell">benders :: M.Map String String
+benders = M.fromList [(&quot;Katara&quot;, &quot;Water&quot;), (&quot;Toph&quot;, &quot;Earth&quot;), (&quot;Zuko&quot;, &quot;Fire&quot;)]
+
+-- Get the value at key &quot;Zuko&quot;
+-- &gt;&gt;&gt; benders ^? ix &quot;Zuko&quot;
+-- Just &quot;Fire&quot;
+
+-- If there's no value at a key, the traversal returns zero elements
+-- &gt;&gt;&gt; benders ^? ix &quot;Sokka&quot;
+-- Nothing
+
+-- We can set the value at a key, but only if that key already exists
+-- &gt;&gt;&gt; benders &amp; ix &quot;Toph&quot; .~ &quot;Metal&quot;
+-- fromList [(&quot;Katara&quot;,&quot;Water&quot;),(&quot;Toph&quot;,&quot;Metal&quot;),(&quot;Zuko&quot;,&quot;Fire&quot;)]
+
+-- Setting a non-existent element of a Map does NOT insert it.
+-- &gt;&gt;&gt; benders &amp; ix &quot;Iroh&quot; .~ &quot;Lightning&quot;
+-- fromList [(&quot;Katara&quot;,&quot;Water&quot;),(&quot;Toph&quot;,&quot;Earth&quot;),(&quot;Zuko&quot;,&quot;Fire&quot;)]
+</code></pre>
+<h4 id="indexed-structures"><a class="header" href="#indexed-structures">Indexed Structures</a></h4>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; :kind! forall a. Index [a]
+-- forall a. Index [a] :: *
+-- = Int
+
+-- &gt;&gt;&gt; :kind! forall a. IxValue [a]
+-- forall a. IxValue [a] :: *
+-- = a
+</code></pre>
+<h4 id="indexing-monomorphic-types"><a class="header" href="#indexing-monomorphic-types">Indexing monomorphic types</a></h4>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;(&quot;hello&quot; :: T.Text) ^? ix 0
+-- Just 'h'
+
+-- We can edit a Word8 within a ByteString as though it's an integer.
+-- &gt;&gt;&gt; (&quot;hello&quot; :: BS.ByteString) &amp; ix 0 +~ 2
+-- &quot;jello&quot;
+</code></pre>
+<p>Cool example:</p>
+<pre><code class="language-haskell">ex64 :: [T.Text]
+ex64 = (&quot;hello&quot; :: T.Text) &amp; ix 1 %%~ const (&quot;aeiou&quot; :: [Char])
+</code></pre>
+<p>Explanation:</p>
+<pre><code class="language-hs">type instance IxValue [a] = a
+instance Ixed [a] where
+  ix k f xs0 | k &lt; 0     = pure xs0
+             | otherwise = go xs0 k where
+    go [] _ = pure []
+    go (a:as) 0 = f a &lt;&amp;&gt; (:as)
+    go (a:as) i = (a:) &lt;$&gt; (go as $! i - 1)
+  {-# INLINE ix #-}
+</code></pre>
+<p>So, we'll pre- and append the not-focused parts inside the Functorial context.</p>
+<pre><code class="language-haskell">ex64' :: [String]
+ex64' = ('h' :) &lt;$&gt; (const &quot;aeiou&quot; 'e' &lt;&amp;&gt; (: &quot;llo&quot;))
+
+-- &gt;&gt;&gt;ex64'
+-- [&quot;hallo&quot;,&quot;hello&quot;,&quot;hillo&quot;,&quot;hollo&quot;,&quot;hullo&quot;]
+</code></pre>
+<h4 id="indexing-stranger-structures"><a class="header" href="#indexing-stranger-structures">Indexing stranger structures</a></h4>
+<p>Numbers denote node children</p>
+<pre><code class="language-haskell">tree :: Tree Int
+tree = Node 1 [Node 2 [Node 4 []], Node 3 [Node 5 [], Node 6 []]]
+
+-- &gt;&gt;&gt; tree ^? ix [1, 1]
+-- Just 6
+
+-- &gt;&gt;&gt; tree ^? ix [5, 6]
+-- Nothing
+</code></pre>
+<p>Functions:</p>
+<blockquote>
+<p>We can &quot;set&quot; or traverse individual results of a function!
+Here we overwrite the function's output at the input value &quot;password&quot;
+so it instead returns a new value.</p>
+</blockquote>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; myPass = (reverse &amp; ix &quot;password&quot; .~ &quot;You found the secret!&quot;)
+-- &gt;&gt;&gt; &quot;pass&quot; &amp; myPass
+-- &quot;ssap&quot;
+-- &gt;&gt;&gt; &quot;password&quot; &amp; myPass
+-- &quot;You found the secret!&quot;
+</code></pre>
+<h3 id="83-inserting--deleting-with-at"><a class="header" href="#83-inserting--deleting-with-at">8.3 Inserting &amp; Deleting with 'At'</a></h3>
+<h4 id="map-like-structures"><a class="header" href="#map-like-structures">Map-like structures</a></h4>
+<p>Can be used with structures that support inserts by an arbitrary index.</p>
+<ul>
+<li><code>Map k v</code></li>
+<li><code>Set k</code> (~ <code>Map k ()</code>)
+Lists don't support that. E.g., can't insert 10th element without having 9th.</li>
+</ul>
+<pre><code class="language-hs">class At where
+  at :: Index m -&gt; Lens' m (Maybe (IxValue m))
+
+ix :: Index m -&gt; Traversal' m (IxValue m)
+at :: Index m -&gt; Lens' m (Maybe (IxValue m))
+
+(?~) :: Traversal s t a (Maybe b) -&gt; b -&gt; s -&gt; t
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt;benders &amp; at &quot;Iroh&quot; ?~ &quot;Lightning&quot;
+-- fromList [(&quot;Iroh&quot;,&quot;Lightning&quot;),(&quot;Katara&quot;,&quot;Water&quot;),(&quot;Toph&quot;,&quot;Earth&quot;),(&quot;Zuko&quot;,&quot;Fire&quot;)]
+</code></pre>
+<pre><code class="language-hs">sans :: At m =&gt; Index m -&gt; m -&gt; m
+sans k = at k .~ Nothing
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; sans &quot;Katara&quot; benders
+-- fromList [(&quot;Toph&quot;,&quot;Earth&quot;),(&quot;Zuko&quot;,&quot;Fire&quot;)]
+
+ps :: [Int]
+ps = foldl (\acc x -&gt; acc &lt;&gt; check acc x) [2] [3 .. 100]
+ where
+  check (a : as) x
+    | a * a &gt; x = [x]
+    | x `mod` a == 0 = []
+    | otherwise = check as x
+  check [] x = [x]
+
+-- &gt;&gt;&gt; ps
+-- [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97]
+
+primes :: S.Set Int
+primes = S.fromList (ps ^.. taking 5 traversed)
+
+-- &gt;&gt;&gt; primes &amp; at 17 ?~ ()
+-- fromList [2,3,5,7,11,17]
+</code></pre>
+<h4 id="exercises---indexable-structuresm"><a class="header" href="#exercises---indexable-structuresm">Exercises - Indexable Structuresm</a></h4>
+<ol>
+<li>fill in blanks</li>
+</ol>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [&quot;Larry&quot;, &quot;Curly&quot;, &quot;Moe&quot;] &amp; ix 1 .~ &quot;Wiggly&quot;
+-- [&quot;Larry&quot;,&quot;Wiggly&quot;,&quot;Moe&quot;]
+
+heroesAndVillains :: M.Map String String
+heroesAndVillains = M.fromList [(&quot;Superman&quot;, &quot;Lex&quot;), (&quot;Batman&quot;, &quot;Joker&quot;)]
+
+-- &gt;&gt;&gt; heroesAndVillains &amp; at &quot;Spiderman&quot; .~ Just &quot;Goblin&quot;
+-- fromList [(&quot;Batman&quot;,&quot;Joker&quot;),(&quot;Spiderman&quot;,&quot;Goblin&quot;),(&quot;Superman&quot;,&quot;Lex&quot;)]
+
+-- &gt;&gt;&gt; sans &quot;Superman&quot; heroesAndVillains
+-- fromList [(&quot;Batman&quot;,&quot;Joker&quot;)]
+
+-- &gt;&gt;&gt; S.fromList ['a', 'e', 'i', 'o', 'u'] &amp; at 'y' .~ Just () &amp; at 'i' .~ Nothing
+-- fromList &quot;aeouy&quot;
+</code></pre>
+<ol>
+<li>input -&gt; output</li>
+</ol>
+<pre><code class="language-haskell">input :: M.Map String Integer
+input = M.fromList [(&quot;candy bars&quot;, 13), (&quot;gum&quot;, 7), (&quot;soda&quot;, 34)]
+
+output :: M.Map String Integer
+output = M.fromList [(&quot;candy bars&quot;, 13), (&quot;ice cream&quot;, 5), (&quot;soda&quot;, 37)]
+
+-- &gt;&gt;&gt; input &amp; at &quot;soda&quot; %~ ((+ 3) &lt;$&gt;) &amp; sans &quot;gum&quot; &amp; at &quot;ice cream&quot; ?~ 5
+-- fromList [(&quot;candy bars&quot;,13),(&quot;ice cream&quot;,5),(&quot;soda&quot;,37)]
+
+-- TODO find 8.5 + and prisms and
+</code></pre>
+<h2 id="10-isos"><a class="header" href="#10-isos">10. Isos</a></h2>
+<ul>
+<li>isomorphism - a completely <strong>reversible transformation</strong> between two types or formats.</li>
+<li>every iso MUST succeed for all inputs.</li>
+</ul>
+<p><img src="./README/tableIsos.png" alt="isos" /></p>
+<p>Example: converting <code>Text</code> to <code>String</code>:</p>
+<pre><code class="language-hs">T.pack . T.unpack = id
+T.unpack . T.pack = id
+</code></pre>
+<p>Construct an <code>Iso</code>:</p>
+<pre><code class="language-hs">iso :: (s -&gt; a) -&gt; (b -&gt; t) -&gt; Iso s t a b
+</code></pre>
+<pre><code class="language-haskell">packed :: Iso' String T.Text
+packed = iso to' from'
+ where
+  to' :: String -&gt; T.Text
+  to' = T.pack
+  from' :: T.Text -&gt; String
+  from' = T.unpack
+
+-- &gt;&gt;&gt; (&quot;Ay, caramba!&quot; :: String) ^. packed
+-- &quot;Ay, caramba!&quot;
+
+-- Use isos as prisms
+-- &gt;&gt;&gt; packed # (&quot;Sufferin' Succotash&quot; :: T.Text)
+-- &quot;Sufferin' Succotash&quot;
+</code></pre>
+<h3 id="103-flipping-isos-with-from"><a class="header" href="#103-flipping-isos-with-from">10.3 Flipping isos with from</a></h3>
+<pre><code class="language-hs">from :: Iso s t a b -&gt; Iso b a t s
+from :: Iso' s a -&gt; Iso' a s
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; (&quot;Good grief&quot; :: T.Text) ^. from packed
+-- &quot;Good grief&quot;
+</code></pre>
+<p>Reversing again.</p>
+<pre><code class="language-hs">unpacked :: Iso' T.Text String
+unpacked = from packed
+</code></pre>
+<h3 id="104-modification-under-isomorphism"><a class="header" href="#104-modification-under-isomorphism">10.4 Modification under isomorphism</a></h3>
+<p>Example: focus on <code>Text</code> (to use functions existing for <code>Text</code>), then convert back to a <code>String</code>.</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; let str = &quot;Idol on a pedestal&quot; :: String
+-- &gt;&gt;&gt; over packed (T.replace &quot;Idol&quot; &quot;Sand&quot;) str
+-- &quot;Sand on a pedestal&quot;
+
+-- Combining with other optics
+-- &gt;&gt;&gt; import Data.Char (toUpper)
+-- &gt;&gt;&gt; let txt = &quot;Lorem ipsum&quot; :: T.Text
+-- &gt;&gt;&gt; txt &amp; from packed . traversed %~ toUpper
+-- &quot;LOREM IPSUM&quot;
+</code></pre>
+<h3 id="105-varieties-of-isomorphisms"><a class="header" href="#105-varieties-of-isomorphisms">10.5 Varieties of isomorphisms</a></h3>
+<p>Isos for the same type</p>
+<pre><code class="language-hs">reversed :: Iso' [a] [a]
+reversed = iso reverse reverse
+
+involuted :: (a -&gt; a) -&gt; Iso' a a
+involuted f = iso f f
+
+reversed :: Iso' [a] [a]
+reversed = involuted reverse
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; &quot;Blue suede shoes&quot; &amp; reversed . taking 1 worded . reversed .~ &quot;gloves&quot;
+-- &quot;Blue suede gloves&quot;
+</code></pre>
+<p>Rearrange pairs</p>
+<pre><code class="language-hs">swapped :: Iso (s, s') (t, t') (a, a') (b, b')
+
+swapped :: (Bifunctor p, Swapped p) =&gt; Iso (p a b) (p c d) (p b a) (p d c)
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; (&quot;Fall&quot;,&quot;Pride&quot;) ^. swapped
+-- (&quot;Pride&quot;,&quot;Fall&quot;)
+
+-- &gt;&gt;&gt; Right &quot;Field&quot; ^. swapped
+-- Left &quot;Field&quot;
+</code></pre>
+<p>Isos for functions</p>
+<pre><code class="language-hs">flipped :: Iso' (a -&gt; b -&gt; c) (b -&gt; a -&gt; c)
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; let (++?) = (++) ^. flipped
+-- &gt;&gt;&gt; &quot;A&quot; ++? &quot;B&quot;
+-- &quot;BA&quot;
+</code></pre>
+<p>more</p>
+<pre><code class="language-hs">curried :: Iso' ((a, b) -&gt; c) (a -&gt; b -&gt; c)
+uncurried :: Iso' (a -&gt; b -&gt; c) ((a, b) -&gt; c)
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; let addTuple = (+) ^. uncurried
+-- &gt;&gt;&gt; addTuple (1, 2)
+-- 3
+</code></pre>
+<p>Isos for numbers</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; 100 ^. adding 50
+-- 150
+</code></pre>
+<h4 id="composing-isos"><a class="header" href="#composing-isos">Composing isos</a></h4>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; import Numeric.Lens
+-- &gt;&gt;&gt; 30 &amp; dividing 10 . multiplying 2 +~ 1
+-- 35.0
+
+-- 30 -&gt; 30/10 = 3 -&gt; 3 * 2 = 6 -&gt; 6 + 1 = 7 -&gt; 7 / 2 = 3.5 -&gt; 3.5 * 10 = 35
+</code></pre>
+<h4 id="exercises---intro-to-isos"><a class="header" href="#exercises---intro-to-isos">Exercises - Intro to Isos</a></h4>
+<ol>
+<li>
+<p>Choose the best optic:</p>
+<ul>
+<li>Focus a Celsius temperature in Fahrenheit - Iso - reversible</li>
+<li>Focus the last element of a list - Traversal - the element may be missing</li>
+<li>View a JSON object as its corresponding Haskell Record - Prism - may fail to parse</li>
+<li>Rotate the elements of a three-tuple one to the right - Iso - rotation is reversible</li>
+<li>Focus on the 'bits' of an Int as Bools - Traversal or Prism - multiple focuses</li>
+<li>Focusing an IntSet from a Set Int - Iso - reversible</li>
+</ul>
+</li>
+<li>
+<p>Fill in the blank</p>
+</li>
+</ol>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; (&quot;Beauty&quot;, &quot;Age&quot;) ^. swapped
+-- (&quot;Age&quot;,&quot;Beauty&quot;)
+
+-- &gt;&gt;&gt; 50 ^. adding 10
+-- 60
+
+-- &gt;&gt;&gt; 50 ^. from (adding 10)
+-- 40
+
+-- &gt;&gt;&gt; 0 &amp; multiplying 4 +~ 12
+-- 3.0
+
+-- &gt;&gt;&gt; 0 &amp; adding 10 . multiplying 2 .~ _
+-- 2
+
+-- Note: transpose flips the rows and columns of a nested list:
+-- &gt;&gt;&gt; import Data.List (transpose)
+-- &gt;&gt;&gt; transpose [[1, 2, 3], [10, 20, 30]]
+-- [[1,10],[2,20],[3,30]]
+-- &gt;&gt;&gt; [[1, 2, 3], [10, 20, 30]] &amp; involuted transpose %~ drop 1
+-- [[2,3],[20,30]]
+
+-- Extra hard: use `switchCase` somehow to make this statement work:
+ex65 :: (Integer, String)
+ex65 = (32, &quot;Hi&quot;) &amp; _2 . involuted (map switchCase) .~ (&quot;hELLO&quot; :: String)
+ where
+  switchCase c = if isUpper c then toLower c else toUpper c
+
+-- &gt;&gt;&gt; ex65
+-- (32,&quot;Hello&quot;)
+</code></pre>
+<ol>
+<li>Conversion</li>
+</ol>
+<pre><code class="language-haskell">celsiusToF :: Double -&gt; Double
+celsiusToF c = (c * (9 / 5)) + 32
+
+fToCelsius :: Double -&gt; Double
+fToCelsius f = (f - 32) * 5 / 9
+
+fahrenheit' :: Iso' Double Double
+fahrenheit' = iso fToCelsius celsiusToF
+
+-- &gt;&gt;&gt; 0 &amp; fahrenheit' .~ 100
+-- 212.0
+</code></pre>
+<!-- d -->
+<h3 id="106-projecting-isos"><a class="header" href="#106-projecting-isos">10.6 Projecting Isos</a></h3>
+<p>We can lift Isos into other structures.</p>
+<pre><code class="language-hs">mapping :: (Functor f, Functor g) =&gt; Iso s t a b -&gt; Iso (f s) (g t) (f a) (g b)
+</code></pre>
+<pre><code class="language-haskell">toYamlList :: [String] -&gt; String
+toYamlList xs = &quot;- &quot; &lt;&gt; intercalate &quot;\n- &quot; xs
+
+shoppingList :: [T.Text]
+shoppingList = [&quot;Milk&quot;, &quot;Eggs&quot;, &quot;Flour&quot;] :: [T.Text]
+
+-- &gt;&gt;&gt; shoppingList ^. mapping unpacked . to toYamlList
+-- &quot;- Milk\n- Eggs\n- Flour&quot;
+</code></pre>
+<p>There's more:</p>
+<pre><code class="language-hs">contramapping :: Contravariant f =&gt; Iso s t a b -&gt; Iso (f a) (f b) (f s) (f t)
+bimapping :: (Bifunctor f, Bifunctor g) =&gt; Iso s t a b -&gt; Iso s' t' a' b' -&gt; Iso (f s s') (g t t') (f a a') (g b b')
+dimapping :: (Profunctor p, Profunctor q) =&gt; Iso s t a b -&gt; Iso s' t' a' b' -&gt; Iso (p a s') (q b t') (p s a') (q t b')
+</code></pre>
+<pre><code class="language-haskell">textToYamlList :: [T.Text] -&gt; T.Text
+textToYamlList = (toYamlList :: [String] -&gt; String) ^. dimapping (mapping unpacked :: Iso' [T.Text] [String]) (packed :: Iso' String T.Text)
+
+-- much more readable
+textToYamlList' :: [T.Text] -&gt; T.Text
+textToYamlList' = T.pack . toYamlList . fmap T.unpack
+</code></pre>
+<h4 id="exercises---projected-isos"><a class="header" href="#exercises---projected-isos">Exercises - Projected Isos</a></h4>
+<ol>
+<li>
+<p>Fill in the blank</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">-- &gt;&gt;&gt; (&quot;Beauty&quot;, &quot;Age&quot;) ^. mapping reversed . swapped
+-- (&quot;egA&quot;,&quot;Beauty&quot;)
+
+-- &gt;&gt;&gt; [True, False, True] ^. mapping (involuted not)
+-- [False,True,False]
+
+-- &gt;&gt;&gt; [True, False, True] &amp; mapping (involuted not) %~ filter id
+-- [False]
+
+-- &gt;&gt;&gt; (show ^. mapping reversed) 1234
+-- &quot;4321&quot;
+</code></pre>
+</li>
+<li>
+<p>Using <code>enum :: Enum a =&gt; Iso' Int a</code> implement the <code>intNot</code>.</p>
+<pre><code class="language-haskell">intNot :: Int -&gt; Int
+intNot = not ^. dimapping enum (from enum)
+
+-- &gt;&gt;&gt; intNot 0
+-- 1
+
+-- &gt;&gt;&gt; intNot 1
+-- 0
+
+-- &gt;&gt;&gt; intNot 2
+-- Prelude.Enum.Bool.toEnum: bad argument
+
+intNot' :: Int -&gt; Int
+intNot' = fromEnum . not . toEnum @Bool
+
+-- &gt;&gt;&gt; intNot' 0
+-- 1
+
+-- &gt;&gt;&gt; intNot' 1
+-- 0
+
+-- &gt;&gt;&gt; intNot' 2
+-- Prelude.Enum.Bool.toEnum: bad argument
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h3 id="107-isos-and-newtypes"><a class="header" href="#107-isos-and-newtypes">10.7 Isos and newtypes</a></h3>
+<h4 id="coercing-with-isos"><a class="header" href="#coercing-with-isos">Coercing with isos</a></h4>
+<ul>
+<li>Coercible is derived for newtypes by the compiler</li>
+<li>Can coerce between newtypes</li>
+</ul>
+<pre><code class="language-hs">coerced :: (Coercible s a, Coercible t b) =&gt; Iso s t a b
+</code></pre>
+<pre><code class="language-haskell">newtype Email = Email {_email :: String} deriving (Show)
+
+-- &gt;&gt;&gt; Email &quot;hi\nu&quot;
+-- Email {_email = &quot;hi\nu&quot;}
+
+-- &gt;&gt;&gt; over coerced (reverse :: String -&gt; String) (Email &quot;joe@example.com&quot;) :: Email
+-- Email {_email = &quot;moc.elpmaxe@eoj&quot;}
+
+email :: Iso' Email String
+email = coerced
+
+ex66 :: String
+ex66 = Email &quot;joe@example.com&quot; ^. email . reversed
+</code></pre>
+<h4 id="newtype-wrapper-isos"><a class="header" href="#newtype-wrapper-isos">Newtype wrapper isos</a></h4>
+<ul>
+<li><code>makeLenses</code> derives isos</li>
+</ul>
+<pre><code class="language-hs">_Wrapped' :: Wrapped s =&gt; Iso' s (Unwrapped s)
+_Unwrapped' :: Wrapped s =&gt; Iso' (Unwrapped s) s
+</code></pre>
+<ul>
+<li>map <strong>only</strong> between types and their newtype wrappers.</li>
+<li>can be generated via <code>makeWrapped</code></li>
+</ul>
+<pre><code class="language-haskell">makeWrapped ''Email
+
+ex67 :: Email
+ex67 = Email &quot;joe@example.com&quot; &amp; _Wrapped' @Email %~ reverse
+
+-- &gt;&gt;&gt; ex67
+-- Email {_email = &quot;moc.elpmaxe@eoj&quot;}
+</code></pre>
+<!-- d -->
+<h3 id="108-laws"><a class="header" href="#108-laws">10.8 Laws</a></h3>
+<h3 id="reversibility"><a class="header" href="#reversibility">Reversibility</a></h3>
+<pre><code class="language-hs">myIso . from myIso == id
+from myIso . myIso == id
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; view (from reversed . reversed) (&quot;Testing one two three&quot;)
+-- &quot;Testing one two three&quot;
+</code></pre>
+<h4 id="exercises---iso-laws"><a class="header" href="#exercises---iso-laws">Exercises - Iso Laws</a></h4>
+<ol>
+<li>
+<p>The following iso is unlawful; provide a counter example which shows that it breaks the law.</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">mapList :: Ord k =&gt; Iso' (M.Map k v) [(k, v)]
+mapList = iso M.toList M.fromList
+
+kvInts :: [(Int, Int)]
+kvInts = [(2 :: Int, 1 :: Int), (1, 2)]
+
+ex68 :: [(Int, Int)]
+ex68 = kvInts ^. from mapList . mapList
+
+-- &gt;&gt;&gt; ex68
+-- [(1,2),(2,1)]
+
+-- &gt;&gt;&gt; ex68 == kvInts
+-- False
+</code></pre>
+</li>
+<li>
+<p>Is there a lawful implementation of the following iso? If so, implement it, if not, why not?</p>
+<ul>
+<li>Yes, there is one.</li>
+</ul>
+<pre><code class="language-haskell">nonEmptyList :: Iso [a] [b] (Maybe (NonEmpty a)) (Maybe (NonEmpty b))
+nonEmptyList = iso nonEmpty (maybe [] Data.List.NonEmpty.toList)
+
+-- &gt;&gt;&gt; [] ^. nonEmptyList . from nonEmptyList
+-- []
+
+-- &gt;&gt;&gt; Nothing ^. from nonEmptyList . nonEmptyList
+-- Nothing
+
+-- &gt;&gt;&gt; [1] ^. nonEmptyList . from nonEmptyList
+-- [1]
+
+-- &gt;&gt;&gt; (Just (1 :| [])) ^. from nonEmptyList . nonEmptyList
+-- Just (1 :| [])
+</code></pre>
+</li>
+<li>
+<p>Is there a lawful implementation of an iso which 'sorts' a list of elements? If so, implement it, if
+not, why not?</p>
+<pre><code class="language-hs">sorted :: Ord a =&gt; Iso' [a] [a]
+</code></pre>
+<ul>
+<li>There's no implementation for this iso because it loses the info about the initial element order.</li>
+</ul>
+</li>
+<li>
+<p>What about the following iso which pairs each element with an Int which remembers its original
+position in the list. Is this a lawful iso? Why or why not? If not, try to find a counter-example.</p>
+<pre><code class="language-haskell">sorted :: (Ord a) =&gt; Iso' [a] [(Int, a)]
+sorted = iso to' from'
+ where
+  to' xs = L.sortOn snd $ zip [0 ..] xs
+  from' xs = snd &lt;$&gt; L.sortOn fst xs
+
+-- &gt;&gt;&gt; [2, 1] ^. sorted . from sorted
+-- [2,1]
+
+-- &gt;&gt;&gt; [(1, 1), (0, 2)] ^. from sorted . sorted
+-- [(1,1),(0,2)]
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h2 id="11-indexed-optics"><a class="header" href="#11-indexed-optics">11. Indexed Optics</a></h2>
+<h3 id="111-what-are-indexed-optics"><a class="header" href="#111-what-are-indexed-optics">11.1 What are indexed optics?</a></h3>
+<p>Let <strong>accumulate information</strong> about the <strong>current focus</strong>.</p>
+<pre><code class="language-hs">itraversed :: TraversableWithIndex i t =&gt; IndexedTraversal i (t a) (t b) a b
+</code></pre>
+<p>There are instances of <code>TraversableWithIndex</code> for most data structures. Like <code>Ixed</code> and <code>At</code>.</p>
+<pre><code class="language-hs">itoListOf :: IndexedGetting i (Endo [(i, a)]) s a -&gt; s -&gt; [(i, a)]
+(^@..) :: s -&gt; IndexedGetting i (Endo [(i, a)]) s a -&gt; [(i, a)]
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; itoListOf itraversed [&quot;Summer&quot;, &quot;Fall&quot;, &quot;Winter&quot;, &quot;Spring&quot;]
+-- [(0,&quot;Summer&quot;),(1,&quot;Fall&quot;),(2,&quot;Winter&quot;),(3,&quot;Spring&quot;)]
+</code></pre>
+<p>Indices are added by <code>actions</code>.
+<code>Indexed action</code> accepts an <code>indexed optic</code></p>
+<p><img src="README/iActions.png" alt="actions" /></p>
+<p>There are actions for: <code>Lens</code>, <code>Traversal</code>, <code>Fold</code>, <code>Getter</code>, <code>Setter</code>.</p>
+<p>No actions for: <code>Prisms</code>, <code>Isos</code>.</p>
+<p>Usually used for Folds or Traversals.</p>
+<pre><code class="language-haskell">-- The index type of maps is the key,
+-- so we can get a list of all elements and their key:
+-- &gt;&gt;&gt; let agenda = M.fromList [(&quot;Monday&quot;, &quot;Shopping&quot;), (&quot;Tuesday&quot;, &quot;Swimming&quot;)]
+-- &gt;&gt;&gt; agenda ^@.. itraversed
+-- [(&quot;Monday&quot;,&quot;Shopping&quot;),(&quot;Tuesday&quot;,&quot;Swimming&quot;)]
+
+-- The index type of trees is a list of int's
+-- which indicates their location in the tree
+-- (See the section on indexed data structures)
+-- &gt;&gt;&gt; import Data.Tree
+-- &gt;&gt;&gt; let t = Node &quot;top&quot; [Node &quot;left&quot; [], Node &quot;right&quot; []]
+-- &gt;&gt;&gt; t ^@.. itraversed
+-- [([],&quot;top&quot;),([0],&quot;left&quot;),([1],&quot;right&quot;)]
+</code></pre>
+<h3 id="112-index-composition"><a class="header" href="#112-index-composition">11.2 Index Composition</a></h3>
+<p>Index of a path will be the index of the <strong>last</strong> indexed optic in the path.</p>
+<pre><code class="language-haskell">agenda :: M.Map String [String]
+agenda = M.fromList [(&quot;Monday&quot;, [&quot;Shopping&quot;, &quot;Yoga&quot;]), (&quot;Saturday&quot;, [&quot;Brunch&quot;, &quot;Food coma&quot;])]
+
+-- &gt;&gt;&gt; agenda ^@.. itraversed . itraversed
+-- [(0,&quot;Shopping&quot;),(1,&quot;Yoga&quot;),(0,&quot;Brunch&quot;),(1,&quot;Food coma&quot;)]
+</code></pre>
+<ul>
+<li><code>(&lt;.)</code>: Use the index of the optic to the left</li>
+<li><code>(.&gt;)</code>: Use the index of the optic to the right (This is how . already behaves)</li>
+<li><code>(&lt;.&gt;)</code>: Combine the indices of both sides as a tuple</li>
+</ul>
+<p>Use map key as an index</p>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; agenda ^@.. itraversed &lt;. itraversed
+-- [(&quot;Monday&quot;,&quot;Shopping&quot;),(&quot;Monday&quot;,&quot;Yoga&quot;),(&quot;Saturday&quot;,&quot;Brunch&quot;),(&quot;Saturday&quot;,&quot;Food coma&quot;)]
+
+-- &gt;&gt;&gt; agenda ^@.. itraversed &lt;.&gt; itraversed
+-- [((&quot;Monday&quot;,0),&quot;Shopping&quot;),((&quot;Monday&quot;,1),&quot;Yoga&quot;),((&quot;Saturday&quot;,0),&quot;Brunch&quot;),((&quot;Saturday&quot;,1),&quot;Food coma&quot;)]
+</code></pre>
+<h4 id="custom-index-composition"><a class="header" href="#custom-index-composition">Custom index composition</a></h4>
+<p><code>icompose</code> Composition of Indexed functions with a user supplied function for combining indices.</p>
+<pre><code class="language-hs">icompose :: Indexable p c
+         =&gt; (i -&gt; j -&gt; p)
+         -&gt; (Indexed i s t -&gt; r)
+         -&gt; (Indexed j a b -&gt; s -&gt; t)
+         -&gt; c a b
+         -&gt; r
+</code></pre>
+<pre><code class="language-haskell">showDayAndNumber :: String -&gt; Int -&gt; String
+showDayAndNumber a b = a &lt;&gt; &quot;: &quot; &lt;&gt; show b
+
+-- &gt;&gt;&gt; agenda ^@.. icompose showDayAndNumber itraversed itraversed
+-- [(&quot;Monday: 0&quot;,&quot;Shopping&quot;),(&quot;Monday: 1&quot;,&quot;Yoga&quot;),(&quot;Saturday: 0&quot;,&quot;Brunch&quot;),(&quot;Saturday: 1&quot;,&quot;Food coma&quot;)]
+</code></pre>
+<p>custom operator</p>
+<pre><code class="language-hs">(&lt;symbols&gt;) :: (Indexed &lt;indexTypeA&gt; s t -&gt; r)
+            -&gt; (Indexed &lt;indexTypeB&gt; a b -&gt; s -&gt; t)
+            -&gt; (Indexed &lt;combinedType&gt; a b -&gt; r)
+(&lt;symbols&gt;) = icompose &lt;combinationFunction&gt;
+</code></pre>
+<pre><code class="language-haskell">(.++) :: (Indexed String s t -&gt; r) -&gt; (Indexed String a b -&gt; s -&gt; t) -&gt; Indexed String a b -&gt; r
+(.++) = icompose (\a b -&gt; a ++ &quot;, &quot; ++ b)
+
+populationMap :: M.Map String (M.Map String Int)
+populationMap =
+  M.fromList
+    [ (&quot;Canada&quot;, M.fromList [(&quot;Ottawa&quot;, 994837), (&quot;Toronto&quot;, 2930000)])
+    , (&quot;Germany&quot;, M.fromList [(&quot;Berlin&quot;, 3748000), (&quot;Munich&quot;, 1456000)])
+    ]
+
+-- &gt;&gt;&gt; populationMap ^@.. itraversed .++ itraversed
+-- [(&quot;Canada, Ottawa&quot;,994837),(&quot;Canada, Toronto&quot;,2930000),(&quot;Germany, Berlin&quot;,3748000),(&quot;Germany, Munich&quot;,1456000)]
+</code></pre>
+<h4 id="exercises-1"><a class="header" href="#exercises-1">Exercises</a></h4>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; M.fromList [(&quot;streamResponse&quot;, False), (&quot;useSSL&quot;, True)] ^@.. itraversed
+-- [(&quot;streamResponse&quot;,False),(&quot;useSSL&quot;,True)]
+
+-- &gt;&gt;&gt; (M.fromList [('a', 1), ('b', 2)], M.fromList [('c', 3), ('d', 4)]) ^@.. both . itraversed
+-- [('a',1),('b',2),('c',3),('d',4)]
+
+ex69 :: [(Char, Bool)]
+ex69 = M.fromList [('a', (True, 1)), ('b', (False, 2))] ^@.. itraversed &lt;. _1
+
+-- &gt;&gt;&gt; ex69
+-- [('a',True),('b',False)]
+
+-- &gt;&gt;&gt; [M.fromList [(&quot;Tulips&quot;, 5), (&quot;Roses&quot;, 3)] , M.fromList [(&quot;Goldfish&quot;, 11), (&quot;Frogs&quot;, 8)]] ^@.. itraversed &lt;.&gt; itraversed
+-- [((0,&quot;Roses&quot;),3),((0,&quot;Tulips&quot;),5),((1,&quot;Frogs&quot;),8),((1,&quot;Goldfish&quot;),11)]
+
+ex70 :: [Int]
+ex70 = [10 :: Int, 20, 30] &amp; itraversed %@~ (+)
+
+-- &gt;&gt;&gt; ex70
+-- [10,21,32]
+
+ex71 :: IO [String]
+ex71 = itraverseOf itraversed (\i s -&gt; pure (replicate i ' ' &lt;&gt; s)) [&quot;one&quot;, &quot;two&quot;, &quot;three&quot;]
+
+-- &gt;&gt;&gt; ex71
+-- [&quot;one&quot;,&quot; two&quot;,&quot;  three&quot;]
+
+-- &gt;&gt;&gt; itraverseOf itraversed (\n s -&gt; pure (show n &lt;&gt; &quot;: &quot; &lt;&gt; s)) [&quot;Go shopping&quot;, &quot;Eat lunch&quot;, &quot;Take a nap&quot;]
+-- [&quot;0: Go shopping&quot;,&quot;1: Eat lunch&quot;,&quot;2: Take a nap&quot;]
+</code></pre>
+<h3 id="113-filtering-by-index"><a class="header" href="#113-filtering-by-index">11.3 Filtering by index</a></h3>
+<pre><code class="language-hs">indices :: (Indexable i p, Applicative f) =&gt; (i -&gt; Bool) -&gt; Optical' p (Indexed i) f a a
+</code></pre>
+<pre><code class="language-haskell">-- Get list elements with an 'even' list-index:
+-- &gt;&gt;&gt; ['a'..'z'] ^.. itraversed . indices even
+-- &quot;acegikmoqsuwy&quot;
+
+ratings :: M.Map String Integer
+ratings =
+  M.fromList
+    [ (&quot;Dark Knight&quot;, 94)
+    , (&quot;Dark Knight Rises&quot;, 87)
+    , (&quot;Death of Superman&quot;, 92)
+    ]
+
+-- &gt;&gt;&gt; ratings ^.. itraversed . indices (has (prefixed &quot;Dark&quot;))
+-- [94,87]
+</code></pre>
+<p>Target a single index</p>
+<pre><code class="language-hs">index :: (Indexable i p, Eq i, Applicative f) =&gt; i -&gt; Optical' p (Indexed i) f a a
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; ratings ^? itraversed . index &quot;Death of Superman&quot;
+-- Just 92
+</code></pre>
+<h4 id="exercises-2"><a class="header" href="#exercises-2">Exercises</a></h4>
+<ol>
+<li>
+<p>Exercises schedule</p>
+<ul>
+<li>
+<p>data</p>
+<!-- i 8 -->
+<pre><code class="language-haskell">exercises :: M.Map String (M.Map String Int)
+exercises =
+  M.fromList
+    [ (&quot;Monday&quot;, M.fromList [(&quot;pushups&quot;, 10), (&quot;crunches&quot;, 20)])
+    , (&quot;Wednesday&quot;, M.fromList [(&quot;pushups&quot;, 15), (&quot;handstands&quot;, 3)])
+    , (&quot;Friday&quot;, M.fromList [(&quot;crunches&quot;, 25), (&quot;handstands&quot;, 5)])
+    ]
+
+-- &gt;&gt;&gt; exercises
+-- fromList [(&quot;Friday&quot;,fromList [(&quot;crunches&quot;,25),(&quot;handstands&quot;,5)]),(&quot;Monday&quot;,fromList [(&quot;crunches&quot;,20),(&quot;pushups&quot;,10)]),(&quot;Wednesday&quot;,fromList [(&quot;handstands&quot;,3),(&quot;pushups&quot;,15)])]
+</code></pre>
+</li>
+<li>
+<p>Compute the total number of &quot;crunches&quot; you should do this week.</p>
+<pre><code class="language-haskell">ex72 :: Int
+ex72 = sumOf (traversed . itraversed . indices (has (only &quot;crunches&quot;))) exercises
+
+-- &gt;&gt;&gt; ex72
+-- 45
+</code></pre>
+</li>
+<li>
+<p>Compute the number of reps you need to do across all exercise types on Wednesday.</p>
+<pre><code class="language-haskell">ex73 :: Int
+ex73 = sumOf (itraversed . indices (has (only &quot;Wednesday&quot;)) . traversed) exercises
+
+-- &gt;&gt;&gt; ex73
+-- 18
+</code></pre>
+</li>
+<li>
+<p>List out the number of pushups you need to do each day, you can use ix to help this time if you wish.</p>
+<pre><code class="language-haskell">ex74 :: [Int]
+ex74 = exercises ^.. traversed . at &quot;pushups&quot; . non 0
+
+-- &gt;&gt;&gt; ex74
+-- [0,10,15]
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p>Board</p>
+<ul>
+<li>
+<p>data</p>
+<!-- i 8 -->
+<pre><code class="language-haskell">board :: [String]
+board =
+  [ &quot;XOO&quot;
+  , &quot;.XO&quot;
+  , &quot;X..&quot;
+  ]
+</code></pre>
+</li>
+<li>
+<p>Generate a list of positions alongside their (row, column) coordinates.</p>
+<pre><code class="language-haskell">ex75 :: [((Int, Int), Char)]
+ex75 = board ^@.. itraversed &lt;.&gt; itraversed
+
+-- &gt;&gt;&gt; ex75
+-- [((0,0),'X'),((0,1),'O'),((0,2),'O'),((1,0),'.'),((1,1),'X'),((1,2),'O'),((2,0),'X'),((2,1),'.'),((2,2),'.')]
+</code></pre>
+</li>
+<li>
+<p>Set the empty square at (1, 0) to an 'X'. HINT: When using the custom composition operators you'll often need to introduce parenthesis to get the right precedence.</p>
+<pre><code class="language-haskell">ex76 :: [String]
+ex76 = board &amp; ix 1 . ix 0 .~ 'X'
+
+-- &gt;&gt;&gt; ex76
+-- [&quot;XOO&quot;,&quot;XXO&quot;,&quot;X..&quot;]
+</code></pre>
+</li>
+<li>
+<p>Get the 2nd <em>column</em> as a list (e.g. &quot;OX.&quot;). Try to do it using index instead of indices!</p>
+<pre><code class="language-haskell">ex77 :: [Char]
+ex77 = board ^.. itraversed . itraversed . index 1
+
+-- &gt;&gt;&gt; ex77
+-- &quot;OX.&quot;
+</code></pre>
+</li>
+<li>
+<p>Get the 3rd row as a list (e.g. &quot;X..&quot;). Try to do it using index instead of indices! HINT: The precedence for this one can be tricky too.</p>
+<pre><code class="language-haskell">ex78 :: [String]
+ex78 = board ^.. itraversed . index 2
+
+-- &gt;&gt;&gt; ex78
+-- [&quot;X..&quot;]
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+<!-- d -->
+<h3 id="114-custom-indexed-optics"><a class="header" href="#114-custom-indexed-optics">11.4 Custom indexed optics</a></h3>
+<p>Tic-Tac-Toe</p>
+<pre><code class="language-haskell">data Board a = Board a a a a a a a a a deriving (Show, Foldable)
+
+data Position = I | II | III deriving (Show, Eq, Ord)
+
+testBoard :: Board Char
+testBoard = Board 'X' 'O' 'X' '.' 'X' 'O' '.' 'O' 'X'
+</code></pre>
+<p>Want to access positions in grid. Need to index.</p>
+<pre><code class="language-hs">ifolding :: (Foldable f, Indexable i p, Contravariant g, Applicative g) =&gt; (s -&gt; f (i, a)) -&gt; Over p g s t a b
+</code></pre>
+<pre><code class="language-haskell">slotsFold :: IndexedFold (Position, Position) (Board a) a
+slotsFold =
+  ifolding $ \board_ -&gt;
+    -- Use a list comprehension to get the list of all coordinate pairs
+    -- in the correct order, then zip them with all the slots in our board
+    zip
+      [(x, y) | y &lt;- [I, II, III], x &lt;- [I, II, III]]
+      (Foldable.toList board_)
+
+-- &gt;&gt;&gt; testBoard ^@.. slotsFold
+-- [((I,I),'X'),((II,I),'O'),((III,I),'X'),((I,II),'.'),((II,II),'X'),((III,II),'O'),((I,III),'.'),((II,III),'O'),((III,III),'X')]
+
+-- Filter indices where the Y coord is 'II'
+-- &gt;&gt;&gt; testBoard ^@.. slotsFold . indices ((== II) . snd)
+-- [((I,II),'.'),((II,II),'X'),((III,II),'O')]
+</code></pre>
+<h4 id="custom-indexedtraversals"><a class="header" href="#custom-indexedtraversals">Custom IndexedTraversals</a></h4>
+<pre><code class="language-haskell">-- define a polymorphic indexed traversal with a tuple of positions as the index:
+slotsTraversal :: IndexedTraversal (Position, Position) (Board a) (Board b) a b
+slotsTraversal p (Board a1 b1 c1 a2 b2 c2 a3 b3 c3) =
+  Board
+    &lt;$&gt; indexed p (I, I) a1
+    &lt;*&gt; indexed p (II, I) b1
+    &lt;*&gt; indexed p (III, I) c1
+    &lt;*&gt; indexed p (I, II) a2
+    &lt;*&gt; indexed p (II, II) b2
+    &lt;*&gt; indexed p (III, II) c2
+    &lt;*&gt; indexed p (I, III) a3
+    &lt;*&gt; indexed p (II, III) b3
+    &lt;*&gt; indexed p (III, III) c3
+
+-- &gt;&gt;&gt; testBoard ^@.. slotsTraversal
+-- [((I,I),'X'),((II,I),'O'),((III,I),'X'),((I,II),'.'),((II,II),'X'),((III,II),'O'),((I,III),'.'),((II,III),'O'),((III,III),'X')]
+
+-- &gt;&gt;&gt; testBoard &amp; slotsTraversal . indices ((== II) . snd) .~ '?'
+-- Board 'X' 'O' 'X' '?' '?' '?' '.' 'O' 'X'
+
+printBoard :: Board Char -&gt; String
+printBoard = execWriter . itraverseOf slotsTraversal printSlot
+ where
+  printSlot (III, _) c = tell ([c] &lt;&gt; &quot;\n&quot;) &gt;&gt; pure [c]
+  printSlot (_, _) c = tell [c] &gt;&gt; pure [c]
+
+-- &gt;&gt;&gt; printBoard testBoard
+-- &quot;XOX\n.XO\n.OX\n&quot;
+</code></pre>
+<pre><code class="language-hs">type IndexedTraversal i s t a b = forall p f. (Indexable i p, Applicative f) =&gt; p a (f b) -&gt; s -&gt; f t
+</code></pre>
+<p><code>p</code> is a <code>Profunctor</code>.</p>
+<p><code>indexed p</code> reduces it to a function</p>
+<pre><code class="language-hs">indexed :: Indexable i p =&gt; p a b -&gt; i -&gt; a -&gt; b
+</code></pre>
+<p>There's also <code>ilens</code>:</p>
+<pre><code class="language-hs">ilens :: (s -&gt; (i, a)) -&gt; (s -&gt; b -&gt; t) -&gt; IndexedLens i s t a b
+</code></pre>
+<h4 id="index-helpers"><a class="header" href="#index-helpers">Index helpers</a></h4>
+<p>Add numeric index alongside elements of an optic.</p>
+<pre><code class="language-hs">indexing :: Traversal s t a b -&gt; IndexedTraversal Int s t a b
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; (&quot;hello&quot; :: T.Text) ^@.. indexing each
+-- [(0,'h'),(1,'e'),(2,'l'),(3,'l'),(4,'o')]
+</code></pre>
+<p>Re-map or edit the indexes of an optic</p>
+<pre><code class="language-hs">reindexed :: Indexable j p =&gt; (i -&gt; j) -&gt; (Indexed i a b -&gt; r) -&gt; p a b -&gt; r
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; ['a'..'c'] ^@.. itraversed
+-- [(0,'a'),(1,'b'),(2,'c')]
+
+-- &gt;&gt;&gt; ['a'..'c'] ^@.. reindexed (*10) itraversed
+-- [(0,'a'),(10,'b'),(20,'c')]
+</code></pre>
+<p>Set the index of the path to the current value.
+This is to bring the upper context to lower path sections.
+Useful for JSON.</p>
+<pre><code class="language-hs">selfIndex :: Indexable a p =&gt; p a fb -&gt; a -&gt; fb
+</code></pre>
+<pre><code class="language-haskell">-- &gt;&gt;&gt; [(&quot;Betty&quot;, 37), (&quot;Veronica&quot;, 12)] ^.. itraversed . selfIndex &lt;. _2
+-- [((&quot;Betty&quot;,37),37),((&quot;Veronica&quot;,12),12)]
+</code></pre>
+<h4 id="exercises---custom-indexed-optics"><a class="header" href="#exercises---custom-indexed-optics">Exercises - Custom Indexed Optics</a></h4>
+<ol>
+<li>Write an indexed Traversal</li>
+</ol>
+<!-- i 2 -->
+<pre><code class="language-haskell">-- pair :: IndexedFold Bool (a, a) a
+pair :: IndexedTraversal Bool (a, a) (b, b) a b
+pair p (x, y) = (,) &lt;$&gt; indexed p False x &lt;*&gt; indexed p True y
+
+-- &gt;&gt;&gt; ('a', 'b') ^@.. pair
+-- [(False,'a'),(True,'b')]
+</code></pre>
+<ol>
+<li>
+<p>Use <code>reindexed</code> to provide an indexed list traversal which starts at <code>1</code> instead of <code>0</code>.</p>
+<!-- i 6 -->
+<ul>
+<li>
+<p><code>oneIndexed</code></p>
+<pre><code class="language-haskell">oneIndexed :: IndexedTraversal Int [a] [b] a b
+oneIndexed = reindexed (+ 1) itraversed
+
+-- &gt;&gt;&gt; ['a'..'d'] ^@.. oneIndexed
+-- [(1,'a'),(2,'b'),(3,'c'),(4,'d')]
+</code></pre>
+</li>
+<li>
+<p>Use <code>reindexed</code> to write a traversal indexed by the distance to the end of the list.</p>
+<pre><code class="language-haskell">invertedIndex :: IndexedTraversal Int [a] [b] a b
+invertedIndex p x = reindexed ((length x - 1) -) itraversed p x
+
+-- &gt;&gt;&gt; ['a'..'d'] ^@.. invertedIndex
+-- [(3,'a'),(2,'b'),(1,'c'),(0,'d')]
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p>Build the following combinators using only compositions of other optics.</p>
+<!-- i 4 -->
+<pre><code class="language-haskell">chars :: IndexedTraversal Int T.Text T.Text Char Char
+chars p x = T.pack &lt;$&gt; itraversed p (T.unpack x)
+
+-- &gt;&gt;&gt; (&quot;banana&quot; :: T.Text) ^@.. chars
+-- [(0,'b'),(1,'a'),(2,'n'),(3,'a'),(4,'n'),(5,'a')]
+
+-- charCoords :: IndexedTraversal (Int, Int) String String Char Char
+-- charCoords p x = itraversed p (itraversed p (lines x))
+
+chc :: [((Int, Int), Char)]
+chc = &quot;line\nby\nline&quot; ^@.. indexing lined &lt;.&gt; itraversed
+
+-- &gt;&gt;&gt; chc
+-- [((0,0),'l'),((0,1),'i'),((0,2),'n'),((0,3),'e'),((1,0),'b'),((1,1),'y'),((2,0),'l'),((2,1),'i'),((2,2),'n'),((2,3),'e')]
+</code></pre>
+</li>
+</ol>
+<!-- d -->
+<h3 id="115-index-preserving-optics"><a class="header" href="#115-index-preserving-optics">11.5 Index-preserving optics</a></h3>
+<p>Some optics forget the index. Can make existing optics index-preserving.</p>
+<pre><code class="language-hs">cloneIndexPreservingLens :: Lens s t a b -&gt; IndexPreservingLens s t a b
+cloneIndexPreservingTraversal :: Traversal s t a b -&gt; IndexPreservingTraversal s t a b
+cloneIndexPreservingSetter :: Setter s t a b -&gt; IndexPreservingSetter s t a b
+</code></pre>
+<pre><code class="language-haskell">-- Now the index 'passes-through' `_1'` to the end.
+-- &gt;&gt;&gt; let _1' = cloneIndexPreservingLens _1
+-- &gt;&gt;&gt; [('a', True), ('b', False), ('c', True)] ^@.. itraversed . _1'
+-- [(0,'a'),(1,'b'),(2,'c')]
+</code></pre>
+<p>Or, make lens index-preserving initially.</p>
+<pre><code class="language-hs">iplens :: (s -&gt; a) -&gt; (s -&gt; b -&gt; t) -&gt; IndexPreservingLens s t a b
+</code></pre>
+<h3 id="13-optics-and-monads"><a class="header" href="#13-optics-and-monads">13. Optics and Monads</a></h3>
+<h4 id="131-reader-monad-and-view"><a class="header" href="#131-reader-monad-and-view">13.1 Reader Monad and View</a></h4>
+<pre><code class="language-hs">view :: MonadReader s m =&gt; Getting a s a -&gt; m a
+</code></pre>
+<p><code>s -&gt; a</code> is a valid <code>MonadReader s m =&gt; m a</code> where <code>m ~ (-&gt;) s</code></p>
+<pre><code class="language-hs">instance Monad ((-&gt;) r) where
+  return = const
+  f &gt;&gt;= k = \r -&gt; k (f r) r
+</code></pre>
+<pre><code class="language-haskell">type UserName = String
+type Password = String
+data Env = Env
+  { _currentUser :: UserName
+  , _users :: M.Map UserName Password
+  }
+  deriving (Show)
+
+makeLenses ''Env
+
+getUserPassword :: ReaderT Env IO (Maybe String)
+getUserPassword = do
+  userName_ &lt;- view currentUser
+  maybePassword &lt;- preview (users . ix userName_)
+  liftIO $ pure maybePassword
+
+-- &gt;&gt;&gt; flip runReaderT (Env &quot;Hey&quot; (M.fromList [(&quot;Hey&quot;, &quot;password&quot;)])) getUserPassword
+-- Just &quot;password&quot;
+
+-- st :: String
+st2 :: [Char]
+st2 = (&quot;optics by fun&quot; :: String) &amp; itraversed %@~ \i c -&gt; chr (ord c + i)
+
+-- &gt;&gt;&gt; st2
+-- &quot;oqvlgx&amp;i\129)p\128z&quot;
+
+st :: String
+st = &quot;oqvlgx&amp;i\129)p\128z&quot; &amp; itraversed %@~ \i c -&gt; chr (ord c - i)
+
+-- &gt;&gt;&gt; st
+-- &quot;optics by fun&quot;
+</code></pre>
+<h3 id="132-state-monad-combinators"><a class="header" href="#132-state-monad-combinators">13.2 State Monad Combinators</a></h3>
+<ul>
+<li>till calculator for recording the sale of a couple beers</li>
+</ul>
+<pre><code class="language-haskell">data Till = Till
+  { _total :: Double
+  , _sales :: [Double]
+  , _taxRate :: Double
+  }
+  deriving (Show)
+
+makeLenses ''Till
+</code></pre>
+<pre><code class="language-hs">(.=) :: MonadState s m =&gt; Lens s s a b -&gt; b -&gt; m ()
+</code></pre>
+<pre><code class="language-haskell">saleCalculation :: StateT Till IO ()
+saleCalculation = do
+  total .= 0
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../haskell/developers-roadmap/TypeFamilies/TypeFamilies.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../../haskell/optics-by-example/Extra.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../haskell/developers-roadmap/TypeFamilies/TypeFamilies.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../../haskell/optics-by-example/Extra.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

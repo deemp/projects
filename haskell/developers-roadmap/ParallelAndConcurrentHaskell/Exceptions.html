@@ -1,0 +1,352 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Exceptions - notes</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../../highlight.css">
+        <link rel="stylesheet" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Outline</li><li class="chapter-item expanded "><a href="../../../outline.html"><strong aria-hidden="true">1.</strong> Outline</a></li><li class="chapter-item expanded affix "><li class="part-title">Developers' Roadmap</li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/index.html"><strong aria-hidden="true">2.</strong> README</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Aeson</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Aeson/HKD.html"><strong aria-hidden="true">3.1.</strong> HKD</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Data</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Data/LargeAnon.html"><strong aria-hidden="true">4.1.</strong> LargeAnon</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.</strong> Debug</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Debug/Breakpoint.html"><strong aria-hidden="true">5.1.</strong> Breakpoint</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> Effectful</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Effectful/Dynamic.html"><strong aria-hidden="true">6.1.</strong> Dynamic</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> Exceptions</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Exceptions/Exceptions.html"><strong aria-hidden="true">7.1.</strong> Exceptions</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Exceptions/Theory.html"><strong aria-hidden="true">7.2.</strong> Theory</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Functions</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Functions/Composition.html"><strong aria-hidden="true">8.1.</strong> Composition</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Functions/Folds.html"><strong aria-hidden="true">8.2.</strong> Folds</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Functions/General.html"><strong aria-hidden="true">8.3.</strong> General</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> FusedEffects</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/FusedEffects/ReinterpretingEffects.html"><strong aria-hidden="true">9.1.</strong> ReinterpretingEffects</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/FusedEffects/UndoIO.html"><strong aria-hidden="true">9.2.</strong> UndoIO</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> GADT</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/GADT/GADT.html"><strong aria-hidden="true">10.1.</strong> GADT</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Generics</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Generics/Generics.html"><strong aria-hidden="true">11.1.</strong> Generics</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> IO</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/IO/RandomNumbers.html"><strong aria-hidden="true">12.1.</strong> RandomNumbers</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> ImplicitParams</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/ImplicitParams/ImplicitParams.html"><strong aria-hidden="true">13.1.</strong> ImplicitParams</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> Lens</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Lens/MissingKey.html"><strong aria-hidden="true">14.1.</strong> MissingKey</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Lens/Node.html"><strong aria-hidden="true">14.2.</strong> Node</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> Misc</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Misc/Determinant.html"><strong aria-hidden="true">15.1.</strong> Determinant</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">16.</strong> Monads</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Monads/FunctionalDependencies.html"><strong aria-hidden="true">16.1.</strong> FunctionalDependencies</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Monads/MonadBaseControl.html"><strong aria-hidden="true">16.2.</strong> MonadBaseControl</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Monads/Monads.html"><strong aria-hidden="true">16.3.</strong> Monads</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">17.</strong> Monoids</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Monoids/FizzBuzz.html"><strong aria-hidden="true">17.1.</strong> FizzBuzz</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">18.</strong> ParallelAndConcurrentHaskell</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/ParallelAndConcurrentHaskell/Exceptions.html" class="active"><strong aria-hidden="true">18.1.</strong> Exceptions</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/ParallelAndConcurrentHaskell/MVar.html"><strong aria-hidden="true">18.2.</strong> MVar</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/ParallelAndConcurrentHaskell/STM.html"><strong aria-hidden="true">18.3.</strong> STM</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">19.</strong> TemplateHaskell</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">19.1.</strong> ConstructorTags</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/TemplateHaskell/ConstructorTags/Declare.html"><strong aria-hidden="true">19.1.1.</strong> Declare</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/TemplateHaskell/ConstructorTags/Use.html"><strong aria-hidden="true">19.1.2.</strong> Use</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">19.2.</strong> Typed</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/TemplateHaskell/Typed/Declare.html"><strong aria-hidden="true">19.2.1.</strong> Declare</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/TemplateHaskell/Typed/Use.html"><strong aria-hidden="true">19.2.2.</strong> Use</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">20.</strong> Test</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/Test/Theory.html"><strong aria-hidden="true">20.1.</strong> Theory</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">21.</strong> TypeClasses</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/TypeClasses/Monoid.html"><strong aria-hidden="true">21.1.</strong> Monoid</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/TypeClasses/Theory.html"><strong aria-hidden="true">21.2.</strong> Theory</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/TypeClasses/TypeClasses.html"><strong aria-hidden="true">21.3.</strong> TypeClasses</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">22.</strong> TypeFamilies</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/TypeFamilies/StringInterpolate.html"><strong aria-hidden="true">22.1.</strong> StringInterpolate</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/TypeFamilies/TaggedClasses.html"><strong aria-hidden="true">22.2.</strong> TaggedClasses</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/TypeFamilies/Theory.html"><strong aria-hidden="true">22.3.</strong> Theory</a></li><li class="chapter-item expanded "><a href="../../../haskell/developers-roadmap/TypeFamilies/TypeFamilies.html"><strong aria-hidden="true">22.4.</strong> TypeFamilies</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Optics By Example</li><li class="chapter-item expanded "><a href="../../../haskell/optics-by-example/Book.html"><strong aria-hidden="true">23.</strong> Book</a></li><li class="chapter-item expanded "><a href="../../../haskell/optics-by-example/Extra.html"><strong aria-hidden="true">24.</strong> Extra</a></li><li class="chapter-item expanded affix "><li class="part-title">Thinking with Types</li><li class="chapter-item expanded "><a href="../../../haskell/thinking-with-types/Chapter02.html"><strong aria-hidden="true">25.</strong> Chapter02</a></li><li class="chapter-item expanded "><a href="../../../haskell/thinking-with-types/Chapter03.html"><strong aria-hidden="true">26.</strong> Chapter03</a></li><li class="chapter-item expanded "><a href="../../../haskell/thinking-with-types/Chapter04.html"><strong aria-hidden="true">27.</strong> Chapter04</a></li><li class="chapter-item expanded "><a href="../../../haskell/thinking-with-types/Chapter05.html"><strong aria-hidden="true">28.</strong> Chapter05</a></li><li class="chapter-item expanded "><a href="../../../haskell/thinking-with-types/Chapter05_1.html"><strong aria-hidden="true">29.</strong> Chapter05_1</a></li><li class="chapter-item expanded "><a href="../../../haskell/thinking-with-types/Chapter06.html"><strong aria-hidden="true">30.</strong> Chapter06</a></li><li class="chapter-item expanded "><a href="../../../haskell/thinking-with-types/Chapter13.html"><strong aria-hidden="true">31.</strong> Chapter13</a></li><li class="chapter-item expanded affix "><li class="part-title">Sockets and Pipes</li><li class="chapter-item expanded "><a href="../../../haskell/sockets-and-pipes-notes/C_01_Handles.html"><strong aria-hidden="true">32.</strong> C_01_Handles</a></li><li class="chapter-item expanded "><a href="../../../haskell/sockets-and-pipes-notes/C_02_Chunks.html"><strong aria-hidden="true">33.</strong> C_02_Chunks</a></li><li class="chapter-item expanded "><a href="../../../haskell/sockets-and-pipes-notes/C_03_Bytes.html"><strong aria-hidden="true">34.</strong> C_03_Bytes</a></li><li class="chapter-item expanded "><a href="../../../haskell/sockets-and-pipes-notes/C_04_Sockets.html"><strong aria-hidden="true">35.</strong> C_04_Sockets</a></li><li class="chapter-item expanded "><a href="../../../haskell/sockets-and-pipes-notes/C_05_HTTP.html"><strong aria-hidden="true">36.</strong> C_05_HTTP</a></li><li class="chapter-item expanded "><a href="../../../haskell/sockets-and-pipes-notes/C_06_HTTP_types.html"><strong aria-hidden="true">37.</strong> C_06_HTTP_types</a></li><li class="chapter-item expanded "><a href="../../../haskell/sockets-and-pipes-notes/C_07_Encoding.html"><strong aria-hidden="true">38.</strong> C_07_Encoding</a></li><li class="chapter-item expanded "><a href="../../../haskell/sockets-and-pipes-notes/C_08_Responding.html"><strong aria-hidden="true">39.</strong> C_08_Responding</a></li><li class="chapter-item expanded "><a href="../../../haskell/sockets-and-pipes-notes/C_09_Content_types.html"><strong aria-hidden="true">40.</strong> C_09_Content_types</a></li><li class="chapter-item expanded "><a href="../../../haskell/sockets-and-pipes-notes/C_10_Change.html"><strong aria-hidden="true">41.</strong> C_10_Change</a></li><li class="chapter-item expanded "><a href="../../../haskell/sockets-and-pipes-notes/C_11_Streaming.html"><strong aria-hidden="true">42.</strong> C_11_Streaming</a></li><li class="chapter-item expanded affix "><li class="part-title">Miscellaneous Notes</li><li class="chapter-item expanded "><a href="../../../miscNotes/MiscNotes.html"><strong aria-hidden="true">43.</strong> Notes</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">notes</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <pre><code class="language-haskell">module Try.ParallelAndConcurrentHaskell.Exceptions where
+
+import UnliftIO
+</code></pre>
+<h2 id="exceptions"><a class="header" href="#exceptions">Exceptions</a></h2>
+<ul>
+<li>
+<p>Form a hierarchy</p>
+</li>
+<li>
+<p>Catching</p>
+<ul>
+<li>
+<p>Some handlers</p>
+<pre><code class="language-hs">try :: Exception e =&gt; IO a -&gt; IO (Either e a)
+handle :: Exception e =&gt; (e -&gt; IO a) -&gt; IO a -&gt; IO a
+onException :: IO a -&gt; IO b -&gt; IO a
+</code></pre>
+</li>
+<li>
+<p><code>onException</code> rethrows the exception. Example:</p>
+<pre><code class="language-hs">bracket before after thing =
+  mask $ \restore -&gt; do
+    a &lt;- before
+    r &lt;- restore (thing a) `onException` after a
+    _ &lt;- after a
+    return r
+</code></pre>
+</li>
+<li>
+<p><code>catchJust</code>, <code>handleJust</code> select an exception by a predicate.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Throwing</p>
+<ul>
+<li><code>throwIO :: Exception e =&gt; e -&gt; IO a</code> guarantees the ordering of exceptions</li>
+<li><code>throw :: Exception e =&gt; e -&gt; a</code> doesn't</li>
+</ul>
+</li>
+<li>
+<p>Processing actions with possible exceptions</p>
+<pre><code class="language-hs">bracket :: IO a -&gt; (a -&gt; IO b) -&gt; (a -&gt; IO c) -&gt; IO c
+finally :: IO a -&gt; IO b -&gt; IO a
+</code></pre>
+</li>
+</ul>
+<h3 id="cancellation-and-timeouts"><a class="header" href="#cancellation-and-timeouts">Cancellation and Timeouts</a></h3>
+<h4 id="masking"><a class="header" href="#masking">Masking</a></h4>
+<pre><code class="language-hs">mask :: ((IO a -&gt; IO a) -&gt; IO b) -&gt; IO b
+</code></pre>
+<p>The mask operation defers the delivery of asynchronous exceptions for the duration of
+its argument.</p>
+<p>Here, asynchronous exceptions can only be delivered inside the argument of <code>restore</code> - inside <code>f a</code>.</p>
+<pre><code class="language-haskell">problem :: MVar a -&gt; (a -&gt; IO a) -&gt; IO ()
+problem m f = mask $ \restore -&gt; do
+  a &lt;- takeMVar m
+  r &lt;- restore (f a) `catchAny` \e -&gt; do putMVar m a; throwIO e
+  putMVar m r
+</code></pre>
+<p>mask is applied to a function, which takes as its argument a function restore. The
+restore function can be used to restore the delivery of asynchronous exceptions to its
+present state during execution of the argument to mask. If we imagine shading the entire
+argument to mask except for the expression (f a), asynchronous exceptions cannot be
+raised in the shaded portions.</p>
+<h4 id="interruptibility"><a class="header" href="#interruptibility">Interruptibility</a></h4>
+<p>An <code>interruptible</code> operation may receive an asynchronous exception only if it actually blocks.
+In the case of problem above, we know the MVar is definitely empty when we call putMVar,
+so putMVar cannot block, which means that it is not interruptible.</p>
+<h4 id="get-current-masking-state"><a class="header" href="#get-current-masking-state">Get current masking state</a></h4>
+<pre><code class="language-hs">getMaskingState :: IO MaskingState
+
+data MaskingState
+  = Unmasked
+  | MaskedInterruptible
+  | MaskedUninterruptible
+</code></pre>
+<p>The getMaskingState function returns one of the following construc‐
+tors:</p>
+<ul>
+<li><code>Unmasked</code> - The current thread is not inside <code>mask</code> or <code>uninterruptibleMask</code>.</li>
+<li><code>MaskedInterruptible</code> - The current thread is inside <code>mask</code>.</li>
+<li><code>MaskedUninterruptible</code> - The current thread is inside <code>uninterruptibleMask</code>.</li>
+</ul>
+<h4 id="multiple-mvars"><a class="header" href="#multiple-mvars">Multiple MVars</a></h4>
+<p><code>modifyMVar</code> and company first <code>takeMVar</code>, then <code>putMVar</code>.</p>
+<pre><code class="language-haskell">modifyTwo :: MVar a -&gt; MVar b -&gt; (a -&gt; b -&gt; IO (a, b)) -&gt; IO ()
+modifyTwo ma mb f =
+  modifyMVar_ mb $ \b -&gt;
+    modifyMVar ma $ \a -&gt; f a b
+</code></pre>
+<p>If this blocks in the inner modifyMVar and an exception is raised, then the outer modifyMVar_ will restore the contents of the MVar it took.</p>
+<h4 id="bracket"><a class="header" href="#bracket">Bracket</a></h4>
+<pre><code class="language-hs">bracket :: IO a -&gt; (a -&gt; IO b) -&gt; (a -&gt; IO c) -&gt; IO c
+bracket before after thing =
+  mask $ \restore -&gt; do
+    a &lt;- before
+    r &lt;- restore (thing a) `onException` after a
+    _ &lt;- after a
+    return r
+</code></pre>
+<p>The IO actions passed in as before and after are performed inside mask. The bracket
+function guarantees that if before returns, after will be executed in the future. It is
+normal for before to contain a blocking operation; if an exception is raised while before
+is blocked, then no harm is done. But before should perform only one blocking oper‐
+ation. An exception raised by a second blocking operation would not result in after
+being executed. If you need to perform two blocking operations, the right way is to nest
+calls to bracket, as we did with modifyMVar.
+Something else to watch out for here is using blocking operations in after. If you need
+to do this, then be aware that your blocking operation is interruptible and might receive
+an asynchronous exception.</p>
+<h3 id="timeouts"><a class="header" href="#timeouts">Timeouts</a></h3>
+<p>See</p>
+<ul>
+<li><a href="https://hackage.haskell.org/package/base-4.18.0.0/docs/Control-Exception-Base.html#v:catchJust">catchJust</a></li>
+<li><a href="https://hackage.haskell.org/package/base-4.18.0.0/docs/System-Timeout.html#v:timeout">timeout</a></li>
+<li><a href="https://hackage.haskell.org/package/base-4.18.0.0/docs/Control-Concurrent.html#v:throwTo">throwTo</a>
+<ul>
+<li>it's <strong>always</strong> interruptible</li>
+</ul>
+</li>
+</ul>
+<h3 id="catching-asynchronous-exceptions"><a class="header" href="#catching-asynchronous-exceptions">Catching asynchronous exceptions</a></h3>
+<p>If you need to handle asynchronous exceptions, it’s usually important
+for the exception handler to be inside a mask so that you don’t get interrupted by another
+asynchronous exception before you’ve finished dealing with the first one. For that rea‐
+son, catch or handle might be more appropriate, because you can take advantage of
+the built-in mask.</p>
+<p>Don't handle exceptions inside a handler.</p>
+<h3 id="mask-and-forkio"><a class="header" href="#mask-and-forkio">mask and forkIO</a></h3>
+<p>Use <code>async</code></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../haskell/developers-roadmap/Monoids/FizzBuzz.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../../../haskell/developers-roadmap/ParallelAndConcurrentHaskell/MVar.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../haskell/developers-roadmap/Monoids/FizzBuzz.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../../../haskell/developers-roadmap/ParallelAndConcurrentHaskell/MVar.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
+
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
