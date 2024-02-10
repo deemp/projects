@@ -1,0 +1,5 @@
+.vscode
+Solution.*
+!Solution.tex
+!Solution.pdf
+*.zip

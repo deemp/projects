@@ -1,0 +1,75 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{amsmath,amsfonts,enumerate}
+\usepackage{zed-csp}
+
+% Define admin constants
+\def\name{Danila Danko}
+\def\course{Models of Software Systems}
+\def\title{Assignment 1}
+
+\begin{document}
+%----------------------------
+% BEGIN HEADER PORTION
+%----------------------------
+\hspace*{-12mm}
+\framebox{
+    \begin{minipage}[t]{\textwidth}
+        \vspace{1ex}
+        {\large\bf  \course} \hfill {\large\bf Name: \name}\\[1ex]
+        {\bf \title}
+        \vspace{1ex}
+    \end{minipage}
+}
+\vskip 0.1in
+%----------------------------
+% END HEADER PORTION
+%----------------------------
+
+\section{Lambda Language}
+Consider a language with alphabet $\{ \lambda, \bullet, (, ), x, y, z \}$ and syntax
+
+\begin{syntax}
+    expression  & =  & variable~name | expression, expression\\
+    & | & $``$ \lambda $''$, variable~name, $``$ \bullet $''$, expression\\
+    & | & ``($"$, expression, ``)$"$;
+    \also
+    variable~name & = & $``$x$''$ | $``$y$''$ | $``$z$''$;
+\end{syntax}
+
+Are the following wffs of the language? For those that are not briefly explain why.
+
+\begin{enumerate}[(a)]
+    \item \makebox[7em][l]{$\lambda x \bullet yz$} Yes
+    \item \makebox[7em][l]{$(x)(y)$} Yes
+    \item \makebox[7em][l]{$\lambda \bullet x \lambda \bullet y$} No - There must be a $variable~name$ after a $\lambda$
+    \item \makebox[7em][l]{($\lambda x \bullet x(yz)$)} Yes
+    \item \makebox[7em][l]{$\lambda x \bullet \lambda y \bullet xyz$} Yes
+\end{enumerate}
+
+\section{Stars, Derivation}
+Using the {\em Stars} formal system that was discussed during the tutorial on week 2 formally shows that
+${\star}{\diamond}{\star}{\star}{\circ}{\star}{\star}{\star}{\star}{\star}\ {\vdash}\ {\star}{\diamond}{\star}{\star}{\star}{\star}{\circ}{\star}{\star}{\star}{\star}{\star}{\star}{\star}$
+
+\subsection{Proof}
+\begin{enumerate}
+    \item \makebox[7em][l]{${\star}{\diamond}{\star}{\star}{\circ}{\star}{\star}{\star}{\star}{\star}$} axiom A
+    \item \makebox[7em][l]{${\star}{\diamond}{\star}{\star}{\star}{\circ}{\star}{\star}{\star}{\star}{\star}{\star}$} R, 1
+    \item \makebox[7em][l]{${\star}{\diamond}{\star}{\star}{\star}{\star}{\circ}{\star}{\star}{\star}{\star}{\star}{\star}{\star}$} R, 2
+\end{enumerate}
+
+\section{Prolog}
+
+\begin{enumerate}[(a)]
+
+    \item Implement the problem "Tower of Hanoi" in Prolog. For information about the problem, visit the link below:
+          ${https://en.wikipedia.org/wiki/Tower\_of\_Hanoi}$
+
+    \item Implement a program in Prolog that takes two lists of integers and returns a new list containing only the elements that appear in both input lists.
+
+    \item Implement a Prolog program that checks if a given list is a palindrome.
+
+\end{enumerate}
+
+
+\end{document}
